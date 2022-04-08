@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BookmarkData()),
       ],
       child: MaterialApp(
-          showPerformanceOverlay: true,
+          // showPerformanceOverlay: true,
           debugShowCheckedModeBanner: false,
           theme: Primary.primaryTheme,
           routes: {

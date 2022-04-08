@@ -28,7 +28,7 @@ class StreetFood extends StatelessWidget {
           ),
           SizedBox(
               width: size.width,
-              height: size.height * .35,
+              height: size.height > 650 ? size.height * .35 : size.height * .45,
               child: ListView.builder(
                 padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 physics: BouncingScrollPhysics(
@@ -71,17 +71,26 @@ class StreetFood extends StatelessWidget {
                             child: GestureDetector(
                               onTap: () {
                                 debugPrint("open new page");
-                                Navigator.push(context, PageRouteBuilder(
-                                  pageBuilder:
-                                      (context, animation, secondaryAnimation) {
-                                    return RotationTransition(
-                                      turns: animation,
-                                      child: StreedFoodDetails(
-                                          restaurantId: imageUrl),
-                                      alignment: Alignment.centerLeft,
-                                    );
-                                  },
-                                ));
+                                const Duration transitionDuration =
+                                    Duration(milliseconds: 300);
+                                Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      transitionDuration: transitionDuration,
+                                      reverseTransitionDuration:
+                                          transitionDuration,
+                                      barrierDismissible: true,
+                                      pageBuilder: (context, animation,
+                                          secondaryAnimation) {
+                                        return ScaleTransition(
+                                          scale: animation,
+                                          child: StreedFoodDetails(
+                                              restaurantId: imageUrl),
+                                          alignment: Alignment.bottomCenter,
+                                          filterQuality: FilterQuality.high,
+                                        );
+                                      },
+                                    ));
                               },
                               child: CachedNetworkImage(
                                 imageUrl: imageUrl,

@@ -1,5 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foodinz/pages/all_orders.dart';
+import 'package:foodinz/pages/calls.dart';
+import 'package:foodinz/pages/messages.dart';
+import 'package:foodinz/pages/recent_contacts.dart';
+import 'package:foodinz/pages/stories.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 import '../widgets/home_screen.dart';
@@ -16,6 +22,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var selected;
+  int _pageIndex = 0;
+  final List<Widget> pages = const [
+    HomeScreen(),
+    AllOrders(),
+    AllMessages(),
+    RecentContacts(),
+    CallsScreen(),
+  ];
 
   var bgColor;
   var heart = false;
@@ -33,50 +47,44 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         controller: controller,
-        children: [
-          HomeScreen()
-          //Add(),
-          //Profile(),
-        ],
+        children: [pages[_pageIndex]],
       ),
       bottomNavigationBar: StylishBottomBar(
         bubbleFillStyle: BubbleFillStyle.outlined,
         barStyle: BubbleBarStyle.horizotnal,
         items: [
           AnimatedBarItems(
-              icon: Icon(
-                Icons.house_outlined,
-              ),
-              selectedIcon: Icon(Icons.explore),
-              selectedColor: Colors.deepOrange,
-              backgroundColor: Colors.amber,
-              title: Text('Explore')),
+            icon: const Icon(
+              Icons.house_outlined,
+            ),
+            selectedIcon: const Icon(Icons.explore),
+            selectedColor: Colors.deepOrange,
+            backgroundColor: Colors.amber,
+            title: const Text(
+              'Explore',
+            ),
+          ),
           AnimatedBarItems(
-              icon: Icon(Icons.restaurant),
-              selectedIcon: Icon(Icons.restaurant_menu),
-              selectedColor: Colors.pink,
-              backgroundColor: Colors.amber,
-              title: Text('Restaurants')),
+            icon: const FaIcon(FontAwesomeIcons.clockRotateLeft),
+            selectedIcon: const FaIcon(FontAwesomeIcons.clockRotateLeft),
+            selectedColor: Colors.pink,
+            backgroundColor: Colors.amber,
+            title: const Text(
+              'Orders',
+            ),
+          ),
           AnimatedBarItems(
-              icon: Icon(
-                Icons.chat_bubble_outline,
-              ),
-              selectedIcon: Icon(
-                Icons.support_agent_rounded,
-              ),
+              icon: const FaIcon(FontAwesomeIcons.message),
+              selectedIcon: const FaIcon(FontAwesomeIcons.message),
               backgroundColor: Colors.blue,
               selectedColor: Colors.pink,
-              title: Text('Support')),
+              title: const Text('Support')),
           AnimatedBarItems(
-              icon: Icon(
-                Icons.person_outline,
-              ),
-              selectedIcon: Icon(
-                Icons.person,
-              ),
+              icon: const FaIcon(FontAwesomeIcons.phoneFlip),
+              selectedIcon: const FaIcon(FontAwesomeIcons.phoneFlip),
               backgroundColor: Colors.amber,
               selectedColor: Colors.pinkAccent,
-              title: Text('Profile')),
+              title: const Text('Calls')),
         ],
         iconSize: 16,
         barAnimation: BarAnimation.liquid,
@@ -84,10 +92,10 @@ class _HomeState extends State<Home> {
         hasNotch: true,
         fabLocation: StylishBarFabLocation.end,
         opacity: 0.2,
-        currentIndex: selected ?? 0,
+        currentIndex: _pageIndex,
         onTap: (index) {
           setState(() {
-            selected = index;
+            _pageIndex = index!;
           });
         },
       ),
