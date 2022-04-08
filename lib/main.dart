@@ -9,6 +9,7 @@ import 'package:foodinz/providers/bookmarks.dart';
 import 'package:foodinz/providers/cart.dart';
 import 'package:foodinz/providers/comments_service.dart';
 import 'package:foodinz/providers/data.dart';
+import 'package:foodinz/themes/light_theme.dart';
 import 'package:provider/provider.dart';
 
 import 'models/food.dart';
@@ -47,10 +48,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BookmarkData()),
       ],
       child: MaterialApp(
+          showPerformanceOverlay: true,
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.orange,
-          ),
+          theme: Primary.primaryTheme,
           routes: {
             StartPage.routeName: (_) => const StartPage(),
             Home.routeName: (_) => const Home()
