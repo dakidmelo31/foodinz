@@ -53,9 +53,15 @@ dependencies:
   flutter_polyline_points:
   font_awesome_flutter:
   faker:
+  stream_chat_flutter:
   geocoding:
+  qr_flutter: 
   provider:
   shared_preferences:
+  flutter_animated_button:
+  ticket_widget:
+  avatar_glow:
+  context_menus:
   flutter:
     sdk: flutter
 

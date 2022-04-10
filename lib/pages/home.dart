@@ -44,10 +44,18 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    const Duration transitionDuration = Duration(milliseconds: 500);
     return Scaffold(
       body: PageView(
         controller: controller,
-        children: [pages[_pageIndex]],
+        children: [
+          AnimatedSwitcher(
+              duration: transitionDuration,
+              reverseDuration: transitionDuration,
+              switchInCurve: Curves.easeIn,
+              switchOutCurve: Curves.easeIn,
+              child: pages[_pageIndex])
+        ],
       ),
       bottomNavigationBar: StylishBottomBar(
         bubbleFillStyle: BubbleFillStyle.outlined,

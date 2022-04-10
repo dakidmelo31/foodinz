@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../models/message_data.dart';
 import '../widgets/message_tile.dart';
+import '../widgets/order_dialog.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -43,73 +44,80 @@ class _ChatScreenState extends State<ChatScreen> {
               Expanded(
                 child: ListView.builder(
                   reverse: true,
-                  itemCount: 100,
+                  itemCount: 10,
                   itemBuilder: (_, index) {
-                    return Random().nextInt(2) % 2 == 0
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(width: size.width * .1),
-                              SizedBox(
-                                  width: size.width * .9,
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: SizedBox(
-                                      child: Card(
-                                          shadowColor:
-                                              Colors.black.withOpacity(.15),
-                                          elevation: 10,
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
-                                          color: Color.fromARGB(
-                                              255, 248, 217, 113),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                                "this would not seem to be very nice since the day started and you know now how far this would go.",
-                                                style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 0, 0, 0))),
-                                          )),
+                    return index % 5 == 0
+                        ? OrderDialog()
+                        : Random().nextBool()
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(width: size.width * .1),
+                                  SizedBox(
+                                      width: size.width * .9,
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: SizedBox(
+                                          child: Card(
+                                              shadowColor:
+                                                  Colors.black.withOpacity(.15),
+                                              elevation: 10,
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 10, vertical: 10),
+                                              color: Color.fromARGB(
+                                                  255, 248, 217, 113),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                    "this would not seem to be very nice since the day started and you know now how far this would go.",
+                                                    style: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 0, 0, 0))),
+                                              )),
+                                        ),
+                                      )),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: size.width * .9,
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: SizedBox(
+                                        child: Card(
+                                            shadowColor:
+                                                Color.fromARGB(255, 59, 56, 46)
+                                                    .withOpacity(.15),
+                                            elevation: 10,
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 10),
+                                            color: Color.fromARGB(
+                                                255, 255, 255, 255),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 18.0,
+                                                      vertical: 10),
+                                              child: Text(
+                                                  faker.lorem
+                                                      .sentences(
+                                                          Random().nextInt(4))
+                                                      .join(", "),
+                                                  style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 68, 68, 68))),
+                                            )),
+                                      ),
                                     ),
-                                  )),
-                            ],
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: size.width * .9,
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SizedBox(
-                                    child: Card(
-                                        shadowColor:
-                                            Color.fromARGB(255, 59, 56, 46)
-                                                .withOpacity(.15),
-                                        elevation: 10,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 10),
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 18.0, vertical: 10),
-                                          child: Text(
-                                              faker.lorem
-                                                  .sentences(
-                                                      Random().nextInt(4))
-                                                  .join(", "),
-                                              style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 68, 68, 68))),
-                                        )),
                                   ),
-                                ),
-                              ),
-                              SizedBox(width: size.width * .1),
-                            ],
-                          );
+                                  SizedBox(width: size.width * .1),
+                                ],
+                              );
                   },
                 ),
               ),
