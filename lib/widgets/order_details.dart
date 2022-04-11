@@ -105,7 +105,7 @@ class OrderDetails extends StatelessWidget {
                             Flexible(
                               flex: 2,
                               child: Text(faker.lorem.sentence(),
-                                  style: TextStyle(),
+                                  style: const TextStyle(),
                                   overflow: TextOverflow.ellipsis),
                             ),
                             Flexible(
@@ -113,9 +113,9 @@ class OrderDetails extends StatelessWidget {
                               fit: FlexFit.tight,
                               child: Row(
                                 children: [
-                                  Align(
+                                  const Align(
                                     alignment: Alignment.centerRight,
-                                    child: Text(
+                                    child: const Text(
                                       "3 x 500 CFA",
                                     ),
                                   ),
@@ -137,7 +137,7 @@ class OrderDetails extends StatelessWidget {
                             " more",
                         style: Primary.lightParagraph),
                   const Spacer(),
-                  Divider(
+                  const Divider(
                     height: 12,
                     color: Colors.pink,
                     endIndent: 70,
@@ -149,16 +149,16 @@ class OrderDetails extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Date", style: Primary.heading),
+                        const Text("Date", style: Primary.heading),
                         Text(
                           timeAgo.format(
                             DateTime.now().subtract(
-                              Duration(
+                              const Duration(
                                 hours: 5033,
                               ),
                             ),
                           ),
-                          style: TextStyle(color: Colors.grey),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ],
                     ),
@@ -168,10 +168,10 @@ class OrderDetails extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Quantity", style: Primary.heading),
-                        Text(
+                        const Text("Quantity", style: Primary.heading),
+                        const Text(
                           "5",
-                          style: TextStyle(color: Colors.grey),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ],
                     ),
@@ -181,8 +181,8 @@ class OrderDetails extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Status", style: Primary.heading),
-                        Text(
+                        const Text("Status", style: Primary.heading),
+                        const Text(
                           "Pending",
                           style: TextStyle(color: Colors.grey),
                         ),
@@ -191,7 +191,7 @@ class OrderDetails extends StatelessWidget {
                   ),
                   const Spacer(),
                   CupertinoButton.filled(
-                    child: Text("Cost: 1000 CFA"),
+                    child: const Text("Cost: 1000 CFA"),
                     onPressed: () {
                       debugPrint("nothing doing");
                     },

@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/street_food_details.dart';
+import 'package:foodinz/providers/meals.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
+import '../models/food.dart';
 import '../themes/light_theme.dart';
 
 class StreetFood extends StatelessWidget {
@@ -12,6 +15,8 @@ class StreetFood extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final shawarmaMeals =
+        Provider.of<MealsData>(context, listen: true).shawarmaMeals;
     String imageUrl = "";
     final size = MediaQuery.of(context).size;
     return Container(
@@ -35,11 +40,16 @@ class StreetFood extends StatelessWidget {
                   parent: const AlwaysScrollableScrollPhysics(),
                 ),
                 scrollDirection: Axis.horizontal,
-                itemCount: 25,
+                itemCount: shawarmaMeals.length,
                 itemBuilder: (_, index) {
-                  int rating = Random().nextInt(12);
+                  final Food food = shawarmaMeals[index];
+                  int rating = food.averageRating.toInt();
                   List<Widget> ratings = [];
                   for (int i = 0; i < 5; i++) {
+                    if (rating <= 1) {
+                      break;
+                    }
+
                     if (i < rating) {
                       ratings.add(
                         Icon(Icons.star_rounded, color: Colors.amber),
@@ -51,13 +61,6 @@ class StreetFood extends StatelessWidget {
                       );
                     }
                   }
-                  imageUrl = Random().nextBool()
-                      ? "https://media.istockphoto.com/photos/greek-gyros-picture-id942444674?b=1&k=20&m=942444674&s=170667a&w=0&h=8H6IKLj6ojIg-sts5P8WqnqvdOjX3hAiQmUqHw0MXYE="
-                      : Random().nextBool()
-                          ? "https://images.unsplash.com/photo-1644615988562-31d2e98fb6b7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c2hhd2FybWF8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
-                          : Random().nextBool()
-                              ? "https://images.unsplash.com/photo-1530469912745-a215c6b256ea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8c2hhd2FybWF8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
-                              : "https://images.unsplash.com/photo-1642783944285-b33b18ef6c3b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8c2hhd2FybWF8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60";
                   return Container(
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     height: double.infinity,
@@ -66,44 +69,41 @@ class StreetFood extends StatelessWidget {
                       children: [
                         Spacer(),
                         ClipOval(
-                          child: Hero(
-                            tag: imageUrl,
-                            child: GestureDetector(
-                              onTap: () {
-                                debugPrint("open new page");
-                                const Duration transitionDuration =
-                                    Duration(milliseconds: 300);
-                                Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      transitionDuration: transitionDuration,
-                                      reverseTransitionDuration:
-                                          transitionDuration,
-                                      barrierDismissible: true,
-                                      pageBuilder: (context, animation,
-                                          secondaryAnimation) {
-                                        return ScaleTransition(
-                                          scale: animation,
-                                          child: StreedFoodDetails(
-                                              restaurantId: imageUrl),
-                                          alignment: Alignment.bottomCenter,
-                                          filterQuality: FilterQuality.high,
-                                        );
-                                      },
-                                    ));
+                          child: GestureDetector(
+                            onTap: () {
+                              debugPrint("open new page");
+                              const Duration transitionDuration =
+                                  Duration(milliseconds: 300);
+                              Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    transitionDuration: transitionDuration,
+                                    reverseTransitionDuration:
+                                        transitionDuration,
+                                    barrierDismissible: true,
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) {
+                                      return ScaleTransition(
+                                        scale: animation,
+                                        child: StreedFoodDetails(
+                                            restaurantId: imageUrl),
+                                        alignment: Alignment.bottomCenter,
+                                        filterQuality: FilterQuality.high,
+                                      );
+                                    },
+                                  ));
+                            },
+                            child: CachedNetworkImage(
+                              imageUrl: food.image,
+                              alignment: Alignment.center,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
+                              errorWidget: (_, string, stackTrace) {
+                                return Lottie.asset(
+                                    "assets/no-connection2.json");
                               },
-                              child: CachedNetworkImage(
-                                imageUrl: imageUrl,
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.high,
-                                errorWidget: (_, string, stackTrace) {
-                                  return Lottie.asset(
-                                      "assets/no-connection2.json");
-                                },
-                                width: 100,
-                                height: 100,
-                              ),
+                              width: 100,
+                              height: 100,
                             ),
                           ),
                         ),
@@ -154,17 +154,7 @@ class StreetFood extends StatelessWidget {
                         ),
                         Spacer(),
                         Text(
-                          Random().nextBool()
-                              ? "Bakari's Shawarma Station"
-                              : Random().nextBool()
-                                  ? "Sweet Shawarma Station"
-                                  : Random().nextBool()
-                                      ? "High Quality Shawarma"
-                                      : Random().nextBool()
-                                          ? "Buy Heavy Quality Shawarma"
-                                          : Random().nextBool()
-                                              ? "J & J Shawarma shop"
-                                              : "Shawarma Hotspot with Extra Meat",
+                          food.name,
                           style: Primary.shawarmaHeading,
                         ),
                         Spacer(),

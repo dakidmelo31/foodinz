@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,11 @@ class _StartPageState extends State<StartPage> {
       // Navigator.pushReplacementNamed(context, Home.routeName);
     }
     super.initState();
+  }
+
+  Future _getPosition() async {
+    bool isServiceEnabled;
+    // final permission = Geolocator.
   }
 
   @override
@@ -81,9 +88,7 @@ class _StartPageState extends State<StartPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(
-                height: size.height * .32,
-              ),
+              Spacer(),
               SizedBox(
                 height: size.height * .3,
                 width: size.width * .9,
@@ -95,9 +100,7 @@ class _StartPageState extends State<StartPage> {
                       "Welcome To Food!n City",
                       style: headingStyles,
                     ),
-                    SizedBox(
-                      height: size.height * .02,
-                    ),
+                    Spacer(),
                     Text(
                         "Hungry, Craving, or just wanna explore? Just hop into the food media in your city and find your favourite dishes. and more",
                         style: myTexts),

@@ -14,7 +14,7 @@ class MealsData with ChangeNotifier {
 
   static double convertDouble(dynamic value) {
     if (value == null) return 0;
-    var myInt = value;
+    var myInt = value + 0.0;
     double newInt = myInt as double;
 
     return newInt;
@@ -47,36 +47,92 @@ class MealsData with ChangeNotifier {
   }
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  List<Food> meals = [];
+  List<Food> meals = [],
+      popularMeals = [],
+      streetMeals = [],
+      cafeMeals = [],
+      classicMeals = [],
+      shawarmaMeals = [],
+      specialMeals = [];
   List<Food> restaurantMenu = [];
 
   loadMeals() async {
-    firestore.collection("meals").get().then((QuerySnapshot querySnapshot) {
-      for (var data in querySnapshot.docs) {
-        String documentId = data.id;
-        print(
-            "going through $documentId now and items of meals array are ${meals.length}");
-        meals.add(Food(
-          foodId: documentId,
-          likes: convertInt(data['likes']),
-          description: data['description'],
-          comments: convertInt(data['comments']),
-          name: data["name"],
-          available: data["available"],
-          image: data['image'],
-          averageRating: convertInt(data["averageRating"])
-              .toDouble(), //int.parse(data['averageRating'])
-          price: convertDouble(data['price']),
-          restaurantId: data['restaurantId'],
-          gallery: convertString(data['gallery']),
-          accessories: convertList(data['accessories']),
-          duration: data['duration'],
-          categories: convertList(data['categories']),
-        ));
-      }
-    }).whenComplete(() {
-      notifyListeners();
-    });
+    firestore
+        .collection("meals")
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+          for (var data in querySnapshot.docs) {
+            String documentId = data.id;
+            debugPrint(
+                "going through $documentId now and items of meals array are ${meals.length}");
+            meals.add(
+              Food(
+                foodId: documentId,
+                likes: convertInt(data['likes']),
+                description: data['description'],
+                comments: convertInt(data['comments']),
+                name: data["name"],
+                available: data["available"],
+                image: data['image'],
+                averageRating: convertInt(data["averageRating"])
+                    .toDouble(), //int.parse(data['averageRating'])
+                price: convertDouble(data['price']) + 0.0,
+                restaurantId: data['restaurantId'],
+                gallery: convertString(data['gallery']),
+                accessories: convertList(data['accessories']),
+                duration: data['duration'],
+                categories: convertList(data['categories']),
+              ),
+            );
+          }
+
+          for (Food food in meals) {
+            for (String cat in food.categories) {
+              switch (cat.toLowerCase()) {
+                case "cafe":
+                case "cafe food":
+                  cafeMeals
+                      .removeWhere((element) => element.foodId == food.foodId);
+
+                  cafeMeals.add(food);
+                  break;
+
+                case "special dish":
+                case "specials":
+                  specialMeals
+                      .removeWhere((element) => element.foodId == food.foodId);
+                  specialMeals.add(food);
+                  break;
+
+                case "classic":
+                case "classic food":
+                  cafeMeals
+                      .removeWhere((element) => element.foodId == food.foodId);
+                  cafeMeals.add(food);
+                  break;
+
+                case "street":
+                case "street food":
+                  streetMeals
+                      .removeWhere((element) => element.foodId == food.foodId);
+
+                  streetMeals.add(food);
+                  break;
+                case "shawarma":
+                case "shawarma special":
+                  shawarmaMeals
+                      .removeWhere((element) => element.foodId == food.foodId);
+
+                  shawarmaMeals.add(food);
+                  break;
+              }
+            }
+          }
+        })
+        .then((value) {})
+        .whenComplete(() {
+          notifyListeners();
+        });
   }
 
   MealsData() {

@@ -1,12 +1,14 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/pages/street_food.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +16,7 @@ import '../models/food.dart';
 import '../providers/data.dart';
 import '../themes/light_theme.dart';
 import '../widgets/slide_up_tween.dart';
+import '../widgets/view_category.dart';
 
 class RecommendedScreen extends StatefulWidget {
   RecommendedScreen({Key? key}) : super(key: key);
@@ -55,6 +58,10 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
   Widget build(BuildContext context) {
     final mealsData = Provider.of<MealsData>(context);
     final _restaurantsData = Provider.of<RestaurantData>(context);
+    final cafeMeals = mealsData.cafeMeals;
+    final streetMeals = mealsData.streetMeals;
+    final classicMeals = mealsData.classicMeals;
+    final specialMeals = mealsData.specialMeals;
     final _categoryData = Provider.of<CategoryData>(context);
     final _categories = _categoryData.getCategories();
     final meals = mealsData.meals;
@@ -75,24 +82,24 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                 children: [
                   SlideUpTween(
                     curve: Curves.bounceInOut,
-                    duration: Duration(milliseconds: 350),
-                    begin: Offset(130, 0),
+                    duration: const Duration(milliseconds: 350),
+                    begin: const Offset(130, 0),
                     child: SizedBox(
                       height: 100,
                       width: size.width,
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: _categories.length,
                           itemBuilder: (_, index) {
                             return SlideUpTween(
-                              begin: Offset(80, 0),
-                              duration: Duration(milliseconds: 500),
+                              begin: const Offset(80, 0),
+                              duration: const Duration(milliseconds: 500),
                               curve: Curves.bounceIn,
                               child: AnimatedPadding(
-                                duration: Duration(milliseconds: 350),
+                                duration: const Duration(milliseconds: 350),
                                 curve: Curves.bounceIn,
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 14),
                                 child: InkWell(
                                   onTap: () {
@@ -107,10 +114,11 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                                             ? Colors.grey.withOpacity(.15)
                                             : Theme.of(context).primaryColor,
                                     avatar: _categoryData.selectedIndex == index
-                                        ? Icon(Icons.restaurant_menu_outlined,
+                                        ? const Icon(
+                                            Icons.restaurant_menu_outlined,
                                             color: Colors.white)
                                         : null,
-                                    labelPadding: EdgeInsets.symmetric(
+                                    labelPadding: const EdgeInsets.symmetric(
                                       horizontal: 8,
                                       vertical: 3,
                                     ),
@@ -134,9 +142,8 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                     children: [
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 18.0, bottom: 15),
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 18.0, bottom: 15),
                           child: Text("You should try these 😋😋",
                               style: Primary.bigHeading),
                         ),
@@ -145,12 +152,12 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                         height: h * .45,
                         width: w * .75,
                         child: PageView.builder(
-                          physics: BouncingScrollPhysics(
+                          physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
                           controller: _cardPageController,
                           onPageChanged: (page) {
                             _cardDetailsController.animateToPage(page,
-                                duration: Duration(milliseconds: 550),
+                                duration: const Duration(milliseconds: 550),
                                 curve: Curves.decelerate);
                           },
                           clipBehavior: Clip.none,
@@ -207,13 +214,13 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                                       ),
                                     child: Material(
                                       shadowColor: index == _cardIndex
-                                          ? Color.fromARGB(103, 0, 0, 0)
+                                          ? const Color.fromARGB(103, 0, 0, 0)
                                           : Colors.white,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
+                                      borderRadius: const BorderRadius.all(
+                                          const Radius.circular(10)),
                                       elevation: 10,
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.all(
+                                        borderRadius: const BorderRadius.all(
                                             Radius.circular(10)),
                                         child: CachedNetworkImage(
                                           imageUrl: meal.image,
@@ -241,7 +248,7 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                       height: h * .15,
                       child: PageView.builder(
                         itemCount: meals.length,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         controller: _cardDetailsController,
                         itemBuilder: (_, index) {
                           final Food meal = meals[index];
@@ -294,8 +301,239 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                           );
                         },
                       )),
-                  const SizedBox(height: 10),
-                  StreetFood()
+                  const SizedBox(height: 10), // Cafe meals
+                  OpenContainer(
+                    closedElevation: 0,
+                    openElevation: 0,
+                    closedBuilder: (_, openContainer) => InkWell(
+                      onTap: openContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Top Shawarma Spots",
+                                style: Primary.heading),
+                            const Icon(Icons.arrow_forward_rounded),
+                          ],
+                        ),
+                      ),
+                    ),
+                    transitionDuration: const Duration(milliseconds: 700),
+                    middleColor: Colors.orange,
+                    transitionType: ContainerTransitionType.fadeThrough,
+                    tappable: true,
+                    openBuilder: (_, closedContainer) =>
+                        ViewCategory(mealCategory: cafeMeals),
+                  ),
+                  const StreetFood(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  OpenContainer(
+                    closedElevation: 0,
+                    openElevation: 0,
+                    closedBuilder: (_, openContainer) => InkWell(
+                      onTap: openContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Cafe Meals", style: Primary.heading),
+                            const Icon(Icons.arrow_forward_rounded),
+                          ],
+                        ),
+                      ),
+                    ),
+                    transitionDuration: const Duration(milliseconds: 700),
+                    middleColor: Colors.orange,
+                    transitionType: ContainerTransitionType.fadeThrough,
+                    tappable: true,
+                    openBuilder: (_, closedContainer) =>
+                        ViewCategory(mealCategory: cafeMeals),
+                  ),
+                  SizedBox(
+                    height: h * .4,
+                    width: w,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: cafeMeals.length,
+                      itemBuilder: (_, index) {
+                        Food meal = cafeMeals[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Column(children: [
+                            Card(
+                              elevation: 5,
+                              shadowColor: Colors.grey.withOpacity(.4),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: CachedNetworkImage(
+                                  imageUrl: meal.image,
+                                  errorWidget: (_, style, stackTrace) {
+                                    return Lottie.asset(
+                                        "assets/no-connection2.json");
+                                  },
+                                  fit: BoxFit.cover,
+                                  width: size.width * .29,
+                                  height: size.height * .18,
+                                  alignment: Alignment.center,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: size.width * .29,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    meal.name,
+                                    style: Primary.cardText,
+                                  ),
+                                  if (meal.likes > 10)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.favorite,
+                                            color: Colors.pink, size: 14),
+                                        Text(
+                                          meal.likes > 1001
+                                              ? (meal.likes / 1000)
+                                                      .toStringAsFixed(2)
+                                                      .toString() +
+                                                  "K"
+                                              : meal.likes > 1001
+                                                  ? (meal.likes / 1000000)
+                                                          .toString() +
+                                                      "M"
+                                                  : meal.likes.toString(),
+                                          style: Primary.cardText,
+                                        ),
+                                      ],
+                                    ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Text(
+                                      NumberFormat().format(
+                                            meal.price.toInt(),
+                                          ) +
+                                          " CFA",
+                                      style: Primary.orangeParagraph,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ]),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  OpenContainer(
+                    closedElevation: 0,
+                    openElevation: 0,
+                    closedBuilder: (_, openContainer) => InkWell(
+                      onTap: openContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Special Meals", style: Primary.heading),
+                            const Icon(Icons.arrow_forward_rounded),
+                          ],
+                        ),
+                      ),
+                    ),
+                    transitionDuration: const Duration(milliseconds: 700),
+                    middleColor: Colors.orange,
+                    transitionType: ContainerTransitionType.fadeThrough,
+                    tappable: true,
+                    openBuilder: (_, closedContainer) =>
+                        ViewCategory(mealCategory: streetMeals),
+                  ),
+                  SizedBox(
+                    height: h * .4,
+                    width: w,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: streetMeals.length,
+                      itemBuilder: (_, index) {
+                        Food meal = streetMeals[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Column(children: [
+                            Card(
+                              elevation: 5,
+                              shadowColor: Colors.grey.withOpacity(.4),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: CachedNetworkImage(
+                                  imageUrl: meal.image,
+                                  errorWidget: (_, style, stackTrace) {
+                                    return Lottie.asset(
+                                        "assets/no-connection2.json");
+                                  },
+                                  fit: BoxFit.cover,
+                                  width: size.width * .29,
+                                  height: size.height * .18,
+                                  alignment: Alignment.center,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: size.width * .29,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    meal.name,
+                                    style: Primary.cardText,
+                                  ),
+                                  if (meal.likes < 10)
+                                    const Icon(Icons.favorite,
+                                        color: Colors.transparent, size: 14),
+                                  if (meal.likes > 10)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.favorite,
+                                            color: Colors.pink, size: 14),
+                                        Text(
+                                          meal.likes > 1001
+                                              ? (meal.likes / 1000)
+                                                      .toStringAsFixed(2)
+                                                      .toString() +
+                                                  "K"
+                                              : meal.likes > 1001
+                                                  ? (meal.likes / 1000000)
+                                                          .toString() +
+                                                      "M"
+                                                  : meal.likes.toString(),
+                                          style: Primary.cardText,
+                                        ),
+                                      ],
+                                    ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Text(
+                                      NumberFormat().format(
+                                            meal.price.toInt(),
+                                          ) +
+                                          " CFA",
+                                      style: Primary.orangeParagraph,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ]),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ],

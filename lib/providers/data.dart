@@ -51,7 +51,13 @@ class RestaurantData with ChangeNotifier {
   }
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  List<Restaurant> restaurants = [];
+  List<Restaurant> restaurants = [],
+      popularRestaurants = [],
+      streetFood = [],
+      caters = [],
+      highClassRestaurants = [],
+      cafeRestaurants = [],
+      recommendedRestaurants = [];
   List<Coupon> coupon = [];
   List<String> categories = [];
   RestaurantData() {
@@ -66,6 +72,9 @@ class RestaurantData with ChangeNotifier {
           restaurants.add(
             Restaurant(
                 address: doc["address"] ?? "",
+                category: doc["category"] ?? "",
+                lat: doc["lat"] ?? 0.0,
+                long: doc["long"] ?? 0.0,
                 avatar: doc['avatar'] ?? "",
                 businessPhoto: doc['businessPhoto'] ?? "",
                 cash: doc['cash'] ?? false,
@@ -85,8 +94,39 @@ class RestaurantData with ChangeNotifier {
                 username: doc['username'] ?? ""),
           );
         }
+
+        for (Restaurant food in restaurants) {
+          caters.removeWhere(
+              (element) => element.restaurantId == food.restaurantId);
+          if (food.ghostKitchen) {
+            caters.add(food);
+          }
+
+          switch (food.category.toLowerCase()) {
+            case "cafe":
+            case "cafe restaurant":
+              cafeRestaurants.removeWhere(
+                  (element) => element.restaurantId == food.restaurantId);
+
+              cafeRestaurants.add(food);
+              break;
+
+            case "special dish":
+            case "specials":
+              break;
+
+            case "street":
+            case "street food":
+              streetFood.removeWhere(
+                  (element) => element.restaurantId == food.restaurantId);
+              streetFood.add(food);
+              break;
+          }
+        }
       },
-    ).whenComplete(() {
+    ).then((value) {
+      debugPrint("done with this");
+    }).whenComplete(() {
       notifyListeners();
     });
   }

@@ -7,9 +7,18 @@ class Primary {
   static const TextStyle paragraph = TextStyle(
     color: Colors.black,
   );
+  static const TextStyle orangeParagraph = TextStyle(
+    color: Colors.deepOrange,
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+  );
   static const TextStyle bigHeading = TextStyle(
     color: Colors.black,
     fontSize: 20,
+  );
+  static const TextStyle cardText = TextStyle(
+    color: Colors.black,
+    fontSize: 11,
   );
   static const TextStyle lightParagraph = TextStyle(
     color: Colors.black54,

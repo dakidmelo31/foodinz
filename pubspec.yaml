@@ -55,6 +55,7 @@ dependencies:
   faker:
   stream_chat_flutter:
   geocoding:
+  geolocator: 
   qr_flutter: 
   provider:
   shared_preferences:
