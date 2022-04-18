@@ -53,6 +53,8 @@ dependencies:
   flutter_polyline_points:
   font_awesome_flutter:
   faker:
+  flutter_countdown_timer:
+  intl_phone_field:
   stream_chat_flutter:
   geocoding:
   geolocator: 

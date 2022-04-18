@@ -1,5 +1,4 @@
-import 'dart:html';
-
+import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +87,7 @@ class _StartPageState extends State<StartPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Spacer(),
+              const Spacer(),
               SizedBox(
                 height: size.height * .3,
                 width: size.width * .9,
@@ -100,7 +99,7 @@ class _StartPageState extends State<StartPage> {
                       "Welcome To Food!n City",
                       style: headingStyles,
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Text(
                         "Hungry, Craving, or just wanna explore? Just hop into the food media in your city and find your favourite dishes. and more",
                         style: myTexts),
@@ -114,24 +113,37 @@ class _StartPageState extends State<StartPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    CupertinoButton.filled(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text("Log In"),
-                            SizedBox(
-                              width: 10,
+                    OpenContainer(
+                      transitionDuration: const Duration(milliseconds: 850),
+                      middleColor: Colors.black,
+                      tappable: true,
+                      transitionType: ContainerTransitionType.fade,
+                      openElevation: 10,
+                      closedColor: Colors.transparent,
+                      openBuilder: (_, openContainer) => const Login(),
+                      closedBuilder: (_, closedContainer) => Card(
+                        color: Colors.orange,
+                        elevation: 0,
+                        child: InkWell(
+                          onTap: closedContainer,
+                          child: SizedBox(
+                            width: size.width - 170,
+                            height: 40,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Text("Log In"),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Icon(CupertinoIcons.lock)
+                              ],
                             ),
-                            Icon(CupertinoIcons.lock)
-                          ],
+                          ),
                         ),
-                        onPressed: () {
-                          debugPrint("login pressed");
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Login()));
-                        }),
+                      ),
+                    ),
                     Text("OR", style: myTexts),
                     CupertinoButton(
                         child: Row(
