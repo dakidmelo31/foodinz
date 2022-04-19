@@ -55,6 +55,7 @@ dependencies:
   faker:
   flutter_countdown_timer:
   intl_phone_field:
+  permission_handler: ^9.2.0
   stream_chat_flutter:
   geocoding:
   geolocator: 

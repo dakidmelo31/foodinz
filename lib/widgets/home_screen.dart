@@ -54,71 +54,22 @@ class _HomeScreenState extends State<HomeScreen>
     final mealData = Provider.of<MealsData>(context, listen: true);
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.white,
-          title:
-              const Text("Food!n City", style: TextStyle(color: Colors.orange)),
-          centerTitle: true,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                debugPrint("Search bar");
-              },
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(30.0),
-            child: TabBar(
-              controller: _tabController,
-              indicator: DotIndicator(),
-              isScrollable: true,
-              automaticIndicatorColorAdjustment: true,
-              indicatorWeight: 10,
-              indicatorSize: TabBarIndicatorSize.label,
-              unselectedLabelColor: Colors.grey.withOpacity(0.6),
-              physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
-              indicatorColor: Colors.deepOrange,
-              tabs: const [
-                Tab(
-                  child: Text("Recommendation"),
-                ),
-                Tab(
-                  child: Text("Caters"),
-                ),
-                Tab(
-                  child: Text("Cafe"),
-                ),
-                Tab(
-                  child: Text("Restaurant"),
-                ),
-                Tab(
-                  child: Text("Street Food"),
-                ),
-              ],
-            ),
-          ),
-        ),
         body: TabBarView(
             dragStartBehavior: DragStartBehavior.down,
             physics: NeverScrollableScrollPhysics(),
             controller: _tabController,
             children: [
-              RecommendedScreen(),
-              ClassicRestaurantsScreen(),
-              CafeRestaurantsScreen(),
-              OpacityTween(
-                child: SlideUpTween(
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.elasticInOut,
-                    begin: Offset(-100, 0),
-                    child: RestaurantsScreen()),
-              ),
-              StreetRestaurantsScreen(),
-            ]));
+          RecommendedScreen(),
+          ClassicRestaurantsScreen(),
+          CafeRestaurantsScreen(),
+          OpacityTween(
+            child: SlideUpTween(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.elasticInOut,
+                begin: Offset(-100, 0),
+                child: RestaurantsScreen()),
+          ),
+          StreetRestaurantsScreen(),
+        ]));
   }
 }

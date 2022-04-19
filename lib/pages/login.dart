@@ -6,12 +6,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:foodinz/main.dart';
+import 'package:foodinz/widgets/scale_tween.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 import 'package:lottie/lottie.dart';
 
+import '../themes/light_theme.dart';
+import '../widgets/home_screen.dart';
 import '../widgets/opacity_tween.dart';
 import '../widgets/slide_up_tween.dart';
 import 'home.dart';
@@ -30,6 +35,37 @@ FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class _LoginState extends State<Login> {
+  var locationMessage;
+  bool showResend = false;
+  String location = "";
+  double lat = 0.0, lng = 0.0;
+
+  Future<void> getLocation() async {
+    var locationStatus = await Permission.location.status;
+    if (locationStatus.isGranted) {
+      debugPrint("granted");
+    } else if (locationStatus.isDenied) {
+      debugPrint("Not granted");
+      Map<Permission, PermissionStatus> status =
+          await [Permission.location].request();
+    } else if (locationStatus.isPermanentlyDenied) {
+      openAppSettings().then((value) {
+        setState(() {});
+      });
+    }
+    var position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    var lastPosition = await Geolocator.getLastKnownPosition();
+    print("position is $lastPosition");
+
+    setState(() {
+      lat = position.latitude;
+      lng = position.longitude;
+    });
+    debugPrint("latitude: $lat, and logitude: $lng");
+  }
+
   OTP _formState = OTP.notSent;
   late PhoneAuthCredential credential;
   int seconds = 60;
@@ -54,12 +90,10 @@ class _LoginState extends State<Login> {
       verificationCompleted: (PhoneAuthCredential credential) async {
         // ANDROID ONLY!
         // Sign the user in (or link) with the auto-generated credential
-        await auth
-            .signInWithCredential(credential)
-            .then((value) async =>
-                {if (value != null) print("user is NOT Logged In!!!!")})
-            .catchError((onError) =>
-                {debugPrint("error saving user: ${onError.toString()}")});
+        await auth.signInWithCredential(credential).then((value) async {
+          debugPrint("done logging in");
+        }).catchError((onError) =>
+            {debugPrint("error saving user: ${onError.toString()}")});
       },
       verificationFailed: (FirebaseAuthException e) {
         if (e.code == 'invalid-phone-number') {
@@ -75,22 +109,8 @@ class _LoginState extends State<Login> {
         setState(() {
           verificationCode = verificationId;
         });
-        // Create a PhoneAuthCredential with the code
-        // credential = PhoneAuthProvider.credential(
-        //     verificationId: verificationId, smsCode: verificationCode);
-
-        // Sign the user in (or link) with the credential
-        // await auth.signInWithCredential(credential);
-
-        // Create a PhoneAuthCredential with the code
-        // PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        //     verificationId: verificationId, smsCode: verificationCode);
-
-        // Sign the user in (or link) with the credential
-        // await auth.signInWithCredential(credential);
       },
     );
-    // auth.signInWithPhoneNumber(_editingController.text.toString());
   }
 
   int endTime = DateTime.now().millisecondsSinceEpoch +
@@ -117,236 +137,354 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.black.withOpacity(.8),
-            Colors.black.withOpacity(.51),
-            Colors.deepOrange.withOpacity(.8),
-            Colors.orange
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return SafeArea(
+      child: Container(
+        width: size.width,
+        height: size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: const AssetImage("assets/bg7.jpg"),
+              colorFilter: const ColorFilter.linearToSrgbGamma(),
+              alignment: Alignment.center,
+              fit: BoxFit.cover,
+              onError: (trace, hold) {
+                Lottie.asset("assets/loading2.json");
+              }),
         ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Container(
-          width: size.width,
-          height: size.height,
+        child: Container(
           decoration: BoxDecoration(
-            image: DecorationImage(
-                image: const AssetImage("assets/bg7.jpg"),
-                colorFilter: const ColorFilter.linearToSrgbGamma(),
-                alignment: Alignment.center,
-                fit: BoxFit.cover,
-                onError: (trace, hold) {
-                  Lottie.asset("assets/loading2.json");
-                }),
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(.8),
+                Colors.black.withOpacity(.51),
+                Colors.deepOrange.withOpacity(.8),
+                Colors.orange
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-          child: ListView(
-            children: [
-              if (_formState == OTP.sent)
-                OpacityTween(
-                  child: SlideUpTween(
-                    begin: Offset(10, 70),
-                    child: Container(
-                        width: size.width,
-                        height: size.height,
-                        child: Column(children: [
-                          Lottie.asset("assets/loading5.json",
-                              width: size.width * .4, height: size.width * .4),
-                          TextField(
-                            controller: _otpController,
-                            maxLength: 6,
-                            decoration: InputDecoration(
-                              label: Text("OTP Verification"),
-                              hintText: "Enter Verification code",
-                            ),
-                          )
-                        ])),
-                  ),
-                ),
-              if (_formState == OTP.notSent)
-                Container(
-                  child: Form(
-                    key: _formKey,
-                    child: Container(
-                      width: size.width,
-                      height: size.height,
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: size.height * .31,
-                              child: Center(
-                                child:
-                                    Text("Sign up Today", style: headingStyles),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Container(
+              width: size.width,
+              height: size.height,
+              child: ListView(
+                children: [
+                  if (_formState == OTP.sent)
+                    OpacityTween(
+                      child: SlideUpTween(
+                        begin: Offset(10, 70),
+                        child: Container(
+                          width: size.width,
+                          height: size.height - kToolbarHeight,
+                          child: Column(
+                            children: [
+                              const Spacer(flex: 1),
+                              Lottie.asset("assets/loading5.json",
+                                  width: size.width * .4,
+                                  height: size.width * .4),
+                              const Spacer(flex: 2),
+                              TextField(
+                                controller: _otpController,
+                                maxLength: 6,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                        color: Colors.white, width: 2),
+                                  ),
+                                  labelStyle: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                  label: Text(
+                                    "OTP Verification",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  hintText: "Enter Verification code",
+                                ),
                               ),
-                              width: double.infinity,
-                            ),
-                            Column(
-                              children: [
-                                TextFormField(
-                                  controller: _nameController,
-                                  validator: (val) {
-                                    return val == null || val.isEmpty
-                                        ? "Enter valid Information"
-                                        : null;
+                              if (showResend)
+                                CupertinoButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _formState = OTP.notSent;
+                                    });
                                   },
-                                  style: TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                    label: Text(
-                                      "Name",
-                                      style: TextStyle(color: Colors.white),
+                                  child: Text("Change Number",
+                                      style: TextStyle(
+                                          color: Colors.white.withOpacity(.6))),
+                                ),
+                              const Spacer(flex: 3),
+                              CupertinoButton.filled(
+                                child: const Text("Verify Number"),
+                                onPressed: () async {
+                                  await getLocation();
+                                  auth
+                                      .signInWithCredential(
+                                    PhoneAuthProvider.credential(
+                                      verificationId: verificationCode,
+                                      smsCode: _otpController.text.trim(),
                                     ),
-                                    hintText: "Enter valid name",
-                                    prefixIcon: Icon(Icons.person),
-                                  ),
-                                ),
-                                TextFormField(
-                                  controller: _emailController,
-                                  validator: (val) {
-                                    return val == null || val.isEmpty
-                                        ? "Enter valid Information"
-                                        : null;
-                                  },
-                                  style: TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                    label: Text(
-                                      "Email",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    hintText: "Enter valid email",
-                                    prefixIcon: Icon(Icons.person),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 15,
-                                ),
-                                if (_formState == OTP.notSent)
-                                  OpacityTween(
-                                    child: SlideUpTween(
-                                      begin: Offset(120, 0),
-                                      child: Material(
-                                        elevation: 15,
-                                        color: Colors.grey[100],
-                                        shadowColor:
-                                            Colors.grey.withOpacity(.3),
-                                        child: IntlPhoneField(
-                                          controller: _phoneController,
-                                          style: TextStyle(color: Colors.black),
-                                          decoration: InputDecoration(
-                                            labelText: 'Phone Number',
-                                            border: InputBorder.none,
+                                  )
+                                      .then(
+                                    (value) async {
+                                      firestore
+                                          .collection("users")
+                                          .doc(auth.currentUser!.uid)
+                                          .set({
+                                        "name": _nameController.text.trim(),
+                                        "phone": phoneNumber.trim(),
+                                        "image": "",
+                                        "lat": lat,
+                                        "long": lng,
+                                        "created_at":
+                                            FieldValue.serverTimestamp(),
+                                      }).then((value) {
+                                        debugPrint(
+                                            "done adding user to firebase");
+                                        Navigator.pushReplacement(
+                                          context,
+                                          PageRouteBuilder(
+                                            transitionDuration:
+                                                Duration(milliseconds: 650),
+                                            reverseTransitionDuration:
+                                                Duration(milliseconds: 650),
+                                            pageBuilder: ((context, animation,
+                                                secondaryAnimation) {
+                                              return FadeTransition(
+                                                  opacity: animation,
+                                                  child: const HomeScreen());
+                                            }),
                                           ),
-                                          initialCountryCode: 'CM',
-                                          onChanged: (phone) {
-                                            phoneNumber = phone.completeNumber;
-                                            print(phone.completeNumber);
-                                          },
+                                        );
+                                      }).catchError((error) {
+                                        debugPrint(error.toString());
+                                      });
+                                      debugPrint(
+                                          "user is done verifying number.");
+                                      final prefs =
+                                          await SharedPreferences.getInstance();
+                                      prefs.setBool("loggedIn", true);
+                                    },
+                                  ).catchError(
+                                    (onError) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        backgroundColor: Colors.pink,
+                                        content: Text(
+                                            "Wrong Code, please try again.",
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        duration: Duration(seconds: 5),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 15),
+                                      ));
+                                      setState(() {
+                                        showResend = true;
+                                      });
+                                      debugPrint(
+                                        onError.toString(),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (_formState == OTP.notSent)
+                    Container(
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
+                          width: size.width,
+                          height: size.height,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                OpacityTween(
+                                  duration: Duration(milliseconds: 1300),
+                                  child: SlideUpTween(
+                                    duration: Duration(milliseconds: 1300),
+                                    begin: const Offset(10, 70),
+                                    child: SizedBox(
+                                      height: size.height * .31,
+                                      child: Center(
+                                        child: Text("Sign, It's Free",
+                                            style: headingStyles),
+                                      ),
+                                      width: double.infinity,
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  children: [
+                                    TextFormField(
+                                      controller: _nameController,
+                                      validator: (val) {
+                                        return val == null || val.isEmpty
+                                            ? "Enter valid Information"
+                                            : null;
+                                      },
+                                      style: TextStyle(color: Colors.white),
+                                      decoration: InputDecoration(
+                                        label: Text(
+                                          "Name",
+                                          style: TextStyle(color: Colors.white),
                                         ),
+                                        hintText: "Enter valid name",
+                                        prefixIcon: Icon(Icons.person),
                                       ),
                                     ),
-                                  ),
-                                if (_formState == OTP.sent)
-                                  TweenAnimationBuilder(
-                                    curve: Curves.fastLinearToSlowEaseIn,
-                                    tween: Tween<double>(begin: 0.0, end: 1.0),
-                                    duration: Duration(milliseconds: 600),
-                                    builder: (_, double value, child) {
-                                      return Opacity(
-                                          opacity: value, child: child);
-                                    },
-                                    child: OpacityTween(
-                                      child: SlideUpTween(
-                                        begin: Offset(100, 10),
-                                        child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 40),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                blurRadius: 10,
-                                                color:
-                                                    Colors.grey.withOpacity(.5),
-                                                offset: Offset(
-                                                  5,
-                                                  15,
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    if (_formState == OTP.notSent)
+                                      OpacityTween(
+                                        child: SlideUpTween(
+                                          begin: Offset(120, 0),
+                                          child: Material(
+                                            elevation: 15,
+                                            color: Colors.grey[100],
+                                            shadowColor:
+                                                Colors.grey.withOpacity(.3),
+                                            child: IntlPhoneField(
+                                              controller: _phoneController,
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                              decoration: InputDecoration(
+                                                labelText: 'Phone Number',
+                                                border: InputBorder.none,
+                                              ),
+                                              initialCountryCode: 'CM',
+                                              onChanged: (phone) {
+                                                phoneNumber =
+                                                    phone.completeNumber;
+                                                print(phone.completeNumber);
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    if (_formState == OTP.sent)
+                                      TweenAnimationBuilder(
+                                        curve: Curves.fastLinearToSlowEaseIn,
+                                        tween:
+                                            Tween<double>(begin: 0.0, end: 1.0),
+                                        duration: Duration(milliseconds: 600),
+                                        builder: (_, double value, child) {
+                                          return Opacity(
+                                              opacity: value, child: child);
+                                        },
+                                        child: OpacityTween(
+                                          child: SlideUpTween(
+                                            begin: Offset(100, 10),
+                                            child: Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 40),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    blurRadius: 10,
+                                                    color: Colors.grey
+                                                        .withOpacity(.5),
+                                                    offset: Offset(
+                                                      5,
+                                                      15,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: TextField(
+                                                keyboardType:
+                                                    TextInputType.phone,
+                                                controller: _otpController,
+                                                decoration: InputDecoration(
+                                                  hintText: "Enter Code ",
+                                                  label: Text(
+                                                    "OTP Code",
+                                                    textAlign: TextAlign.center,
+                                                  ),
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                          child: TextField(
-                                            keyboardType: TextInputType.phone,
-                                            controller: _otpController,
-                                            decoration: InputDecoration(
-                                              hintText: "Enter Code ",
-                                              label: Text(
-                                                "OTP Code",
-                                                textAlign: TextAlign.center,
-                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
+                                    SizedBox(
+                                        height: 45,
+                                        child: Center(
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                _showPassword = !_showPassword;
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "Show password",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                CupertinoSwitch(
+                                                    trackColor: Colors.grey,
+                                                    value: _showPassword,
+                                                    activeColor: Colors.orange,
+                                                    onChanged: (onChanged) {
+                                                      setState(() {
+                                                        _showPassword =
+                                                            onChanged;
+                                                      });
+                                                    }),
+                                              ],
+                                            ),
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 38.0),
+                                  child: CupertinoButton.filled(
+                                    child: const Text("Sign Up",
+                                        style: TextStyle(color: Colors.black)),
+                                    onPressed: () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        debugPrint("call signup function");
+                                        setState(() {
+                                          verifyPhoneNumber();
+                                          _formState = OTP.sent;
+                                        });
+                                      }
+                                    },
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: size.width * .25,
+                                        vertical: 10),
                                   ),
-                                SizedBox(
-                                    height: 45,
-                                    child: Center(
-                                      child: InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _showPassword = !_showPassword;
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              "Show password",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            CupertinoSwitch(
-                                                trackColor: Colors.grey,
-                                                value: _showPassword,
-                                                activeColor: Colors.orange,
-                                                onChanged: (onChanged) {
-                                                  setState(() {
-                                                    _showPassword = onChanged;
-                                                  });
-                                                }),
-                                          ],
-                                        ),
-                                      ),
-                                    )),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 38.0),
-                              child: CupertinoButton.filled(
-                                child: const Text("Sign Up"),
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    debugPrint("call signup function");
-                                    verifyPhoneNumber();
-                                  }
-                                },
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: size.width * .25, vertical: 10),
-                              ),
-                            ),
-                          ]),
+                                ),
+                              ]),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-            ],
+                ],
+              ),
+            ),
           ),
         ),
       ),
