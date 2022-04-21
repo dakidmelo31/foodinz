@@ -4,42 +4,65 @@ import 'dart:ui';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/pages/meal_details.dart';
+import 'package:foodinz/pages/search_page.dart';
 import 'package:foodinz/pages/street_food.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../models/food.dart';
+import '../providers/auth.dart';
 import '../providers/data.dart';
 import '../themes/light_theme.dart';
 import '../widgets/slide_up_tween.dart';
 import '../widgets/view_category.dart';
+import 'product_details.dart';
 
-class RecommendedScreen extends StatefulWidget {
-  RecommendedScreen({Key? key}) : super(key: key);
+class Showcase extends StatefulWidget {
+  const Showcase({Key? key}) : super(key: key);
 
   @override
-  State<RecommendedScreen> createState() => _RecommendedScreenState();
+  State<Showcase> createState() => _ShowcaseState();
 }
 
-class _RecommendedScreenState extends State<RecommendedScreen> {
+class _ShowcaseState extends State<Showcase> {
   late final PageController _cardPageController;
   late final PageController _cardDetailsController;
+  late GoogleMapController _mapController;
   double _cardPage = 0.0, _cardDetailsPage = 0.0;
   int _cardIndex = 0;
 
   final _showCardDetails = ValueNotifier(true);
   @override
   void initState() {
+    getCurrentLocation();
     _cardPageController = PageController(viewportFraction: .77)
       ..addListener(_cardPageListener);
     _cardDetailsController = PageController()
       ..addListener(_cardDetailsPageListener);
     super.initState();
   }
+
+  getCurrentLocation() async {
+    var position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    debugPrint("move the next step. again");
+    debugPrint(position.toString());
+    var lastPosition = await Geolocator.getLastKnownPosition();
+    print("position is $lastPosition");
+
+    lat = lastPosition!.latitude;
+    long = lastPosition.longitude;
+  }
+
+  double lat = 0.0, long = 0.0;
 
   _cardPageListener() {
     setState(() {
@@ -57,6 +80,7 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
   @override
   Widget build(BuildContext context) {
     final mealsData = Provider.of<MealsData>(context);
+    final userData = Provider.of<UserData>(context);
     final _restaurantsData = Provider.of<RestaurantData>(context);
     final cafeMeals = mealsData.cafeMeals;
     final streetMeals = mealsData.streetMeals;
@@ -66,8 +90,7 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
     final _categories = _categoryData.getCategories();
     final meals = mealsData.meals;
     final size = MediaQuery.of(context).size;
-    final carouselHeight = 300.0;
-    final carouselWidth = 300.0;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final h = constraints.maxHeight;
@@ -145,12 +168,12 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                         child: const Padding(
                           padding: EdgeInsets.only(left: 18.0, bottom: 15),
                           child: Text("You should try these 😋😋",
-                              style: Primary.bigHeading),
+                              style: Primary.heading),
                         ),
                       ),
                       SizedBox(
                         height: h * .45,
-                        width: w * .75,
+                        width: w * .85,
                         child: PageView.builder(
                           physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
@@ -181,7 +204,7 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                                   _showCardDetails.value =
                                       !_showCardDetails.value;
                                   const transitionDuration =
-                                      Duration(milliseconds: 550);
+                                      Duration(milliseconds: 250);
 
                                   Navigator.push(
                                     context,
@@ -192,7 +215,14 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                                       pageBuilder: (_, animation, __) {
                                         return FadeTransition(
                                           opacity: animation,
-                                          child: FoodDetails(meal: meal),
+                                          child: SizeTransition(
+                                              axis: Axis.horizontal,
+                                              sizeFactor: CurvedAnimation(
+                                                  parent: animation,
+                                                  curve: Interval(.0, .80,
+                                                      curve:
+                                                          Curves.decelerate)),
+                                              child: FoodDetails(meal: meal)),
                                         );
                                       },
                                     ),
@@ -203,7 +233,7 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                                   });
                                 },
                                 child: Hero(
-                                  tag: meal.image,
+                                  tag: meal.foodId.toUpperCase(),
                                   child: AnimatedContainer(
                                     duration: const Duration(milliseconds: 400),
                                     curve: Curves.easeInOut,
@@ -354,7 +384,7 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                         ViewCategory(mealCategory: cafeMeals),
                   ),
                   SizedBox(
-                    height: h * .4,
+                    height: h * .32,
                     width: w,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -456,7 +486,7 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
                         ViewCategory(mealCategory: streetMeals),
                   ),
                   SizedBox(
-                    height: h * .4,
+                    height: h * .32,
                     width: w,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,

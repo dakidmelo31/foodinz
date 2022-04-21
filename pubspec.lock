@@ -497,7 +497,7 @@ packages:
     source: hosted
     version: "0.4.0"
   flutter_slidable:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_slidable
       url: "https://pub.dartlang.org"

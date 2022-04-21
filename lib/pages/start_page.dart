@@ -24,16 +24,17 @@ FirebaseAuth auth = FirebaseAuth.instance;
 
 class _StartPageState extends State<StartPage> {
   checkUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey("userLoggedIn")) {
-      Navigator.pushReplacementNamed(context, Home.routeName);
-    }
+    auth.currentUser != null
+        ? Future.delayed(Duration.zero, () {
+            Navigator.pushReplacementNamed(context, Home.routeName);
+          })
+        : null;
   }
 
   @override
   void initState() {
     // TODO: implement initState
-    // checkUser();
+    checkUser();
     if (auth.currentUser != null) {
       // Navigator.pushReplacementNamed(context, Home.routeName);
     }

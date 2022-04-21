@@ -72,7 +72,7 @@ class RestaurantData with ChangeNotifier {
           restaurants.add(
             Restaurant(
                 address: doc["address"] ?? "",
-                category: doc["category"] ?? "",
+                categories: convertList(doc["categories"]),
                 lat: doc["lat"] ?? 0.0,
                 long: doc["long"] ?? 0.0,
                 avatar: doc['avatar'] ?? "",
@@ -102,25 +102,27 @@ class RestaurantData with ChangeNotifier {
             caters.add(food);
           }
 
-          switch (food.category.toLowerCase()) {
-            case "cafe":
-            case "cafe restaurant":
-              cafeRestaurants.removeWhere(
-                  (element) => element.restaurantId == food.restaurantId);
+          for (String info in food.categories) {
+            switch (info) {
+              case "cafe":
+              case "cafe restaurant":
+                cafeRestaurants.removeWhere(
+                    (element) => element.restaurantId == food.restaurantId);
 
-              cafeRestaurants.add(food);
-              break;
+                cafeRestaurants.add(food);
+                break;
 
-            case "special dish":
-            case "specials":
-              break;
+              case "special dish":
+              case "specials":
+                break;
 
-            case "street":
-            case "street food":
-              streetFood.removeWhere(
-                  (element) => element.restaurantId == food.restaurantId);
-              streetFood.add(food);
-              break;
+              case "street":
+              case "street food":
+                streetFood.removeWhere(
+                    (element) => element.restaurantId == food.restaurantId);
+                streetFood.add(food);
+                break;
+            }
           }
         }
       },

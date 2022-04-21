@@ -43,26 +43,29 @@ class _LoginState extends State<Login> {
   Future<void> getLocation() async {
     var locationStatus = await Permission.location.status;
     if (locationStatus.isGranted) {
-      debugPrint("granted");
-    } else if (locationStatus.isDenied) {
-      debugPrint("Not granted");
-      Map<Permission, PermissionStatus> status =
-          await [Permission.location].request();
-    } else if (locationStatus.isPermanentlyDenied) {
-      openAppSettings().then((value) {
-        setState(() {});
-      });
+      debugPrint("is granted");
+    } else {
+      if (locationStatus.isDenied) {
+        debugPrint("Not granted");
+        Map<Permission, PermissionStatus> status =
+            await [Permission.location].request();
+      } else {
+        if (locationStatus.isPermanentlyDenied) {
+          openAppSettings().then((value) {});
+        }
+      }
     }
+
     var position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
+    debugPrint("move the next step. again");
+    debugPrint(position.toString());
     var lastPosition = await Geolocator.getLastKnownPosition();
     print("position is $lastPosition");
 
-    setState(() {
-      lat = position.latitude;
-      lng = position.longitude;
-    });
+    lat = position.latitude;
+    lng = position.longitude;
     debugPrint("latitude: $lat, and logitude: $lng");
   }
 
@@ -185,31 +188,45 @@ class _LoginState extends State<Login> {
                                   width: size.width * .4,
                                   height: size.width * .4),
                               const Spacer(flex: 2),
-                              TextField(
-                                controller: _otpController,
-                                maxLength: 6,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                        color: Colors.white, width: 2),
-                                  ),
-                                  labelStyle: TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                  label: Text(
-                                    "OTP Verification",
+                              Column(
+                                children: [
+                                  TextField(
+                                    controller: _otpController,
+                                    maxLength: 6,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                            color: Colors.white, width: 2),
+                                      ),
+                                      labelStyle: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                      label: Text(
+                                        "OTP Verification",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      hintText: "Enter Verification code",
+                                    ),
                                   ),
-                                  hintText: "Enter Verification code",
-                                ),
+                                  SizedBox(height: 20),
+                                  TextButton(
+                                      child: Text(
+                                        "Change number",
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _formState = OTP.notSent;
+                                        });
+                                      }),
+                                ],
                               ),
                               if (showResend)
                                 CupertinoButton(
@@ -226,8 +243,10 @@ class _LoginState extends State<Login> {
                               CupertinoButton.filled(
                                 child: const Text("Verify Number"),
                                 onPressed: () async {
-                                  await getLocation();
-                                  auth
+                                  debugPrint("done working");
+                                  // await getLocation();
+                                  debugPrint("complete verification");
+                                  await auth
                                       .signInWithCredential(
                                     PhoneAuthProvider.credential(
                                       verificationId: verificationCode,

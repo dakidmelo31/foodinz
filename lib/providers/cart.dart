@@ -11,11 +11,19 @@ class CartData with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateCart({required Cart item}) {
+    myCart.removeWhere((element) => element.foodId == item.foodId);
+    myCart.add(item);
+    updateTotal();
+    notifyListeners();
+  }
+
   double total = 0;
   void updateTotal() {
-    myCart.forEach((element) {
-      total += element.price * element.quantity;
-    });
+    total = 0;
+    for (var element in myCart) {
+      total = total + (element.price * element.quantity);
+    }
     notifyListeners();
   }
 

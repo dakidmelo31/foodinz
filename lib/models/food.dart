@@ -7,8 +7,10 @@ class Food {
   final double averageRating, price;
   final int likes;
   bool favorite = false;
+
   final int comments;
   final List<String> accessories, gallery, categories;
+  List<String> compliments = [];
   Food(
       {required this.accessories,
       required this.available,
@@ -109,4 +111,31 @@ class Food {
         "foodId": food.foodId,
         "description": food.description
       };
+
+bool  complimentExists(String item) {
+    bool exists = false;
+
+    for (String data in compliments) {
+      if (data == item) {
+        exists = true;
+      }
+    }
+    return exists;
+  }
+
+  toggle(String selection) {
+    debugPrint("updating compliments selected");
+    bool remove = false;
+
+    for (String data in compliments) {
+      if (data == selection) {
+        remove = true;
+      }
+    }
+    if (remove) {
+      compliments.removeWhere((element) => element == selection);
+    } else {
+      compliments.add(selection);
+    }
+  }
 }

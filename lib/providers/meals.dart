@@ -145,7 +145,17 @@ class MealsData with ChangeNotifier {
 
   void toggleFavorite(String id) {
     Food meal = restaurantMenu.firstWhere((element) => element.foodId == id);
-    meal.favorite = !meal.favorite;
+
+    restaurantMenu.firstWhere((element) => element.foodId == id).favorite =
+        !meal.favorite;
+    notifyListeners();
+  }
+
+  void toggleMeal({required String id}) {
+    Food meal = meals.firstWhere((element) => element.foodId == id);
+
+    meals.firstWhere((element) => element.foodId == id).favorite =
+        !meal.favorite;
     notifyListeners();
   }
 

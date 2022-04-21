@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/providers/cart.dart';
 import 'package:foodinz/widgets/food_info_table_item.dart';
 import 'package:foodinz/widgets/rating_list.dart';
 import 'package:lottie/lottie.dart';
@@ -26,9 +27,9 @@ class _MealGalleryState extends State<MealGallery> {
     final Food meal = widget.meal;
     final _mealComments = Provider.of<CommentsData>(context, listen: true);
     _mealComments.loadAgain ? _mealComments.loadComments(meal.foodId) : null;
-    _mealComments.notifyListeners();
 
     List<String> gallery = meal.gallery;
+
     final Size size = MediaQuery.of(context).size;
     return Column(
       children: [
@@ -50,26 +51,34 @@ class _MealGalleryState extends State<MealGallery> {
               flex: 4,
               child: InkWell(
                 onTap: () {
-                  showCupertinoDialog(
-                      barrierDismissible: true,
-                      barrierLabel: meal.name,
-                      useRootNavigator: true,
-                      context: context,
-                      builder: (_) {
-                        return Hero(
-                          tag: meal.image,
-                          child: CachedNetworkImage(
-                              fit: BoxFit.contain,
-                              imageUrl: meal.image,
-                              width: double.infinity,
-                              height: double.infinity,
-                              errorWidget: (_, text, __) {
-                                return Lottie.asset(
-                                  "assets/animation/no-connection2.json",
-                                );
-                              }),
-                        );
-                      });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => Scaffold(
+                        backgroundColor: Colors.black,
+                        appBar: AppBar(
+                            title: Text(
+                              meal.name,
+                            ),
+                            centerTitle: true),
+                        body: Center(
+                          child: Hero(
+                            tag: meal.image,
+                            child: CachedNetworkImage(
+                                fit: BoxFit.contain,
+                                imageUrl: meal.image,
+                                width: double.infinity,
+                                height: double.infinity,
+                                errorWidget: (_, text, __) {
+                                  return Lottie.asset(
+                                    "assets/no-connection2.json",
+                                  );
+                                }),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
                 },
                 child: Hero(
                   tag: meal.image,
@@ -80,7 +89,7 @@ class _MealGalleryState extends State<MealGallery> {
                       fit: BoxFit.cover,
                       errorWidget: (_, text, __) {
                         return Lottie.asset(
-                          "assets/animation/no-connection.json",
+                          "assets/no-connection2.json",
                           width: size.width * .5,
                           height: size.width * .5,
                         );
@@ -97,33 +106,7 @@ class _MealGalleryState extends State<MealGallery> {
               child: Column(
                 children: [
                   InkWell(
-                    onTap: () async {
-                      _mealComments.loadAgain = true;
-                      _mealComments.loadAgain
-                          ? _mealComments.loadComments(meal.foodId)
-                          : null;
-
-                      WidgetsBinding.instance?.addPostFrameCallback((_) {
-                        showCupertinoModalBottomSheet(
-                            backgroundColor: Colors.white,
-                            animationCurve: Curves.elasticInOut,
-                            bounce: true,
-                            elevation: 10,
-                            isDismissible: true,
-                            duration: Duration(milliseconds: 800),
-                            expand: true,
-                            topRadius: Radius.circular(18),
-                            transitionBackgroundColor: Colors.pink,
-                            useRootNavigator: true,
-                            context: context,
-                            builder: (_) {
-                              return CommentList(foodId: meal.foodId);
-                            }).then((value) {
-                          _mealComments.comments.clear();
-                          _mealComments.loadAgain = true;
-                        });
-                      });
-                    },
+                    onTap: () async {},
                     child: FittedBox(
                       child: FoodInfoTableItem(
                           description: _mealComments.comments.length.toString(),
@@ -141,32 +124,36 @@ class _MealGalleryState extends State<MealGallery> {
           child: CarouselSlider.builder(
             itemCount: gallery.length,
             itemBuilder: (_, index, index2) {
-              return Hero(
-                tag: gallery[index],
+              return Material(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: InkWell(
                     onTap: () {
-                      showCupertinoDialog(
-                          barrierDismissible: true,
-                          barrierLabel: meal.name,
-                          useRootNavigator: true,
-                          context: context,
-                          builder: (_) {
-                            return Hero(
-                              tag: gallery[index],
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => Scaffold(
+                            backgroundColor: Colors.black,
+                            appBar: AppBar(
+                                title: Text(meal.name), centerTitle: true),
+                            body: Hero(
+                              tag: gallery[index].toUpperCase() +
+                                  (100 + index * 30203).toString(),
                               child: CachedNetworkImage(
-                                  fit: BoxFit.contain,
-                                  imageUrl: gallery[index],
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  errorWidget: (_, text, __) {
-                                    return Lottie.asset(
-                                      "assets/animation/no-connection2.json",
-                                    );
-                                  }),
-                            );
-                          });
+                                fit: BoxFit.contain,
+                                imageUrl: gallery[index],
+                                width: double.infinity,
+                                height: double.infinity,
+                                errorWidget: (_, text, __) {
+                                  return Lottie.asset(
+                                    "assets/no-connection2.json",
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
                     },
                     child: CachedNetworkImage(
                         fit: BoxFit.cover,
@@ -174,7 +161,7 @@ class _MealGalleryState extends State<MealGallery> {
                         width: size.width * .35,
                         errorWidget: (_, text, __) {
                           return Lottie.asset(
-                            "assets/animation/no-connection2.json",
+                            "assets/no-connection2.json",
                           );
                         }),
                   ),

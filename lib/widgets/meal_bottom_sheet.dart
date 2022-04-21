@@ -32,7 +32,7 @@ class _MealBottomSheetState extends State<MealBottomSheet> {
     _counter = isAlreadyInCart != null ? isAlreadyInCart.quantity : 1;
     String? _dropDownValue;
     final bookMark = Provider.of<BookmarkData>(context, listen: true);
-    final alreadyBookmarked = bookMark.isBookmarked(meal.foodId);
+    final alreadyBookmarked = bookMark.isBookmarked(foodId: meal.foodId);
     double selectedStartTime = 0, selectedEndTime = 20;
     String? updateText;
     return StatefulBuilder(builder: (context, setState) {
@@ -143,7 +143,7 @@ class _MealBottomSheetState extends State<MealBottomSheet> {
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              bookMark.isBookmarked(meal.foodId)
+                              bookMark.isBookmarked(foodId: meal.foodId)
                                   ? setState(() {
                                       bookMark.removeBookmark(meal.foodId);
                                     })
@@ -152,7 +152,7 @@ class _MealBottomSheetState extends State<MealBottomSheet> {
                                     });
                             },
                             icon: Icon(
-                              !bookMark.isBookmarked(meal.foodId)
+                              !bookMark.isBookmarked(foodId: meal.foodId)
                                   ? Icons.bookmark_border_rounded
                                   : Icons.bookmark_rounded,
                               size: 30,

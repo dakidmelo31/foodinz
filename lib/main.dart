@@ -46,6 +46,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartData()),
         ChangeNotifierProvider(create: (_) => CommentsData()),
         ChangeNotifierProvider(create: (_) => BookmarkData()),
+        ChangeNotifierProvider(
+          create: (_) => UserData(),
+        ),
       ],
       child: MaterialApp(
           // showPerformanceOverlay: true,

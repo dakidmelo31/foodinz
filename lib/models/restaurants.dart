@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Restaurant {
   final String name,
-      category,
       address,
       restaurantId,
       closingTime,
@@ -21,11 +20,12 @@ class Restaurant {
       foodReservation,
       ghostKitchen;
   final double lat, long;
+  final List<String> categories;
 
   Restaurant(
       {required this.address,
       required this.name,
-      required this.category,
+      required this.categories,
       required this.long,
       required this.lat,
       required this.restaurantId,
