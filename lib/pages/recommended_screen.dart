@@ -353,8 +353,8 @@ class _ShowcaseState extends State<Showcase> {
                     middleColor: Colors.orange,
                     transitionType: ContainerTransitionType.fadeThrough,
                     tappable: true,
-                    openBuilder: (_, closedContainer) =>
-                        ViewCategory(mealCategory: cafeMeals),
+                    openBuilder: (_, closedContainer) => ViewCategory(
+                        mealCategory: cafeMeals, title: " Cafe Meals"),
                   ),
                   const StreetFood(),
                   const SizedBox(
@@ -370,7 +370,7 @@ class _ShowcaseState extends State<Showcase> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text("Cafe Meals", style: Primary.heading),
+                            const Text("Special Meals", style: Primary.heading),
                             const Icon(Icons.arrow_forward_rounded),
                           ],
                         ),
@@ -380,8 +380,8 @@ class _ShowcaseState extends State<Showcase> {
                     middleColor: Colors.orange,
                     transitionType: ContainerTransitionType.fadeThrough,
                     tappable: true,
-                    openBuilder: (_, closedContainer) =>
-                        ViewCategory(mealCategory: cafeMeals),
+                    openBuilder: (_, closedContainer) => ViewCategory(
+                        mealCategory: cafeMeals, title: "Special Meals"),
                   ),
                   SizedBox(
                     height: h * .32,
@@ -482,8 +482,8 @@ class _ShowcaseState extends State<Showcase> {
                     middleColor: Colors.orange,
                     transitionType: ContainerTransitionType.fadeThrough,
                     tappable: true,
-                    openBuilder: (_, closedContainer) =>
-                        ViewCategory(mealCategory: streetMeals),
+                    openBuilder: (_, closedContainer) => ViewCategory(
+                        mealCategory: streetMeals, title: "Street Food"),
                   ),
                   SizedBox(
                     height: h * .32,

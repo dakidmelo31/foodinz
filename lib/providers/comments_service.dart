@@ -45,12 +45,13 @@ class CommentsData with ChangeNotifier {
           foodId: data['foodId'],
           restaurantId: data['restaurantId'],
           commentId: documentId,
+          avatar: data['avatar'],
           stars: convertInt(data['stars']),
           description: data['description'],
           name: data["name"],
           userId: data["userId"],
           image: data['image'],
-          time: data['time'],
+          created_at: data['time'],
         ));
       }
     }).whenComplete(() {

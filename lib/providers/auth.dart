@@ -8,7 +8,7 @@ import '../models/user.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 
-FirebaseFirestore firestore = FirebaseFirestore.instance;
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class UserData with ChangeNotifier {
   UserModel? user;
@@ -18,7 +18,7 @@ class UserData with ChangeNotifier {
   }
 
   loadUser() async {
-    firestore
+    _firestore
         .collection("users")
         .doc(auth.currentUser!.uid)
         .get()

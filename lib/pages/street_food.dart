@@ -93,17 +93,20 @@ class StreetFood extends StatelessWidget {
                                     },
                                   ));
                             },
-                            child: CachedNetworkImage(
-                              imageUrl: food.image,
-                              alignment: Alignment.center,
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high,
-                              errorWidget: (_, string, stackTrace) {
-                                return Lottie.asset(
-                                    "assets/no-connection2.json");
-                              },
-                              width: 100,
-                              height: 100,
+                            child: Hero(
+                              tag: food.image.toUpperCase() + "aaa",
+                              child: CachedNetworkImage(
+                                imageUrl: food.image,
+                                alignment: Alignment.center,
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.high,
+                                errorWidget: (_, string, stackTrace) {
+                                  return Lottie.asset(
+                                      "assets/no-connection2.json");
+                                },
+                                width: 100,
+                                height: 100,
+                              ),
                             ),
                           ),
                         ),

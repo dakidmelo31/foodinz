@@ -43,7 +43,8 @@ class _MealGalleryState extends State<MealGallery> {
                 children: [
                   FoodInfoTableItem(
                       description: meal.likes.toString(), title: "Likes"),
-                  Icon(Icons.favorite_rounded, color: Colors.pink, size: 30),
+                  const Icon(Icons.favorite_rounded,
+                      color: Colors.pink, size: 30),
                 ],
               ),
             ),
@@ -103,18 +104,34 @@ class _MealGalleryState extends State<MealGallery> {
             ),
             Flexible(
               flex: 1,
-              child: Column(
-                children: [
-                  InkWell(
-                    onTap: () async {},
-                    child: FittedBox(
+              child: InkWell(
+                onTap: () {
+                  showCupertinoModalBottomSheet(
+                      duration: const Duration(milliseconds: 600),
+                      animationCurve: Curves.bounceIn,
+                      bounce: true,
+                      enableDrag: true,
+                      expand: true,
+                      isDismissible: true,
+                      topRadius: const Radius.circular(40),
+                      context: context,
+                      builder: (_) {
+                        return SingleChildScrollView(
+                          child: CommentList(foodId: meal.foodId),
+                        );
+                      });
+                },
+                child: Column(
+                  children: [
+                    FittedBox(
                       child: FoodInfoTableItem(
                           description: _mealComments.comments.length.toString(),
                           title: "Comments"),
                     ),
-                  ),
-                  Icon(Icons.star_rounded, color: Colors.amber, size: 30),
-                ],
+                    const Icon(Icons.star_rounded,
+                        color: Colors.amber, size: 30),
+                  ],
+                ),
               ),
             ),
           ],

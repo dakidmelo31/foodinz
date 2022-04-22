@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/widgets/food_info_table.dart';
+import 'package:foodinz/widgets/opacity_tween.dart';
+import 'package:foodinz/widgets/scale_tween.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -35,10 +37,13 @@ class _FoodDetailsState extends State<FoodDetails>
   bool updateCount = true;
 
   late AnimationController _animationController;
+  late Animation<double> _animation;
   @override
   void initState() {
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
+        _animation = CurvedAnimation(parent: _animationController, curve: Curves.decelerate);
+        _animationController.forward();
     // TODO: implement initState
     super.initState();
   }
@@ -67,7 +72,8 @@ class _FoodDetailsState extends State<FoodDetails>
 
     updateCount = false; // prevent counter from reinitializing everytime.
     return Scaffold(
-      body: SizedBox(
+      body: AnimatedBuilder(animation: _animation, builder: (_, widget){
+        return SizedBox(
         height: size.height,
         child: Column(
           children: [
@@ -91,71 +97,94 @@ class _FoodDetailsState extends State<FoodDetails>
                   child: Column(
                     children: [
                       const Spacer(),
-                      MealGallery(meal: meal),
-                      const Spacer(),
-                      Text(
-                        meal.name,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+                      OpacityTween(
+                        duration: const Duration(milliseconds: 900),
+                        curve: Curves.decelerate,
+                        child: SlideUpTween(
+                          begin: const Offset(0, -100),
+                          curve: Curves.decelerate,
+                          duration: const Duration(milliseconds: 550),
+                          child: MealGallery(meal: meal)),
                       ),
                       const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      OpacityTween(
+                        duration: const Duration(milliseconds: 800),
                         child: Text(
-                          meal.description,
+                          meal.name,
                           style: const TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
                       ),
                       const Spacer(),
-                      const Text("Available With Meal"),
-                      SizedBox(
-                        height: 60,
-                        width: size.width,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: meal.accessories.length,
-                          itemBuilder: (_, index) {
-                            final compliment = meal.accessories[index];
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: InkWell(
-                                onTap: () {
-                                  debugPrint("show info");
-                                  setState(() {
-                                    meal.toggle(meal.accessories[index]);
-                                  });
-                                },
-                                child: Chip(
-                                    backgroundColor:
-                                        meal.complimentExists(compliment)
-                                            ? Colors.orange
-                                            : Colors.grey.withOpacity(.3),
-                                    elevation: 10,
-                                    label: Text(
-                                      compliment,
-                                      style: TextStyle(
-                                        color: meal.complimentExists(compliment)
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                    avatar: const Icon(
-                                        Icons.restaurant_menu_rounded,
-                                        color: Colors.white)),
+                      OpacityTween(
+                        child: SlideUpTween(
+                        duration: const Duration(milliseconds: 800),
+                          begin: const Offset(0, 30),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: Text(
+                              meal.description,
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w400,
                               ),
-                            );
-                          },
+                            ),
+                          ),
                         ),
                       ),
                       const Spacer(),
-                      FoodInfoTable(meal: meal),
+                      const OpacityTween(child: SlideUpTween(begin: Offset(0, 55),child: Text("Available With Meal"))),
+                      OpacityTween(
+                        duration: const Duration(milliseconds: 800),
+                        child: SlideUpTween(
+                          begin: const Offset(100, 0),
+                          child: SizedBox(
+                            height: 60,
+                            width: size.width,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: meal.accessories.length,
+                              itemBuilder: (_, index) {
+                                final compliment = meal.accessories[index];
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: InkWell(
+                                    onTap: () {
+                                      debugPrint("show info");
+                                      setState(() {
+                                        meal.toggle(meal.accessories[index]);
+                                      });
+                                    },
+                                    child: Chip(
+                                        backgroundColor:
+                                            meal.complimentExists(compliment)
+                                                ? Colors.orange
+                                                : Colors.grey.withOpacity(.3),
+                                        elevation: 10,
+                                        label: Text(
+                                          compliment,
+                                          style: TextStyle(
+                                            color: meal.complimentExists(compliment)
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                        avatar: const Icon(
+                                            Icons.restaurant_menu_rounded,
+                                            color: Colors.white)),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      OpacityTween(child: FoodInfoTable(meal: meal)),
                       const Spacer(),
                       DropdownButton(
                         enableFeedback: true,
@@ -284,7 +313,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           duration: const Duration(
-                                            milliseconds: 1800,
+                                            milliseconds: 1670,
                                           ),
                                           behavior: SnackBarBehavior.floating,
                                           dismissDirection:
@@ -412,7 +441,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           duration: const Duration(
-                                            milliseconds: 1800,
+                                            milliseconds: 1550,
                                           ),
                                           behavior: SnackBarBehavior.floating,
                                           dismissDirection:
@@ -466,217 +495,226 @@ class _FoodDetailsState extends State<FoodDetails>
                 ),
               ),
             ),
-            Expanded(
-              child: Card(
-                elevation: 0,
-                color: Colors.white,
-                child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.keyboard_arrow_left_rounded,
-                          size: 30,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {
-                          debugPrint("pop");
-                          Navigator.maybePop(context);
-                        },
-                      ),
-                      SizedBox(
-                          child: Row(children: [
-                        Tooltip(
-                          margin: const EdgeInsets.only(bottom: 15),
-                          message: "bookmark meal",
-                          child: IconButton(
-                            icon: Icon(
-                              !currentBookmarkState
-                                  ? Icons.bookmark_rounded
-                                  : Icons.bookmark_border_rounded,
-                              color: Colors.black,
+            OpacityTween(
+                        duration: const Duration(milliseconds: 700),
+              child: SlideUpTween(
+                        duration: const Duration(milliseconds: 1200),
+                begin: const Offset(0, 80),
+                child: Expanded(
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.white,
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.keyboard_arrow_left_rounded,
                               size: 30,
+                              color: Colors.black,
                             ),
                             onPressed: () {
-                              debugPrint("toggle bookmark");
-                              _bookmarksData.toggleBookmark(
-                                  foodId: meal.foodId);
-                              debugPrint(_bookmarksData
-                                  .isBookmarked(foodId: meal.foodId)
-                                  .toString());
+                              debugPrint("pop");
+                              Navigator.maybePop(context);
                             },
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            meal.favorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: meal.favorite ? Colors.pink : Colors.black,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            debugPrint("toggle favorite");
-                            setState(() {
-                              _restaurantData.toggleMeal(id: meal.foodId);
-                            });
-                          },
-                        ),
-                        TextButton.icon(
-                          icon: const Icon(
-                            Icons.star_border_rounded,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                          onPressed: () async {
-                            debugPrint("Show review form");
-                            bool? outcome = await showCupertinoModalBottomSheet(
-                                animationCurve: Curves.bounceIn,
-                                bounce: true,
-                                duration: const Duration(milliseconds: 350),
-                                isDismissible: true,
-                                enableDrag: true,
-                                expand: true,
-                                topRadius: const Radius.circular(30),
-                                context: context,
-                                builder: (_) {
-                                  int review = 1;
-                                  return StatefulBuilder(
-                                    builder: (_, setState) {
-                                      return Material(
-                                        child: Column(children: [
-                                          Flexible(
-                                            child: TextField(
-                                              minLines: 8,
-                                              maxLines: 8,
-                                              controller: _reviewController,
-                                              decoration: const InputDecoration(
-                                                  label: Text(
-                                                      "What do you think about this?"),
-                                                  enabled: true,
-                                                  fillColor: Colors.white,
-                                                  filled: true,
-                                                  hintText:
-                                                      "Enter your review...",
-                                                  contentPadding:
-                                                      EdgeInsets.symmetric(
-                                                          horizontal: 15,
-                                                          vertical: 10)),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: kToolbarHeight,
-                                            width: size.width,
-                                            child: Center(
-                                              child: InkWell(
-                                                onTap: (){
-                                                  HapticFeedback.heavyImpact();
-                                                },
-                                                
-                                                
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children:
-                                                      [1, 2, 3, 4, 5].map((e) {
-                                                    return Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 4.0),
-                                                      child: IconButton(
-                                                        onPressed: () {
-                                                          debugPrint(
-                                                              e.toString());
-                                                              setState(() {
-                                                                review = e;
-                                                              })
-                                                        },
-                                                        icon: review >= e
-                                                            ? const Icon(
-                                                                Icons
-                                                                    .star_rounded,
-                                                                color:
-                                                                    Colors.amber, 
-                                                                     size: 40,
-                                              )
-                                                            : const Icon(
-                                                                Icons
-                                                                    .star_border_rounded,
-                                                                color:
-                                                                    Colors.pink,
-                                                                    size: 40,
-                                                              ),
-                                                      ),
-                                                    );
-                                                  }).toList(),
+                          SizedBox(
+                              child: Row(children: [
+                            Tooltip(
+                              margin: const EdgeInsets.only(bottom: 15),
+                              message: "bookmark meal",
+                              child: IconButton(
+                                icon: Icon(
+                                  !currentBookmarkState
+                                      ? Icons.bookmark_rounded
+                                      : Icons.bookmark_border_rounded,
+                                  color: Colors.black,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  debugPrint("toggle bookmark");
+                                  _bookmarksData.toggleBookmark(
+                                      foodId: meal.foodId);
+                                  debugPrint(_bookmarksData
+                                      .isBookmarked(foodId: meal.foodId)
+                                      .toString());
+                                },
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                meal.favorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: meal.favorite ? Colors.pink : Colors.black,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                debugPrint("toggle favorite");
+                                setState(() {
+                                  _restaurantData.toggleMeal(id: meal.foodId);
+                                });
+                              },
+                            ),
+                            TextButton.icon(
+                              icon: const Icon(
+                                Icons.star_border_rounded,
+                                color: Colors.black,
+                                size: 30,
+                              ),
+                              onPressed: () async {
+                                debugPrint("Show review form");
+                                bool? outcome = await showCupertinoModalBottomSheet(
+                                    animationCurve: Curves.bounceIn,
+                                    bounce: true,
+                                    duration: const Duration(milliseconds: 350),
+                                    isDismissible: true,
+                                    enableDrag: true,
+                                    expand: true,
+                                    topRadius: const Radius.circular(30),
+                                    context: context,
+                                    builder: (_) {
+                                      int review = 1;
+                                      return StatefulBuilder(
+                                        builder: (_, setState) {
+                                          return Material(
+                                            child: Column(children: [
+                                              Flexible(
+                                                child: TextField(
+                                                  minLines: 8,
+                                                  maxLines: 8,
+                                                  controller: _reviewController,
+                                                  decoration: const InputDecoration(
+                                                      label: Text(
+                                                          "What do you think about this?"),
+                                                      enabled: true,
+                                                      fillColor: Colors.white,
+                                                      filled: true,
+                                                      hintText:
+                                                          "Enter your review...",
+                                                      contentPadding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 15,
+                                                              vertical: 10)),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                          const Spacer(flex: 3),
-                                          CupertinoButton.filled(
-                                              child: const Text("Add review"),
-                                              onPressed: () {
-                                                debugPrint("add review");
-                                                FirebaseFirestore.instance.collection("reviews").add({
-                                                  "restaurantId": meal.restaurantId,
-                                                  "foodId": meal.foodId,
-                                                  "name": meal.name,
-                                                  "image" : meal.image,
-                                                  "description": _reviewController.text,
-                                                  "userId": _userData.user!.userId,
-                                                  "username": _userData.user!.name,
-                                                  "avatar": _userData.user!.image,
-
-                                                  "created_at": FieldValue.serverTimestamp(),
-                                                }).then((value){
-                                                  debugPrint("done adding review");
-                                                  _reviewController.text = "";
-                                                });
-                                                Navigator.maybePop(
-                                                    context, true);
-                                              }),
-                                          const Spacer(flex: 1),
-                                        ]),
+                                              SizedBox(
+                                                height: kToolbarHeight,
+                                                width: size.width,
+                                                child: Center(
+                                                  child: InkWell(
+                                                    onTap: (){
+                                                      HapticFeedback.heavyImpact();
+                                                    },
+                                                    
+                                                    
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.center,
+                                                      children:
+                                                          [1, 2, 3, 4, 5].map((e) {
+                                                        return Padding(
+                                                          padding: const EdgeInsets
+                                                                  .symmetric(
+                                                              horizontal: 4.0),
+                                                          child: IconButton(
+                                                            onPressed: () {
+                                                              debugPrint(
+                                                                  e.toString());
+                                                                  setState(() {
+                                                                    review = e;
+                                                                  })
+                                                            },
+                                                            icon: review >= e
+                                                                ? const Icon(
+                                                                    Icons
+                                                                        .star_rounded,
+                                                                    color:
+                                                                        Colors.amber, 
+                                                                         size: 40,
+                                                  )
+                                                                : const Icon(
+                                                                    Icons
+                                                                        .star_border_rounded,
+                                                                    color:
+                                                                        Colors.pink,
+                                                                        size: 40,
+                                                                  ),
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const Spacer(flex: 3),
+                                              CupertinoButton.filled(
+                                                  child: const Text("Add review"),
+                                                  onPressed: () {
+                                                    debugPrint("add review");
+                                                    FirebaseFirestore.instance.collection("reviews").add({
+                                                      "restaurantId": meal.restaurantId,
+                                                      "foodId": meal.foodId,
+                                                      "name": meal.name,
+                                                      "image" : meal.image,
+                                                      "description": _reviewController.text,
+                                                      "userId": _userData.user!.userId,
+                                                      "username": _userData.user!.name,
+                                                      "avatar": _userData.user!.image,
+                                                      "stars": review,
+              
+                                                      "created_at": FieldValue.serverTimestamp(),
+                                                    }).then((value){
+                                                      debugPrint("done adding review");
+                                                      _reviewController.text = "";
+                                                    });
+                                                    Navigator.maybePop(
+                                                        context, true);
+                                                  }),
+                                              const Spacer(flex: 1),
+                                            ]),
+                                          );
+                                        },
                                       );
-                                    },
-                                  );
-                                });
-
-                            if (outcome != null) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      duration: const Duration(
-                                        milliseconds: 1800,
-                                      ),
-                                      behavior: SnackBarBehavior.floating,
-                                      dismissDirection: DismissDirection.down,
-                                      backgroundColor: Colors.white,
-                                      elevation: 20,
-                                      width: size.width - 70,
-                                      content: Row(
-                                        children: [
-                                          const Text(
-                                            "Thanks for your review 💖",
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                    });
+              
+                                if (outcome != null) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                          duration: const Duration(
+                                            milliseconds: 1800,
                                           ),
-                                        ],
-                                      )));
-                            }
-                          },
-                          label: const Text("Review"),
-                        ),
-                      ]))
-                    ]),
+                                          behavior: SnackBarBehavior.floating,
+                                          dismissDirection: DismissDirection.down,
+                                          backgroundColor: Colors.white,
+                                          elevation: 20,
+                                          width: size.width - 70,
+                                          content: Row(
+                                            children: [
+                                              const Text(
+                                                "Thanks for your review 💖",
+                                                style:
+                                                    TextStyle(color: Colors.black),
+                                              ),
+                                            ],
+                                          )));
+                                }
+                              },
+                              label: const Text("Review"),
+                            ),
+                          ]))
+                        ]),
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ),
+      );
+      }),
     );
   }
 }

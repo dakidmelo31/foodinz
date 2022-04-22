@@ -58,7 +58,7 @@ class _RecentCommentsState extends State<RecentComments> {
                     name: data["name"],
                     userId: data["userId"],
                     image: data['image'],
-                    time: data['time'],
+                    created_at: data['time'],
                   );
                   return Card(
                     color: Colors.transparent,
@@ -107,7 +107,7 @@ class _RecentCommentsState extends State<RecentComments> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: Text(
-                            timeago.format(comment.time.toDate(),
+                            timeago.format(comment.created_at.toDate(),
                                 allowFromNow: true, locale: 'en'),
                           ),
                         ),

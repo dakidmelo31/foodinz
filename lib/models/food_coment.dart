@@ -10,16 +10,18 @@ class Comment {
       foodId,
       restaurantId;
   final int stars;
-  final Timestamp time;
+  final Timestamp created_at;
+  String avatar = '';
   Comment(
       {required this.name,
       required this.image,
       required this.restaurantId,
       required this.foodId,
-      required this.time,
+      required this.created_at,
       required this.userId,
       required this.description,
       required this.commentId,
+      this.avatar = "",
       required this.stars});
 
   Row ratingBar() {

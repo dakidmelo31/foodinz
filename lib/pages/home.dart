@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/pages/all_orders.dart';
 import 'package:foodinz/pages/calls.dart';
 import 'package:foodinz/pages/messages.dart';
+import 'package:foodinz/pages/messages_overview.dart';
 import 'package:foodinz/pages/recent_contacts.dart';
 import 'package:foodinz/pages/stories.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
@@ -25,7 +26,7 @@ class _HomeState extends State<Home> {
   int _pageIndex = 0;
   final List<Widget> pages = const [
     HomeScreen(),
-    AllOrders(),
+    MessagesOverview(),
     AllMessages(),
     RecentContacts(),
     CallsScreen(),

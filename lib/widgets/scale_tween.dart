@@ -18,7 +18,9 @@ class ScaleTween extends StatelessWidget {
         duration: duration,
         builder: (_, double value, child) {
           return Transform.scale(
-            scale: value,
+            scaleX: value,
+            scaleY: value,
+            transformHitTests: true,
             // scaleX: value,
             // scaleY: value,
             child: child,
