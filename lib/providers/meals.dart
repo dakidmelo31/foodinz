@@ -51,10 +51,75 @@ class MealsData with ChangeNotifier {
       popularMeals = [],
       streetMeals = [],
       cafeMeals = [],
-      classicMeals = [],
+      traditionalMeals = [],
       shawarmaMeals = [],
-      specialMeals = [];
+      homeDelivery = [];
   List<Food> restaurantMenu = [];
+  List<Food> searchList = [];
+  List<Food> search({required String keyword}) {
+    searchList.clear();
+
+    for (Food item in meals) {
+      if (item.name.toLowerCase().contains(
+                keyword.toLowerCase(),
+              ) ||
+          item.description.toLowerCase().contains(
+                keyword.toLowerCase(),
+              ) ||
+          item.accessories.contains(
+            keyword.toLowerCase(),
+          ) ||
+          item.compliments.contains(
+            keyword.toLowerCase(),
+          )) {
+        searchList.add(item);
+      }
+    }
+
+    notifyListeners();
+    return searchList;
+  }
+
+  List<Food> filterCategory({required String keyword}) {
+    List<Food> filterList = [];
+
+    for (Food item in meals) {
+      for (String cat in item.categories) {
+        debugPrint(cat);
+        if (keyword.toLowerCase().contains("dessert")) {
+          if (cat.toLowerCase().contains(keyword.toLowerCase()) ||
+              cat.toLowerCase().contains("cake") ||
+              cat.toLowerCase().contains("dessert") ||
+              cat.toLowerCase().contains("birthday") ||
+              cat.toLowerCase().contains("party") ||
+              cat.toLowerCase().contains("cream") ||
+              cat.toLowerCase().contains("sweet")) {
+            // debugPrint(cat);
+            filterList.add(item);
+            break;
+          }
+        } else if (cat.toLowerCase().contains(keyword.toLowerCase())) {
+          // debugPrint(cat);
+          filterList.add(item);
+          break;
+        } else if (keyword.toLowerCase().contains("grocery")) {
+          if (cat.toLowerCase().contains(keyword.toLowerCase()) ||
+              cat.toLowerCase().contains("spice") ||
+              cat.toLowerCase().contains("market") ||
+              cat.toLowerCase().contains("vegetables") ||
+              cat.toLowerCase().contains("healthy") ||
+              cat.toLowerCase().contains("fruit")) {
+            debugPrint(cat);
+            filterList.add(item);
+            break;
+          }
+        }
+      }
+    }
+
+    // notifyListeners();
+    return filterList;
+  }
 
   loadMeals() async {
     firestore
@@ -99,9 +164,9 @@ class MealsData with ChangeNotifier {
 
                 case "special dish":
                 case "specials":
-                  specialMeals
+                  traditionalMeals
                       .removeWhere((element) => element.foodId == food.foodId);
-                  specialMeals.add(food);
+                  traditionalMeals.add(food);
                   break;
 
                 case "classic":
@@ -168,5 +233,31 @@ class MealsData with ChangeNotifier {
       food.restaurantId == id ? restaurantMenu.add(food) : null;
     }
     debugPrint(restaurantMenu.length.toString());
+  }
+
+  updateStore(
+      {required String collectionBucket,
+      required String foodId,
+      required dynamic value,
+      required String name}) {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    FirebaseFirestore.instance
+        .collection(collectionBucket)
+        .where("foodId", isEqualTo: foodId)
+        .get()
+        .then((querySnapshot) {
+      for (var document in querySnapshot.docs) {
+        try {
+          // Only if DocumentID has only numbers
+          batch.update(document.reference, {name: value});
+        } on FormatException catch (error) {
+          // If a document ID is unparsable. Example "lRt931gu83iukSSLwyei" is unparsable.
+          debugPrint("The document ${error.source} could not be parsed.");
+          return null;
+        }
+      }
+      return batch.commit();
+    });
   }
 }

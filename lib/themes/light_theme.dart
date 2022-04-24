@@ -9,7 +9,7 @@ class Primary {
   );
   static const TextStyle orangeParagraph = TextStyle(
     color: Colors.deepOrange,
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: FontWeight.bold,
   );
   static const TextStyle bigHeading = TextStyle(

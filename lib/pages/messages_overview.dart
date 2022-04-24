@@ -57,7 +57,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
       ),
     );
 
-    List<String> list = List.generate(300, (index) => faker.lorem.sentence());
+    List<String> list = List.generate(20, (index) => faker.lorem.sentence());
     return Scaffold(
       body: SafeArea(
         child: Stack(alignment: Alignment.topCenter, children: [
@@ -70,7 +70,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
               duration: const Duration(milliseconds: 2400),
               tween: Tween(begin: 0.0, end: 1.0),
               curve: CurvedAnimation(
-                      parent: _animationController, curve: Curves.bounceIn)
+                      parent: _animationController, curve: Curves.easeInOut)
                   .curve,
               builder: (context, double value, child) {
                 return Opacity(opacity: value, child: child);
@@ -386,14 +386,23 @@ class _MessagesOverviewState extends State<MessagesOverview>
                         controller: tabController,
                         automaticIndicatorColorAdjustment: true,
                         isScrollable: true,
+                        enableFeedback: true,
+                        labelStyle: TextStyle(
+                            color: Colors.green, fontWeight: FontWeight.bold),
                         tabs: [
                           Tab(
+                            iconMargin: EdgeInsets.symmetric(horizontal: 18),
                             icon: Icon(Icons.message_rounded),
-                            child: Text("Messages"),
+                            child: SizedBox(
+                                width: size.width / 2.5,
+                                child: Center(child: Text("Messages"))),
                           ),
                           Tab(
+                            iconMargin: EdgeInsets.symmetric(horizontal: 18),
                             icon: Icon(Icons.restaurant_menu),
-                            child: Text("Orders"),
+                            child: SizedBox(
+                                width: size.width / 2.5,
+                                child: Center(child: Text("Orders"))),
                           ),
                         ],
                       ),

@@ -34,10 +34,10 @@ class RestaurantDetails extends StatelessWidget {
           floatingActionButton: FloatingActionButton.small(
               onPressed: () {},
               backgroundColor: Colors.grey,
-              child: Icon(Icons.message_rounded, color: Colors.white)),
+              child: const Icon(Icons.message_rounded, color: Colors.white)),
           body: CustomScrollView(
             scrollDirection: Axis.vertical,
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverAppBar(
                 actions: [
@@ -59,52 +59,7 @@ class RestaurantDetails extends StatelessWidget {
                     width: w,
                     height: h * .6,
                     child: InkWell(
-                      onDoubleTap: () {
-                        showCupertinoDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            useRootNavigator: true,
-                            barrierLabel: "Meal Photo",
-                            builder: (_) {
-                              return AlertDialog(
-                                backgroundColor: Colors.black.withOpacity(.7),
-                                content: SizedBox.expand(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(40),
-                                      bottomRight: Radius.circular(40),
-                                    ),
-                                    child: InteractiveViewer(
-                                      minScale: .5,
-                                      maxScale: 3.0,
-                                      panEnabled: true,
-                                      alignPanAxis: true,
-                                      boundaryMargin: EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 10),
-                                      clipBehavior: Clip.none,
-                                      constrained: false,
-                                      scaleEnabled: true,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(25),
-                                        child: CachedNetworkImage(
-                                          imageUrl: restaurant.businessPhoto,
-                                          alignment: Alignment.center,
-                                          fit: BoxFit.contain,
-                                          filterQuality: FilterQuality.high,
-                                          errorWidget: (_, string, stackTrace) {
-                                            return Lottie.asset(
-                                                "assets/no-connection2.json");
-                                          },
-                                          height: size.height * .6,
-                                          width: size.width * .6,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            });
-                      },
+                      onDoubleTap: () {},
                       child: Hero(
                         tag: restaurant.businessPhoto,
                         child: FoodCard(image: restaurant.businessPhoto),
@@ -121,7 +76,7 @@ class RestaurantDetails extends StatelessWidget {
                       tag: restaurant.restaurantId,
                       child: ListView(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         children: [
                           Card(
                             color: Colors.white,
@@ -149,7 +104,7 @@ class RestaurantDetails extends StatelessWidget {
                         OpacityTween(
                             begin: 0.0,
                             child: SlideUpTween(
-                                begin: Offset(-30, 30),
+                                begin: const Offset(-30, 30),
                                 child: PromoCode(
                                     restaurantId: restaurant.restaurantId))),
                       ],
@@ -159,19 +114,19 @@ class RestaurantDetails extends StatelessWidget {
 
                     OpacityTween(
                       child: SlideUpTween(
-                        begin: Offset(-30, 30),
+                        begin: const Offset(-30, 30),
                         child: TodayMenu(
                           restaurantId: restaurant.restaurantId,
                         ),
                       ),
                     ),
                     const Spacer(flex: 5),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 15.0, left: 10.0, bottom: 10.0),
+                    const Padding(
+                      padding:
+                          EdgeInsets.only(top: 15.0, left: 10.0, bottom: 10.0),
                       child: Text(
                         "Recent Comments",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,

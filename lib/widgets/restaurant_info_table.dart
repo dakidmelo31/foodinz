@@ -37,11 +37,12 @@ class RestaurantInfoTable extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        const Flexible(
+        Flexible(
           flex: 1,
           child: RestaurantInfoTableItem(
-              icon: Icon(Icons.star_rounded, color: Colors.amber, size: 16),
-              description: "32k",
+              icon:
+                  const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+              description: "be first",
               title: "Ratings"),
         ),
         FittedBox(
@@ -54,6 +55,7 @@ class RestaurantInfoTable extends StatelessWidget {
         OpenContainer(
             transitionDuration: const Duration(milliseconds: 700),
             transitionType: ContainerTransitionType.fadeThrough,
+            closedElevation: 0,
             middleColor: Colors.deepPurple,
             openBuilder: (_, closedContainer) =>
                 MapDetailsScreen(restaurant: restaurant),

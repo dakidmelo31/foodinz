@@ -6,17 +6,25 @@ import 'package:flutter/material.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as map;
 import 'package:lottie/lottie.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../models/food.dart';
 import '../models/restaurants.dart';
 import '../providers/data.dart';
+import '../themes/light_theme.dart';
+import '../widgets/recent_comments.dart';
+import '../widgets/restaurant_info_table.dart';
 import '../widgets/slide_up_tween.dart';
 import 'restaurant_details.dart';
 
 class RestaurantsScreen extends StatefulWidget {
-  RestaurantsScreen({Key? key}) : super(key: key);
+  const RestaurantsScreen({Key? key, required this.lat, required this.long})
+      : super(key: key);
+  final double lat, long;
 
   @override
   State<RestaurantsScreen> createState() => _RecommendedScreenState();
@@ -53,14 +61,14 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double lat = widget.lat;
+    double long = widget.long;
     final mealsData = Provider.of<MealsData>(context);
     final _restaurantsData = Provider.of<RestaurantData>(context);
     final _categoryData = Provider.of<CategoryData>(context);
     final _categories = _categoryData.getCategories();
     final restaurants = _restaurantsData.getRestaurants;
     final size = MediaQuery.of(context).size;
-    final carouselHeight = 300.0;
-    final carouselWidth = 300.0;
     return LayoutBuilder(
       builder: (context, constraints) {
         final h = constraints.maxHeight;
@@ -73,18 +81,18 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
               width: size.width,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   itemCount: _categories.length,
                   itemBuilder: (_, index) {
                     return SlideUpTween(
-                      begin: Offset(80, 0),
-                      duration: Duration(milliseconds: 500),
+                      begin: const Offset(80, 0),
+                      duration: const Duration(milliseconds: 500),
                       curve: Curves.bounceIn,
                       child: AnimatedPadding(
-                        duration: Duration(milliseconds: 350),
+                        duration: const Duration(milliseconds: 350),
                         curve: Curves.bounceIn,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 14),
                         child: InkWell(
                           onTap: () {
                             setState(() {
@@ -98,10 +106,10 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                     ? Colors.grey.withOpacity(.15)
                                     : Theme.of(context).primaryColor,
                             avatar: _categoryData.selectedIndex == index
-                                ? Icon(Icons.restaurant_menu_outlined,
+                                ? const Icon(Icons.restaurant_menu_outlined,
                                     color: Colors.white)
                                 : null,
-                            labelPadding: EdgeInsets.symmetric(
+                            labelPadding: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 3,
                             ),
@@ -120,18 +128,19 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                   }),
             ),
             SizedBox(
-              height: h * .45,
-              width: w * .75,
+              height: h * .60,
+              width: w * .85,
               child: PageView.builder(
-                physics: BouncingScrollPhysics(
+                physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
                 controller: _cardPageController,
                 onPageChanged: (page) {
                   _cardDetailsController.animateToPage(page,
-                      duration: Duration(milliseconds: 550),
+                      duration: const Duration(milliseconds: 550),
                       curve: Curves.decelerate);
                 },
                 clipBehavior: Clip.none,
+                allowImplicitScrolling: true,
                 itemCount: restaurants.length,
                 itemBuilder: (_, index) {
                   final Restaurant restaurant = restaurants[index];
@@ -180,13 +189,14 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                             ),
                           child: Material(
                             shadowColor: index == _cardIndex
-                                ? Color.fromARGB(103, 0, 0, 0)
+                                ? const Color.fromARGB(103, 0, 0, 0)
                                 : Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
                             elevation: 10,
                             child: ClipRRect(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
+                                  const BorderRadius.all(Radius.circular(10)),
                               child: GridTile(
                                 header: Row(
                                   children: [
@@ -196,13 +206,14 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Icon(Icons.stars_rounded,
+                                          const Icon(Icons.stars_rounded,
                                               color: Colors.white, size: 16),
                                           IconButton(
                                             onPressed: () {
                                               debugPrint("add heart");
                                             },
-                                            icon: Icon(Icons.favorite_outlined),
+                                            icon: const Icon(Icons.star_rounded,
+                                                size: 30, color: Colors.amber),
                                           )
                                         ],
                                       ),
@@ -234,7 +245,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                             vertical: 18.0, horizontal: 10),
                                         child: Text(
                                           restaurant.companyName,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -264,65 +275,206 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             SizedBox(
-                height: h * .25,
-                child: PageView.builder(
-                  itemCount: restaurants.length,
-                  physics: NeverScrollableScrollPhysics(),
-                  controller: _cardDetailsController,
-                  itemBuilder: (_, index) {
-                    final Restaurant restaurant = restaurants[index];
-                    final opacity = (index - _cardDetailsPage).clamp(0.0, 1.0);
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: w * 0.1,
-                      ),
-                      child: Opacity(
-                        opacity: 1 - opacity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Hero(
-                              tag: restaurant.restaurantId,
-                              child: FittedBox(
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: Text(
-                                    restaurant.companyName.toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 25,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+              height: h * .15,
+              child: PageView.builder(
+                itemCount: restaurants.length,
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _cardDetailsController,
+                itemBuilder: (_, index) {
+                  final Restaurant restaurant = restaurants[index];
+                  final opacity = (index - _cardDetailsPage).clamp(0.0, 1.0);
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: w * 0.1,
+                    ),
+                    child: Opacity(
+                      opacity: 1 - opacity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Hero(
+                            tag: restaurant.restaurantId,
+                            child: FittedBox(
+                              child: Material(
+                                type: MaterialType.transparency,
+                                child: Text(
+                                  restaurant.companyName.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
-                            ValueListenableBuilder<bool>(
-                              valueListenable: _showCardDetails,
-                              builder: (_, value, child) {
-                                return Visibility(
-                                  child: child!,
-                                  visible: value,
-                                );
-                              },
-                              child: Text(
-                                restaurant.openingTime +
-                                    " " +
-                                    restaurant.closingTime,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w300,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ValueListenableBuilder<bool>(
+                                valueListenable: _showCardDetails,
+                                builder: (_, value, child) {
+                                  return Visibility(
+                                    child: child!,
+                                    visible: value,
+                                  );
+                                },
+                                child: Text(
+                                  "Open until " + restaurant.closingTime,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w300,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                              TextButton.icon(
+                                icon: const Icon(Icons.directions_run_rounded,
+                                    size: 30),
+                                onPressed: () {
+                                  showCupertinoModalBottomSheet(
+                                      bounce: true,
+                                      elevation: 15,
+                                      isDismissible: false,
+                                      enableDrag: true,
+                                      animationCurve: Curves.bounceInOut,
+                                      duration: Duration(milliseconds: 550),
+                                      topRadius: Radius.circular(40),
+                                      expand: true,
+                                      context: context,
+                                      builder: (_) {
+                                        final initialPosition = CameraPosition(
+                                            tilt: 20,
+                                            target: LatLng(restaurant.lat,
+                                                restaurant.long),
+                                            zoom: 14.6);
+                                        late GoogleMapController _mapController;
+                                        return Material(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: size.width,
+                                                height: size.height * .45,
+                                                color: Colors.blue,
+                                                child: GoogleMap(
+                                                    mapToolbarEnabled: true,
+                                                    myLocationButtonEnabled:
+                                                        true,
+                                                    zoomControlsEnabled: true,
+                                                    buildingsEnabled: true,
+                                                    zoomGesturesEnabled: true,
+                                                    initialCameraPosition:
+                                                        initialPosition,
+                                                    onMapCreated: (controller) {
+                                                      _mapController =
+                                                          controller;
+                                                    },
+                                                    markers: {
+                                                      map.Marker(
+                                                        markerId: MarkerId(
+                                                            restaurant
+                                                                .restaurantId),
+                                                        infoWindow: InfoWindow(
+                                                            title: restaurant
+                                                                .companyName),
+                                                        icon: BitmapDescriptor
+                                                            .defaultMarkerWithHue(
+                                                                BitmapDescriptor
+                                                                    .hueViolet),
+                                                        position: LatLng(
+                                                          restaurant.lat,
+                                                          restaurant.long,
+                                                        ),
+                                                      ),
+                                                      map.Marker(
+                                                        markerId: MarkerId(
+                                                            "myLocation"),
+                                                        infoWindow: InfoWindow(
+                                                          title: "You",
+                                                        ),
+                                                        icon: BitmapDescriptor
+                                                            .defaultMarkerWithHue(
+                                                                BitmapDescriptor
+                                                                    .hueRose),
+                                                        position: LatLng(
+                                                          lat,
+                                                          long,
+                                                        ),
+                                                      ),
+                                                    },
+                                                    mapType: MapType.normal,
+                                                    indoorViewEnabled: true),
+                                              ),
+                                              Card(
+                                                color: Colors.white,
+                                                elevation: 15,
+                                                shadowColor: Colors.grey
+                                                    .withOpacity(.25),
+                                                margin: EdgeInsets.symmetric(
+                                                  horizontal: w * 0.03,
+                                                  vertical: 10,
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: w * 0.1,
+                                                    vertical: 10,
+                                                  ),
+                                                  child: RestaurantInfoTable(
+                                                      restaurant: restaurant),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 30),
+                                              Text(
+                                                restaurant.companyName,
+                                                style: const TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                              const Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 15.0,
+                                                    left: 10.0,
+                                                    bottom: 10.0),
+                                                child: Text(
+                                                  "Recent Comments",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 15.0,
+                                                    left: 10.0,
+                                                    bottom: 10.0),
+                                                child: RecentComments(
+                                                    restaurantId: restaurant
+                                                        .restaurantId),
+                                              ),
+                                              const SizedBox(height: 20)
+                                            ],
+                                          ),
+                                        );
+                                      });
+                                },
+                                label: const Text("Get directions"),
+                              )
+                            ],
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                )),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         );
       },

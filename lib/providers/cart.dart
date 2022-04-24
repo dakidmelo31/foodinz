@@ -37,6 +37,17 @@ class CartData with ChangeNotifier {
     return null;
   }
 
+  bool isAlreadyInCart({required String foodId}) {
+    bool answer = false;
+    for (Cart item in myCart) {
+      if (item.foodId == foodId) {
+        answer = true;
+        break;
+      }
+    }
+    return answer;
+  }
+
   void removeFromCart(String id) {
     myCart.removeWhere((element) => element.foodId == id);
     updateTotal();

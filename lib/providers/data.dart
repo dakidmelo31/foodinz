@@ -64,6 +64,11 @@ class RestaurantData with ChangeNotifier {
     loadRestaurants();
   }
 
+  Restaurant selectRestaurant({required String restaurantId}) {
+    return restaurants
+        .firstWhere((element) => element.restaurantId == restaurantId);
+  }
+
   loadRestaurants() async {
     firestore.collection("restaurants").get().then(
       (QuerySnapshot querySnapshot) {

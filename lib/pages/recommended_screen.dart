@@ -6,8 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/pages/meal_details.dart';
-import 'package:foodinz/pages/search_page.dart';
 import 'package:foodinz/pages/street_food.dart';
+import 'package:foodinz/providers/cart.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
 import 'package:geolocator/geolocator.dart';
@@ -20,12 +20,15 @@ import '../models/food.dart';
 import '../providers/auth.dart';
 import '../providers/data.dart';
 import '../themes/light_theme.dart';
+import '../widgets/meals_block.dart';
 import '../widgets/slide_up_tween.dart';
 import '../widgets/view_category.dart';
 import 'product_details.dart';
+import 'restaurants_screen.dart';
 
 class Showcase extends StatefulWidget {
-  const Showcase({Key? key}) : super(key: key);
+  const Showcase({Key? key, required this.searchFunction}) : super(key: key);
+  final VoidCallback searchFunction;
 
   @override
   State<Showcase> createState() => _ShowcaseState();
@@ -84,10 +87,10 @@ class _ShowcaseState extends State<Showcase> {
     final _restaurantsData = Provider.of<RestaurantData>(context);
     final cafeMeals = mealsData.cafeMeals;
     final streetMeals = mealsData.streetMeals;
-    final classicMeals = mealsData.classicMeals;
-    final specialMeals = mealsData.specialMeals;
+    final homeDelivery = mealsData.homeDelivery;
+    final traditionalMeals = mealsData.traditionalMeals;
     final _categoryData = Provider.of<CategoryData>(context);
-    final _categories = _categoryData.getCategories();
+
     final meals = mealsData.meals;
     final size = MediaQuery.of(context).size;
 
@@ -96,76 +99,25 @@ class _ShowcaseState extends State<Showcase> {
         final h = constraints.maxHeight;
         final w = constraints.maxWidth;
 
-        return Container(
+        return SizedBox(
           width: size.width,
           height: size.height,
           child: ListView(
             children: [
+              AppBar(elevation: 0, backgroundColor: Colors.white, actions: [
+                IconButton(
+                    icon: const FaIcon(
+                      FontAwesomeIcons.magnifyingGlass,
+                    ),
+                    onPressed: widget.searchFunction)
+              ]),
               Column(
                 children: [
-                  SlideUpTween(
-                    curve: Curves.bounceInOut,
-                    duration: const Duration(milliseconds: 350),
-                    begin: const Offset(130, 0),
-                    child: SizedBox(
-                      height: 100,
-                      width: size.width,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: _categories.length,
-                          itemBuilder: (_, index) {
-                            return SlideUpTween(
-                              begin: const Offset(80, 0),
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.bounceIn,
-                              child: AnimatedPadding(
-                                duration: const Duration(milliseconds: 350),
-                                curve: Curves.bounceIn,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 14),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _categoryData.selectedIndex = index;
-                                    });
-                                  },
-                                  radius: 15,
-                                  child: Chip(
-                                    backgroundColor:
-                                        _categoryData.selectedIndex != index
-                                            ? Colors.grey.withOpacity(.15)
-                                            : Theme.of(context).primaryColor,
-                                    avatar: _categoryData.selectedIndex == index
-                                        ? const Icon(
-                                            Icons.restaurant_menu_outlined,
-                                            color: Colors.white)
-                                        : null,
-                                    labelPadding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 3,
-                                    ),
-                                    label: Text(
-                                      _categories[index].name,
-                                      style: TextStyle(
-                                        color:
-                                            _categoryData.selectedIndex != index
-                                                ? Colors.black
-                                                : Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                    ),
-                  ),
                   Column(
                     children: [
-                      Align(
+                      const Align(
                         alignment: Alignment.centerLeft,
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.only(left: 18.0, bottom: 15),
                           child: Text("You should try these 😋😋",
                               style: Primary.heading),
@@ -219,7 +171,7 @@ class _ShowcaseState extends State<Showcase> {
                                               axis: Axis.horizontal,
                                               sizeFactor: CurvedAnimation(
                                                   parent: animation,
-                                                  curve: Interval(.0, .80,
+                                                  curve: const Interval(.0, .80,
                                                       curve:
                                                           Curves.decelerate)),
                                               child: FoodDetails(meal: meal)),
@@ -369,9 +321,9 @@ class _ShowcaseState extends State<Showcase> {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text("Special Meals", style: Primary.heading),
-                            const Icon(Icons.arrow_forward_rounded),
+                          children: const [
+                            Text("Popular Restaurants", style: Primary.heading),
+                            Icon(Icons.arrow_forward_rounded),
                           ],
                         ),
                       ),
@@ -380,188 +332,63 @@ class _ShowcaseState extends State<Showcase> {
                     middleColor: Colors.orange,
                     transitionType: ContainerTransitionType.fadeThrough,
                     tappable: true,
-                    openBuilder: (_, closedContainer) => ViewCategory(
-                        mealCategory: cafeMeals, title: "Special Meals"),
+                    openBuilder: (_, closedContainer) =>
+                        ViewCategory(mealCategory: cafeMeals, title: "Popular"),
                   ),
+
+                  Container(
+                      width: size.width,
+                      height: size.height * .75,
+                      child: RestaurantsScreen(lat: lat, long: long)),
+
+                  const MealsBlock(
+                      filter: "traditional", title: "Street Meals"),
+
+                  const MealsBlock(filter: "cafe", title: "Cafe"),
+
+                  const MealsBlock(filter: "Traditional", title: "Traditional"),
+
+                  const MealsBlock(filter: "Desserts", title: "Desserts"),
+
+                  const MealsBlock(filter: "grocery", title: "Groceries"),
+
                   SizedBox(
-                    height: h * .32,
-                    width: w,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: cafeMeals.length,
-                      itemBuilder: (_, index) {
-                        Food meal = cafeMeals[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Column(children: [
-                            Card(
-                              elevation: 5,
-                              shadowColor: Colors.grey.withOpacity(.4),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: CachedNetworkImage(
-                                  imageUrl: meal.image,
-                                  errorWidget: (_, style, stackTrace) {
-                                    return Lottie.asset(
-                                        "assets/no-connection2.json");
-                                  },
-                                  fit: BoxFit.cover,
-                                  width: size.width * .29,
-                                  height: size.height * .18,
-                                  alignment: Alignment.center,
-                                ),
-                              ),
+                    width: size.width,
+                    height: size.height * .7,
+                    child: Stack(
+                      children: [
+                        ClipPath(
+                          clipper: ClipContainer(),
+                          child: Container(
+                            height: size.height * .6,
+                            width: size.width,
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  "https://media.istockphoto.com/photos/cropped-shot-of-an-africanamerican-young-woman-using-smart-phone-at-picture-id1313901506?b=1&k=20&m=1313901506&s=170667a&w=0&h=Dg9qzoAe0pYsBceTUZ6lzaWeUuG3ZQ2WZuLqXvYc718=",
+                              fit: BoxFit.cover,
+                              width: size.width,
+                              height: size.height * .6,
                             ),
-                            SizedBox(
-                              width: size.width * .29,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    meal.name,
-                                    style: Primary.cardText,
-                                  ),
-                                  if (meal.likes > 10)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.favorite,
-                                            color: Colors.pink, size: 14),
-                                        Text(
-                                          meal.likes > 1001
-                                              ? (meal.likes / 1000)
-                                                      .toStringAsFixed(2)
-                                                      .toString() +
-                                                  "K"
-                                              : meal.likes > 1001
-                                                  ? (meal.likes / 1000000)
-                                                          .toString() +
-                                                      "M"
-                                                  : meal.likes.toString(),
-                                          style: Primary.cardText,
-                                        ),
-                                      ],
-                                    ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Text(
-                                      NumberFormat().format(
-                                            meal.price.toInt(),
-                                          ) +
-                                          " CFA",
-                                      style: Primary.orangeParagraph,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ]),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  OpenContainer(
-                    closedElevation: 0,
-                    openElevation: 0,
-                    closedBuilder: (_, openContainer) => InkWell(
-                      onTap: openContainer,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text("Special Meals", style: Primary.heading),
-                            const Icon(Icons.arrow_forward_rounded),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    transitionDuration: const Duration(milliseconds: 700),
-                    middleColor: Colors.orange,
-                    transitionType: ContainerTransitionType.fadeThrough,
-                    tappable: true,
-                    openBuilder: (_, closedContainer) => ViewCategory(
-                        mealCategory: streetMeals, title: "Street Food"),
-                  ),
-                  SizedBox(
-                    height: h * .32,
-                    width: w,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: streetMeals.length,
-                      itemBuilder: (_, index) {
-                        Food meal = streetMeals[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Column(children: [
-                            Card(
-                              elevation: 5,
-                              shadowColor: Colors.grey.withOpacity(.4),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: CachedNetworkImage(
-                                  imageUrl: meal.image,
-                                  errorWidget: (_, style, stackTrace) {
-                                    return Lottie.asset(
-                                        "assets/no-connection2.json");
-                                  },
-                                  fit: BoxFit.cover,
-                                  width: size.width * .29,
-                                  height: size.height * .18,
-                                  alignment: Alignment.center,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: size.width * .29,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    meal.name,
-                                    style: Primary.cardText,
-                                  ),
-                                  if (meal.likes < 10)
-                                    const Icon(Icons.favorite,
-                                        color: Colors.transparent, size: 14),
-                                  if (meal.likes > 10)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.favorite,
-                                            color: Colors.pink, size: 14),
-                                        Text(
-                                          meal.likes > 1001
-                                              ? (meal.likes / 1000)
-                                                      .toStringAsFixed(2)
-                                                      .toString() +
-                                                  "K"
-                                              : meal.likes > 1001
-                                                  ? (meal.likes / 1000000)
-                                                          .toString() +
-                                                      "M"
-                                                  : meal.likes.toString(),
-                                          style: Primary.cardText,
-                                        ),
-                                      ],
-                                    ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Text(
-                                      NumberFormat().format(
-                                            meal.price.toInt(),
-                                          ) +
-                                          " CFA",
-                                      style: Primary.orangeParagraph,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ]),
-                        );
-                      },
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 30.0),
+                            child: Lottie.asset("assets/catering2.json",
+                                reverse: true,
+                                width: size.width * .3,
+                                height: size.width * .3,
+                                options: LottieOptions(enableMergePaths: true),
+                                fit: BoxFit.contain),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Text("You don't have to wait anymore.",
+                              style: Primary.heading),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -571,5 +398,35 @@ class _ShowcaseState extends State<Showcase> {
         );
       },
     );
+  }
+}
+
+class ClipContainer extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+
+    // path.quadraticBezierTo(300, 120, 0, size.height * .5);
+    // path.lineTo(0, 0);
+
+    // path.lineTo(size.width / 2, size.height);
+    // path.lineTo(size.width, 0.0);
+
+    // path.quadraticBezierTo(
+    //     size.width / 3, size.height - 50, size.width, size.height);
+    // path.lineTo(size.width, 0);
+    path.lineTo(0, size.height);
+    path.quadraticBezierTo(
+        size.width / 2, size.height - 200, size.width, size.height);
+    path.lineTo(size.width, 0);
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return true;
   }
 }

@@ -48,6 +48,8 @@ class _HomeState extends State<Home> {
     const Duration transitionDuration = Duration(milliseconds: 500);
     return Scaffold(
       body: PageView(
+        physics: BouncingScrollPhysics(),
+        pageSnapping: true,
         controller: controller,
         children: [
           AnimatedSwitcher(
@@ -60,6 +62,7 @@ class _HomeState extends State<Home> {
       ),
       bottomNavigationBar: StylishBottomBar(
         bubbleFillStyle: BubbleFillStyle.outlined,
+        elevation: 0,
         barStyle: BubbleBarStyle.horizotnal,
         items: [
           AnimatedBarItems(
@@ -83,11 +86,14 @@ class _HomeState extends State<Home> {
             ),
           ),
           AnimatedBarItems(
-              icon: const FaIcon(FontAwesomeIcons.message),
-              selectedIcon: const FaIcon(FontAwesomeIcons.message),
-              backgroundColor: Colors.blue,
-              selectedColor: Colors.pink,
-              title: const Text('Support')),
+            icon: const FaIcon(FontAwesomeIcons.message),
+            selectedIcon: const FaIcon(FontAwesomeIcons.message),
+            backgroundColor: Colors.blue,
+            selectedColor: Colors.pink,
+            title: const Text(
+              'Support',
+            ),
+          ),
           AnimatedBarItems(
               icon: const FaIcon(FontAwesomeIcons.phoneFlip),
               selectedIcon: const FaIcon(FontAwesomeIcons.phoneFlip),

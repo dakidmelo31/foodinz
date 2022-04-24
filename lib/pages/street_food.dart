@@ -2,12 +2,15 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/pages/street_food_details.dart';
 import 'package:foodinz/providers/meals.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../models/food.dart';
+import '../providers/cart.dart';
+import '../providers/data.dart';
 import '../themes/light_theme.dart';
 
 class StreetFood extends StatelessWidget {
@@ -17,6 +20,10 @@ class StreetFood extends StatelessWidget {
   Widget build(BuildContext context) {
     final shawarmaMeals =
         Provider.of<MealsData>(context, listen: true).shawarmaMeals;
+    final restaurantData = Provider.of<RestaurantData>(context, listen: false);
+    final _cartData = Provider.of<CartData>(context, listen: true);
+
+    // debugPrint(shawarmaMeals.length.toString());
     String imageUrl = "";
     final size = MediaQuery.of(context).size;
     return Container(
@@ -24,25 +31,25 @@ class StreetFood extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 50),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 18.0),
-              child: Text("Tasty Street Food", style: Primary.heading),
-            ),
-          ),
           SizedBox(
               width: size.width,
               height: size.height > 650 ? size.height * .35 : size.height * .45,
               child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                physics: BouncingScrollPhysics(
-                  parent: const AlwaysScrollableScrollPhysics(),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
                 ),
                 scrollDirection: Axis.horizontal,
                 itemCount: shawarmaMeals.length,
                 itemBuilder: (_, index) {
                   final Food food = shawarmaMeals[index];
+
+                  final isAlreadyInCart =
+                      _cartData.isAlreadyInCart(foodId: food.foodId);
+
+                  final restaurant = restaurantData.selectRestaurant(
+                      restaurantId: food.restaurantId);
                   int rating = food.averageRating.toInt();
                   List<Widget> ratings = [];
                   for (int i = 0; i < 5; i++) {
@@ -52,7 +59,7 @@ class StreetFood extends StatelessWidget {
 
                     if (i < rating) {
                       ratings.add(
-                        Icon(Icons.star_rounded, color: Colors.amber),
+                        const Icon(Icons.star_rounded, color: Colors.amber),
                       );
                     } else {
                       ratings.add(
@@ -62,18 +69,18 @@ class StreetFood extends StatelessWidget {
                     }
                   }
                   return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
                     height: double.infinity,
                     width: size.width / 2.4,
                     child: Column(
                       children: [
-                        Spacer(),
+                        const Spacer(),
                         ClipOval(
                           child: GestureDetector(
                             onTap: () {
                               debugPrint("open new page");
                               const Duration transitionDuration =
-                                  Duration(milliseconds: 300);
+                                  Duration(milliseconds: 800);
                               Navigator.push(
                                   context,
                                   PageRouteBuilder(
@@ -85,8 +92,7 @@ class StreetFood extends StatelessWidget {
                                         secondaryAnimation) {
                                       return ScaleTransition(
                                         scale: animation,
-                                        child: StreedFoodDetails(
-                                            restaurantId: imageUrl),
+                                        child: FoodDetails(meal: food),
                                         alignment: Alignment.bottomCenter,
                                         filterQuality: FilterQuality.high,
                                       );
@@ -94,58 +100,50 @@ class StreetFood extends StatelessWidget {
                                   ));
                             },
                             child: Hero(
-                              tag: food.image.toUpperCase() + "aaa",
-                              child: CachedNetworkImage(
-                                imageUrl: food.image,
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.high,
-                                errorWidget: (_, string, stackTrace) {
-                                  return Lottie.asset(
-                                      "assets/no-connection2.json");
-                                },
-                                width: 100,
-                                height: 100,
+                              tag: food.image.toUpperCase(),
+                              child: Opacity(
+                                opacity: isAlreadyInCart ? .25 : 1.0,
+                                child: CachedNetworkImage(
+                                  imageUrl: food.image,
+                                  alignment: Alignment.center,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  errorWidget: (_, string, stackTrace) {
+                                    return Lottie.asset(
+                                        "assets/no-connection2.json");
+                                  },
+                                  width: 100,
+                                  height: 100,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Text(
-                          Random().nextBool()
-                              ? "Shawarma"
-                              : Random().nextBool()
-                                  ? "Burning Fish"
-                                  : "Morning Achombo",
+                          food.categories.join(", "),
                           style: Primary.paragraph,
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: ratings),
-                        Spacer(),
+                        const Spacer(),
+                        Row(
+                          children: ratings,
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                Random().nextBool()
-                                    ? "Molyko"
-                                    : Random().nextBool()
-                                        ? "Buea Town"
-                                        : Random().nextBool()
-                                            ? "Clerks Quarters"
-                                            : Random().nextBool()
-                                                ? "Sandpit"
-                                                : Random().nextBool()
-                                                    ? "Mile 17"
-                                                    : "Check Point",
+                                restaurant.address,
                                 style: Primary.paragraph,
                               ),
                               IconButton(
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.location_pin,
                                     color: Colors.pink,
                                   ),
@@ -155,12 +153,12 @@ class StreetFood extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Text(
                           food.name,
                           style: Primary.shawarmaHeading,
                         ),
-                        Spacer(),
+                        const Spacer(),
                       ],
                     ),
                   );

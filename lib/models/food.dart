@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Food {
   String name, description, image, duration, restaurantId, foodId;
+  String address = "";
   final bool available;
   final double averageRating, price;
   final int likes;
@@ -25,6 +28,7 @@ class Food {
       required this.gallery,
       required this.likes,
       required this.name,
+      this.address = "Molyko",
       required this.restaurantId});
 
   static int convertInt(dynamic value) {
@@ -112,7 +116,7 @@ class Food {
         "description": food.description
       };
 
-bool  complimentExists(String item) {
+  bool complimentExists(String item) {
     bool exists = false;
 
     for (String data in compliments) {
