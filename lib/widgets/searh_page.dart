@@ -96,7 +96,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     onChanged: (value) {
                                       mealData.search(keyword: value);
                                     },
-                                    decoration: InputDecoration(
+                                    autofocus: false,
+                                    decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintText: "Search meals or Restaurant...",
                                       filled: false,

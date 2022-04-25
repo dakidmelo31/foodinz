@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/pages/all_orders.dart';
 import 'package:foodinz/pages/calls.dart';
+import 'package:foodinz/pages/cart_screen.dart';
 import 'package:foodinz/pages/messages.dart';
 import 'package:foodinz/pages/messages_overview.dart';
 import 'package:foodinz/pages/recent_contacts.dart';
@@ -48,7 +49,7 @@ class _HomeState extends State<Home> {
     const Duration transitionDuration = Duration(milliseconds: 500);
     return Scaffold(
       body: PageView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         pageSnapping: true,
         controller: controller,
         children: [
@@ -116,9 +117,20 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            heart = !heart;
-          });
+          Navigator.push(
+              context,
+              PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 400),
+                reverseTransitionDuration: const Duration(milliseconds: 400),
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return ScaleTransition(
+                    filterQuality: FilterQuality.high,
+                    scale: animation,
+                    alignment: Alignment.bottomRight,
+                    child: const CartScreen(),
+                  );
+                },
+              ));
         },
         backgroundColor: Colors.white,
         child: Icon(

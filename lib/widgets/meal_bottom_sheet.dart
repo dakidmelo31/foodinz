@@ -419,6 +419,7 @@ class _MealBottomSheetState extends State<MealBottomSheet> {
                                                   )));
                                           cartData.addToCart(Cart(
                                             foodId: meal.foodId,
+                                            name: meal.name,
                                             image: meal.image,
                                             price: meal.price,
                                             restaurantId: meal.restaurantId,

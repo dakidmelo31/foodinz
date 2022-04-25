@@ -21,7 +21,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
   late AnimationController _animationController;
   late Animation<double> progressAnimation;
   late ScrollController _sliverController;
-  double _scroll_value = 0;
+  double _scrollValue = 0;
 
   @override
   void initState() {

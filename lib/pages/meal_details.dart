@@ -304,6 +304,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                     _cart.updateCart(
                                         item: Cart(
                                             foodId: meal.foodId,
+                                        name: meal.name,
                                             image: meal.image,
                                             price: meal.price,
                                             quantity: _counter,
@@ -432,6 +433,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                     _cart.addToCart(Cart(
                                       foodId: meal.foodId,
                                       image: meal.image,
+                                        name: meal.name,
                                       price: meal.price,
                                       restaurantId: meal.restaurantId,
                                       compliments: meal.compliments,
@@ -693,8 +695,8 @@ class _FoodDetailsState extends State<FoodDetails>
                                           elevation: 20,
                                           width: size.width - 70,
                                           content: Row(
-                                            children: [
-                                              const Text(
+                                            children:const [
+                                              Text(
                                                 "Thanks for your review 💖",
                                                 style:
                                                     TextStyle(color: Colors.black),

@@ -21,6 +21,7 @@ class Restaurant {
       ghostKitchen;
   final double lat, long;
   final List<String> categories;
+  int deliveryCost = 500;
 
   Restaurant(
       {required this.address,
@@ -28,6 +29,7 @@ class Restaurant {
       required this.categories,
       required this.long,
       required this.lat,
+      this.deliveryCost = 500,
       required this.restaurantId,
       required this.businessPhoto,
       required this.tableReservation,

@@ -16,6 +16,9 @@ class Primary {
     color: Colors.black,
     fontSize: 20,
   );
+  static const TextStyle whiteText = TextStyle(
+    color: Colors.white,
+  );
   static const TextStyle cardText = TextStyle(
     color: Colors.black,
     fontSize: 11,

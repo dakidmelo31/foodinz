@@ -67,6 +67,7 @@ dependencies:
   ticket_widget:
   avatar_glow:
   context_menus:
+  page_transition:
   flutter:
     sdk: flutter
 

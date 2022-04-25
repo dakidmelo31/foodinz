@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/food.dart';
 
@@ -85,7 +86,6 @@ class MealsData with ChangeNotifier {
 
     for (Food item in meals) {
       for (String cat in item.categories) {
-        debugPrint(cat);
         if (keyword.toLowerCase().contains("dessert")) {
           if (cat.toLowerCase().contains(keyword.toLowerCase()) ||
               cat.toLowerCase().contains("cake") ||
@@ -235,29 +235,42 @@ class MealsData with ChangeNotifier {
     debugPrint(restaurantMenu.length.toString());
   }
 
-  updateStore(
-      {required String collectionBucket,
+  toggleLike(
+      {required String userId,
       required String foodId,
       required dynamic value,
-      required String name}) {
+      required String name}) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
-
-    FirebaseFirestore.instance
-        .collection(collectionBucket)
-        .where("foodId", isEqualTo: foodId)
-        .get()
-        .then((querySnapshot) {
-      for (var document in querySnapshot.docs) {
-        try {
-          // Only if DocumentID has only numbers
-          batch.update(document.reference, {name: value});
-        } on FormatException catch (error) {
-          // If a document ID is unparsable. Example "lRt931gu83iukSSLwyei" is unparsable.
-          debugPrint("The document ${error.source} could not be parsed.");
-          return null;
-        }
-      }
-      return batch.commit();
-    });
+    final _prefs = await SharedPreferences.getInstance();
+    if (_prefs.containsKey(foodId)) {
+      debugPrint("already liked");
+    } else {
+      debugPrint("add like");
+      FirebaseFirestore.instance
+          .collection("meals")
+          .where("foodId", isEqualTo: foodId)
+          .get()
+          .then(
+        (querySnapshot) {
+          for (var document in querySnapshot.docs) {
+            int likes = document.data()["likes"];
+            likes++;
+            FirebaseFirestore.instance.collection("meals").doc(foodId).update(
+              {
+                "likes": likes,
+              },
+            ).then(
+              (value) {
+                debugPrint("done updating");
+              },
+            ).catchError(
+              (error) {
+                debugPrint("Error while updating: $error");
+              },
+            );
+          }
+        },
+      );
+    }
   }
 }
