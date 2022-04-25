@@ -5,6 +5,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../theme/main_theme.dart';
 import 'all_chats.dart';
@@ -30,10 +31,6 @@ class _MessagesOverviewState extends State<MessagesOverview>
     _sliverController =
         ScrollController(keepScrollOffset: true, initialScrollOffset: 0.0);
     _animationController.forward();
-
-    _sliverController.addListener(() {
-      _scroll_value = _sliverController.position.maxScrollExtent;
-    });
 
     super.initState();
   }
@@ -463,24 +460,18 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                         onTap: () {
                                           debugPrint("showDetails");
                                           Navigator.push(
-                                              context,
-                                              PageRouteBuilder(
-                                                  transitionDuration:
-                                                      const Duration(
-                                                          milliseconds: 400),
-                                                  reverseTransitionDuration:
-                                                      const Duration(
-                                                          milliseconds: 400),
-                                                  opaque: false,
-                                                  pageBuilder: (_,
-                                                      _animationController,
-                                                      secondary) {
-                                                    return FadeTransition(
-                                                        opacity:
-                                                            _animationController,
-                                                        child:
-                                                            const ChatScreen());
-                                                  }));
+                                            context,
+                                            PageTransition(
+                                              type: PageTransitionType
+                                                  .rightToLeftWithFade,
+                                              curve: Curves.decelerate,
+                                              duration:
+                                                  Duration(milliseconds: 800),
+                                              reverseDuration:
+                                                  Duration(milliseconds: 800),
+                                              child: const ChatScreen(),
+                                            ),
+                                          );
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(

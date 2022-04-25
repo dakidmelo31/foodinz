@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,10 +17,26 @@ import 'package:provider/provider.dart';
 import 'models/food.dart';
 import 'providers/category_serice.dart';
 import 'providers/meals.dart';
+import 'package:timezone/timezone.dart' as tz;
+
+class ReceivedNotification {
+  ReceivedNotification({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.payload,
+  });
+
+  final int id;
+  final String? title;
+  final String? body;
+  final String? payload;
+}
 
 TextStyle myTexts = TextStyle(color: Color.fromARGB(255, 226, 226, 226));
 TextStyle headingStyles = const TextStyle(
     color: Colors.white, fontSize: 25, fontWeight: FontWeight.w700);
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);

@@ -29,6 +29,7 @@ environment:
 dependencies:
   animations:
   lottie:
+  path_provider:
   cached_network_image:
   intl:
   firebase_core:
@@ -59,6 +60,9 @@ dependencies:
   flutter_slidable:
   stream_chat_flutter:
   geocoding:
+  flutter_local_notifications:
+  timezone:
+  sqflite:
   geolocator: 
   qr_flutter: 
   provider:
