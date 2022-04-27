@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqlite_api.dart';
 
+import '../models/favorite.dart';
 import '../models/food.dart';
+import 'message_database.dart';
 
 class MealsData with ChangeNotifier {
   static int convertInt(dynamic value) {
@@ -122,17 +125,23 @@ class MealsData with ChangeNotifier {
   }
 
   loadMeals() async {
+    var favorites = DatabaseHelper.instance;
+
     firestore
         .collection("meals")
         .get()
         .then((QuerySnapshot querySnapshot) {
           for (var data in querySnapshot.docs) {
-            String documentId = data.id;
+            String foodId = data.id;
             debugPrint(
-                "going through $documentId now and items of meals array are ${meals.length}");
+                "going through $foodId now and items of meals array are ${meals.length}");
+
+            bool isFavorite = favorites.checkFavorite(foodId: foodId);
+
             meals.add(
               Food(
-                foodId: documentId,
+                favorite: isFavorite,
+                foodId: foodId,
                 likes: convertInt(data['likes']),
                 description: data['description'],
                 comments: convertInt(data['comments']),
@@ -213,6 +222,7 @@ class MealsData with ChangeNotifier {
 
     restaurantMenu.firstWhere((element) => element.foodId == id).favorite =
         !meal.favorite;
+
     notifyListeners();
   }
 

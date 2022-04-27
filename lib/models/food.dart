@@ -3,6 +3,9 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../providers/message_database.dart';
+import 'favorite.dart';
+
 class Food {
   String name, description, image, duration, restaurantId, foodId;
   String address = "";
@@ -15,7 +18,8 @@ class Food {
   final List<String> accessories, gallery, categories;
   List<String> compliments = [];
   Food(
-      {required this.accessories,
+      {favorite = false,
+      required this.accessories,
       required this.available,
       required this.price,
       required this.categories,
@@ -75,10 +79,15 @@ class Food {
   }
 
   factory Food.fromJson(AsyncSnapshot<DocumentSnapshot> documentSnapshot) {
+    var favorites = DatabaseHelper.instance;
+
     Map<String, dynamic> data =
         documentSnapshot.data!.data()! as Map<String, dynamic>;
     String documentId = documentSnapshot.data!.id;
+
+    bool isFavorite = favorites.checkFavorite(foodId: documentId);
     return Food(
+      favorite: isFavorite,
       foodId: documentId,
       likes: convertInt(data['likes']),
       description: data['description'],

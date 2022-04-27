@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:foodinz/models/bookmark.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../models/favorite.dart';
 import '../models/message.dart';
 
 class DatabaseHelper {
@@ -37,6 +40,43 @@ class DatabaseHelper {
 
     )
  ''');
+    await db.execute('''
+    CREATE TABLE recentMeals(
+      id int PRIMARY KEY,
+      foodId TEXT,
+      restaurantId TEXT
+    )
+
+''');
+    await db.execute('''
+    CREATE TABLE recentSearches(
+      id int PRIMARY KEY,
+      keyword TEXT
+    )
+''');
+    await db.execute('''
+    CREATE TABLE favorites(
+      id int PRIMARY KEY,
+      foodId TEXT,
+      name TEXT
+    )
+''');
+    await db.execute('''
+    CREATE TABLE bookmarks(
+      id int PRIMARY KEY,
+      foodId TEXT,
+      name TEXT
+    )
+''');
+    await db.execute('''
+    CREATE TABLE orders(
+      id int PRIMARY KEY,
+      orderId TEXT,
+      total TEXT,
+
+    )
+''');
+    debugPrint("done building tables");
   }
 
   getMessages({required String senderId}) async {
@@ -46,6 +86,41 @@ class DatabaseHelper {
         ? messages.map((e) => Message.fromMap(e)).toList()
         : [];
     return messageList;
+  }
+
+  getBookmarks() async {
+    Database _db = await instance.database;
+    var messages = await _db.query("bookmarks", orderBy: "id");
+    List<Bookmark> messageList = messages.isNotEmpty
+        ? messages.map((e) => Bookmark.fromMap(e)).toList()
+        : [];
+    return messageList;
+  }
+
+  deleteBookmark({required String bookmarkId}) async {
+    Database _db = await instance.database;
+    _db.rawDelete('DELETE FROM bookmarks WHERE foodId = ?', [bookmarkId]);
+  }
+
+  getFavorites() async {
+    Database _db = await instance.database;
+    var messages = await _db.query("favorites", orderBy: "id");
+    List<Favorite> messageList = messages.isNotEmpty
+        ? messages.map((e) => Favorite.fromMap(e)).toList()
+        : [];
+    return messageList;
+  }
+
+  checkFavorite({required String foodId}) async {
+    List<Favorite> favorites = DatabaseHelper.instance.getFavorites();
+    bool isFavorite = false;
+    for (Favorite state in favorites) {
+      if (state.foodId == foodId) {
+        isFavorite = true;
+      }
+
+      return isFavorite;
+    }
   }
 
   getMessageOverview({required String senderId}) async {
