@@ -1,15 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
-import '../models/restaurants.dart';
+import '../models/chats_model.dart';
 import '../providers/cart.dart';
+import '../providers/message_database.dart';
 import '../themes/light_theme.dart';
 
 class CartScreen extends StatefulWidget {
@@ -378,8 +382,29 @@ class _CartScreenState extends State<CartScreen> {
                               Future.delayed(const Duration(seconds: 8), () {
                                 ScaffoldMessenger.of(context)
                                     .clearMaterialBanners();
-                              });
+                              }).then((value) => setState(() {}));
                             } else {
+                              final restaurant = Provider.of<RestaurantData>(
+                                      context,
+                                      listen: false)
+                                  .getRestaurant(
+                                      _cartData.myCart[0].restaurantId);
+                              final user =
+                                  Provider.of<UserData>(context, listen: false);
+
+                              Chat newChat = Chat(
+                                  userId: user.userId,
+                                  lastMessageTime: Timestamp.now(),
+                                  lastmessage:
+                                      "Hi, I'd like to follow up on my order",
+                                  restaurantId:
+                                      _cartData.myCart[0].restaurantId,
+                                  restaurantName: restaurant.companyName,
+                                  restaurantImage: restaurant.companyName,
+                                  userImage: user.photoURL);
+
+                              DatabaseHelper.instance.addChat(chats: newChat);
+
                               _cartData.checkout(
                                   isHomeDelivery: deliveryCost > 0,
                                   context: context,

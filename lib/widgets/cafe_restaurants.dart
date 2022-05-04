@@ -55,7 +55,7 @@ class _CafeRestaurantsScreenState extends State<CafeRestaurantsScreen> {
   Widget build(BuildContext context) {
     final mealsData = Provider.of<MealsData>(context);
     final _restaurantsData = Provider.of<RestaurantData>(context);
-    final restaurants = _restaurantsData.cafeRestaurants;
+    final restaurants = _restaurantsData.restaurants;
     final size = MediaQuery.of(context).size;
     final carouselHeight = 300.0;
     final carouselWidth = 300.0;

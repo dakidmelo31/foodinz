@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodinz/firebase_options.dart';
+import 'package:foodinz/local_notif.dart';
 import 'package:foodinz/pages/home.dart';
 import 'package:foodinz/pages/start_page.dart';
 import 'package:foodinz/providers/auth.dart';
@@ -18,6 +20,9 @@ import 'models/food.dart';
 import 'providers/category_serice.dart';
 import 'providers/meals.dart';
 import 'package:timezone/timezone.dart' as tz;
+
+import 'providers/message_database.dart';
+import 'providers/notification_services.dart';
 
 class ReceivedNotification {
   ReceivedNotification({
@@ -39,7 +44,8 @@ TextStyle headingStyles = const TextStyle(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
+  await NotificationService().init();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -58,6 +64,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => DatabaseHelper.instance),
         ChangeNotifierProvider(create: (_) => RestaurantData()),
         ChangeNotifierProvider(create: (_) => MealsData()),
         ChangeNotifierProvider(create: (_) => CategoryData()),

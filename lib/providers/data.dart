@@ -51,13 +51,7 @@ class RestaurantData with ChangeNotifier {
   }
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  List<Restaurant> restaurants = [],
-      popularRestaurants = [],
-      streetFood = [],
-      caters = [],
-      highClassRestaurants = [],
-      cafeRestaurants = [],
-      recommendedRestaurants = [];
+  List<Restaurant> restaurants = [];
   List<Coupon> coupon = [];
   List<String> categories = [];
   RestaurantData() {
@@ -98,37 +92,6 @@ class RestaurantData with ChangeNotifier {
                 tableReservation: doc['tableReservation'] ?? false,
                 username: doc['username'] ?? ""),
           );
-        }
-
-        for (Restaurant food in restaurants) {
-          caters.removeWhere(
-              (element) => element.restaurantId == food.restaurantId);
-          if (food.ghostKitchen) {
-            caters.add(food);
-          }
-
-          for (String info in food.categories) {
-            switch (info) {
-              case "cafe":
-              case "cafe restaurant":
-                cafeRestaurants.removeWhere(
-                    (element) => element.restaurantId == food.restaurantId);
-
-                cafeRestaurants.add(food);
-                break;
-
-              case "special dish":
-              case "specials":
-                break;
-
-              case "street":
-              case "street food":
-                streetFood.removeWhere(
-                    (element) => element.restaurantId == food.restaurantId);
-                streetFood.add(food);
-                break;
-            }
-          }
         }
       },
     ).then((value) {

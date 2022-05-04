@@ -130,13 +130,13 @@ class MealsData with ChangeNotifier {
     firestore
         .collection("meals")
         .get()
-        .then((QuerySnapshot querySnapshot) {
+        .then((QuerySnapshot querySnapshot) async {
           for (var data in querySnapshot.docs) {
             String foodId = data.id;
             debugPrint(
                 "going through $foodId now and items of meals array are ${meals.length}");
 
-            bool isFavorite = favorites.checkFavorite(foodId: foodId);
+            bool isFavorite = await favorites.checkFavorite(foodId: foodId);
 
             meals.add(
               Food(

@@ -29,12 +29,13 @@ environment:
 dependencies:
   animations:
   lottie:
+  dio:
+  pdf:
   path_provider:
   cached_network_image:
   intl:
   firebase_core:
   google_fonts:
-
   cloud_firestore:
   firebase_auth:
   stylish_bottom_bar:
@@ -58,7 +59,6 @@ dependencies:
   intl_phone_field:
   permission_handler: ^9.2.0
   flutter_slidable:
-  stream_chat_flutter:
   geocoding:
   flutter_local_notifications:
   timezone:

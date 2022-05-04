@@ -12,6 +12,9 @@ FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class UserData with ChangeNotifier {
   UserModel? user;
+  late final String name;
+  late final String photoURL;
+  late final String userId;
   UserData() {
     loadUser();
     isLocationSet();
@@ -24,6 +27,9 @@ class UserData with ChangeNotifier {
         .get()
         .then((value) {
       user = UserModel.fromMap(value.data()!);
+      this.name = user!.name;
+      this.photoURL = user!.image;
+      this.userId = user!.userId;
       debugPrint(user!.name);
       debugPrint("user is done loading");
       notifyListeners();

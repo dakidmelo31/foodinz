@@ -11,6 +11,7 @@ import 'package:foodinz/pages/stories.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 import '../widgets/home_screen.dart';
+import 'my_favorites.dart';
 
 //
 //Example to setup Stylish Bottom Bar with PageView
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
   final List<Widget> pages = const [
     HomeScreen(),
     MessagesOverview(),
-    AllMessages(),
+    MyFavorites(),
     RecentContacts(),
     CallsScreen(),
   ];
@@ -48,20 +49,28 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     const Duration transitionDuration = Duration(milliseconds: 500);
     return Scaffold(
-      body: PageView(
-        physics: const BouncingScrollPhysics(),
-        pageSnapping: true,
-        controller: controller,
-        children: [
-          AnimatedSwitcher(
-              duration: transitionDuration,
-              reverseDuration: transitionDuration,
-              switchInCurve: Curves.easeIn,
-              switchOutCurve: Curves.easeIn,
-              child: pages[_pageIndex])
-        ],
+      backgroundColor: Colors.white,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: PageView(
+          physics: const BouncingScrollPhysics(),
+          pageSnapping: true,
+          controller: controller,
+          children: [
+            AnimatedSwitcher(
+                duration: transitionDuration,
+                reverseDuration: transitionDuration,
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeIn,
+                child: pages[_pageIndex])
+          ],
+        ),
       ),
       bottomNavigationBar: StylishBottomBar(
+        inkEffect: true,
+        padding: EdgeInsets.symmetric(horizontal: 4),
         bubbleFillStyle: BubbleFillStyle.outlined,
         elevation: 0,
         barStyle: BubbleBarStyle.horizotnal,
@@ -87,8 +96,8 @@ class _HomeState extends State<Home> {
             ),
           ),
           AnimatedBarItems(
-            icon: const FaIcon(FontAwesomeIcons.message),
-            selectedIcon: const FaIcon(FontAwesomeIcons.message),
+            icon: const Icon(Icons.favorite_border_rounded),
+            selectedIcon: const FaIcon(FontAwesomeIcons.heart),
             backgroundColor: Colors.blue,
             selectedColor: Colors.pink,
             title: const Text(

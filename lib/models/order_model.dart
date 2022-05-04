@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -11,9 +12,10 @@ class Order {
   final List<double> prices;
   final bool homeDelivery;
   final int deliveryCost;
-  final DateTime time;
+  final Timestamp time;
   final String userId;
   String orderId = '';
+  final int friendlyId;
   Order({
     required this.restaurantId,
     required this.status,
@@ -23,6 +25,7 @@ class Order {
     required this.homeDelivery,
     required this.deliveryCost,
     required this.time,
+    required this.friendlyId,
     required this.userId,
   });
 
@@ -34,12 +37,14 @@ class Order {
     List<double>? prices,
     bool? homeDelivery,
     int? deliveryCost,
-    DateTime? time,
+    Timestamp? time,
     String? userId,
+    int? friendlyId,
   }) {
     return Order(
       restaurantId: restaurantId ?? this.restaurantId,
       status: status ?? this.status,
+      friendlyId: friendlyId ?? this.friendlyId,
       quantities: quantities ?? this.quantities,
       names: names ?? this.names,
       prices: prices ?? this.prices,
@@ -54,6 +59,7 @@ class Order {
     final result = <String, dynamic>{};
 
     result.addAll({'restaurantId': restaurantId});
+    result.addAll({'friendlyId': friendlyId});
     result.addAll({'status': status});
     result.addAll({'quantities': quantities});
     result.addAll({'names': names});
@@ -70,12 +76,13 @@ class Order {
     return Order(
       restaurantId: map['restaurantId'] ?? '',
       status: map['status'] ?? '',
+      friendlyId: map['friendlyId'] ?? Random().nextInt(75044),
       quantities: List<int>.from(map['quantities']),
       names: List<String>.from(map['names']),
       prices: List<double>.from(map['prices']),
       homeDelivery: map['homeDelivery'] ?? false,
       deliveryCost: map['deliveryCost']?.toInt() ?? 0,
-      time: DateTime.fromMillisecondsSinceEpoch(map['time']),
+      time: map['time'],
       userId: map['userId'] ?? '',
     );
   }

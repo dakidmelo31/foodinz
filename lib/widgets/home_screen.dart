@@ -2,11 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:foodinz/pages/restaurants_screen.dart';
-import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/searh_page.dart';
-import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:foodinz/widgets/street_restaurants.dart';
 import 'package:provider/provider.dart';
 
@@ -47,14 +43,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
     _searchController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1260),
+      duration: const Duration(milliseconds: 760),
     );
     horizontalExpand = CurvedAnimation(
         parent: _searchController,
-        curve: Interval(0.0, 0.50, curve: Curves.decelerate));
+        curve: const Interval(0.0, 0.50, curve: Curves.easeInOut));
     verticalExpand = CurvedAnimation(
         parent: _searchController,
-        curve: Interval(0.4, 1.0, curve: Curves.easeInOut));
+        curve: const Interval(0.4, 1.0, curve: Curves.easeInOut));
     super.initState();
   }
 
@@ -65,37 +61,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final user = Provider.of<UserData>(context, listen: true);
     Size size = MediaQuery.of(context).size;
     return SafeArea(
-      child: Stack(
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            width: size.width,
-            height: size.height,
-            child: TabBarView(
-              dragStartBehavior: DragStartBehavior.down,
-              physics: const NeverScrollableScrollPhysics(),
-              controller: _tabController,
-              children: [
-                Showcase(searchFunction: () {
-                  setState(() {
-                    // search = true;
-                    _searchController.forward();
-                  });
-                }),
-                StreetRestaurantsScreen(),
-                StreetRestaurantsScreen(),
-              ],
+      child: GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus!.requestFocus();
+        },
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              width: size.width,
+              height: size.height,
+              child: TabBarView(
+                dragStartBehavior: DragStartBehavior.down,
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _tabController,
+                children: [
+                  Showcase(searchFunction: () {
+                    setState(() {
+                      // search = true;
+                      _searchController.forward();
+                    });
+                  }),
+                  StreetRestaurantsScreen(),
+                  StreetRestaurantsScreen(),
+                ],
+              ),
             ),
-          ),
-          // if (search)
-          SearchScreen(
-              startSearchAnimation: horizontalExpand,
-              endSearchAnimation: verticalExpand,
-              closeFunction: () {
-                _searchController.reverse();
-              })
-        ],
+            // if (search)
+            SearchScreen(
+                startSearchAnimation: horizontalExpand,
+                endSearchAnimation: verticalExpand,
+                closeFunction: () {
+                  _searchController.reverse();
+                })
+          ],
+        ),
       ),
     );
   }

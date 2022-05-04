@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:foodinz/main.dart';
-import 'package:foodinz/widgets/scale_tween.dart';
+import 'package:foodinz/pages/home.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,11 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import 'package:lottie/lottie.dart';
 
-import '../themes/light_theme.dart';
 import '../widgets/home_screen.dart';
 import '../widgets/opacity_tween.dart';
 import '../widgets/slide_up_tween.dart';
-import 'home.dart';
 
 enum OTP { notSent, sent, none }
 
@@ -280,7 +278,7 @@ class _LoginState extends State<Login> {
                                                 secondaryAnimation) {
                                               return FadeTransition(
                                                   opacity: animation,
-                                                  child: const HomeScreen());
+                                                  child: const Home());
                                             }),
                                           ),
                                         );

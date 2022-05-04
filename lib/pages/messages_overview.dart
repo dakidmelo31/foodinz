@@ -2,11 +2,19 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:faker/faker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foodinz/pages/all_orders.dart';
+import 'package:foodinz/providers/data.dart';
+import 'package:foodinz/providers/message_database.dart';
+import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:page_transition/page_transition.dart';
-
+import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeAgo;
+import '../models/chats_model.dart';
+import '../models/message.dart';
 import '../theme/main_theme.dart';
 import 'all_chats.dart';
 
@@ -49,7 +57,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
       length: 2,
       vsync: this,
       initialIndex: 0,
-      animationDuration: Duration(
+      animationDuration: const Duration(
         milliseconds: 400,
       ),
     );
@@ -76,16 +84,8 @@ class _MessagesOverviewState extends State<MessagesOverview>
                 color: Colors.white,
                 child: Column(
                   children: [
-                    const Spacer(),
                     Row(
                       children: [
-                        IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back_rounded,
-                            ),
-                            onPressed: () {
-                              Navigator.maybePop(context);
-                            }),
                         Flexible(
                             child: Material(
                           elevation: 10,
@@ -98,7 +98,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                 contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 10),
                                 border: InputBorder.none,
-                                hintText: "Search Order...",
+                                hintText: "Search Messages...",
                               ),
                             ),
                           ),
@@ -384,22 +384,25 @@ class _MessagesOverviewState extends State<MessagesOverview>
                         automaticIndicatorColorAdjustment: true,
                         isScrollable: true,
                         enableFeedback: true,
-                        labelStyle: TextStyle(
+                        labelStyle: const TextStyle(
                             color: Colors.green, fontWeight: FontWeight.bold),
                         tabs: [
                           Tab(
-                            iconMargin: EdgeInsets.symmetric(horizontal: 18),
-                            icon: Icon(Icons.message_rounded),
+                            iconMargin:
+                                const EdgeInsets.symmetric(horizontal: 18),
+                            icon: const Icon(Icons.message_rounded),
                             child: SizedBox(
                                 width: size.width / 2.5,
-                                child: Center(child: Text("Messages"))),
+                                child: const Center(child: Text("Messages"))),
                           ),
                           Tab(
-                            iconMargin: EdgeInsets.symmetric(horizontal: 18),
-                            icon: Icon(Icons.restaurant_menu),
+                            iconMargin:
+                                const EdgeInsets.symmetric(horizontal: 18),
+                            icon: const Icon(Icons.restaurant_menu),
                             child: SizedBox(
                                 width: size.width / 2.5,
-                                child: Center(child: Text("Orders"))),
+                                child:
+                                    const Center(child: const Text("Orders"))),
                           ),
                         ],
                       ),
@@ -411,7 +414,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
           ),
           Positioned(
               top: 130,
-              height: size.height - 130,
+              height: size.height - 100 - kToolbarHeight,
               width: size.width,
               left: 0,
               child: TabBarView(
@@ -425,163 +428,220 @@ class _MessagesOverviewState extends State<MessagesOverview>
                         delegate: SliverChildListDelegate(
                           [
                             const SizedBox(height: 25),
-                            const Padding(
-                              padding: EdgeInsets.all(15.0),
-                              child: const Text("Showing All Orders",
-                                  style: heading),
-                            ),
-                            Column(
-                              children: list.map((e) {
-                                return SizedBox(
-                                  width: size.width,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Dismissible(
-                                      key: GlobalKey(),
-                                      background: Container(
-                                          color: const Color.fromARGB(
-                                              255, 43, 146, 39),
-                                          child: const Icon(
-                                            Icons.home,
-                                            color: Colors.white,
-                                          )),
-                                      behavior: HitTestBehavior.deferToChild,
-                                      direction: DismissDirection.horizontal,
-                                      secondaryBackground: Container(
-                                          color: Colors.deepPurple,
-                                          child: const Icon(
-                                            Icons.home,
-                                            color: Colors.white,
-                                          )),
-                                      child: InkWell(
-                                        splashColor: const Color.fromARGB(
-                                            26, 59, 4, 209),
-                                        highlightColor: Colors.transparent,
-                                        onTap: () {
-                                          debugPrint("showDetails");
-                                          Navigator.push(
-                                            context,
-                                            PageTransition(
-                                              type: PageTransitionType
-                                                  .rightToLeftWithFade,
-                                              curve: Curves.decelerate,
-                                              duration:
-                                                  Duration(milliseconds: 800),
-                                              reverseDuration:
-                                                  Duration(milliseconds: 800),
-                                              child: const ChatScreen(),
-                                            ),
-                                          );
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 14.0, horizontal: 3),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 12.0),
-                                                  child: CircleAvatar(
-                                                    backgroundColor: Random()
-                                                            .nextBool()
-                                                        ? Colors.deepPurple
-                                                        : Random().nextBool()
-                                                            ? Colors.blue
-                                                            : Random()
-                                                                    .nextBool()
-                                                                ? Colors.orange
-                                                                : Random()
-                                                                        .nextBool()
-                                                                    ? Colors
-                                                                        .pink
-                                                                    : Colors
-                                                                        .grey,
-                                                    child: Icon(
-                                                      Random().nextBool()
-                                                          ? Icons
-                                                              .supervised_user_circle
-                                                          : Icons.chair_rounded,
-                                                      color: Random().nextBool()
-                                                          ? Colors.black
-                                                          : Colors.white,
-                                                    ),
+                            FutureBuilder(
+                                future: DatabaseHelper.instance.getChats(),
+                                builder:
+                                    (_, AsyncSnapshot<List<Chat>> snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                      child: Text(
+                                          "Your messages with restaurants will show up here."),
+                                    );
+                                  }
+                                  if (snapshot.data!.length == 0) {
+                                    return SizedBox(
+                                      height: size.height * .7,
+                                      width: size.width,
+                                      child: Center(
+                                        child: Text(
+                                            "Your messages with restaurants will show up here."),
+                                      ),
+                                    );
+                                  }
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Lottie.asset(
+                                      "assets/loading5.json",
+                                      fit: BoxFit.contain,
+                                      width: size.width - 160,
+                                      alignment: Alignment.center,
+                                    );
+                                  }
+                                  debugPrint("total new chats" +
+                                      snapshot.data!.length.toString());
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: snapshot.data!.length,
+                                    itemBuilder: (_, index) {
+                                      final message = snapshot.data![index];
+                                      final restaurant =
+                                          Provider.of<RestaurantData>(context)
+                                              .getRestaurant(
+                                                  message.restaurantId);
+                                      final user =
+                                          Provider.of<UserInfo>(context);
+
+                                      debugPrint(restaurant.companyName +
+                                          "user: " +
+                                          user.displayName.toString());
+                                      return SizedBox(
+                                        width: size.width,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Dismissible(
+                                            key: GlobalKey(),
+                                            background: Container(
+                                                color: const Color.fromARGB(
+                                                    255, 43, 146, 39),
+                                                child: const Icon(
+                                                  Icons.home,
+                                                  color: Colors.white,
+                                                )),
+                                            behavior:
+                                                HitTestBehavior.deferToChild,
+                                            direction:
+                                                DismissDirection.endToStart,
+                                            secondaryBackground: Container(
+                                                color: Colors.deepPurple,
+                                                child: const Icon(
+                                                  Icons.home,
+                                                  color: Colors.white,
+                                                )),
+                                            child: InkWell(
+                                              splashColor: const Color.fromARGB(
+                                                  26, 59, 4, 209),
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              onTap: () {
+                                                debugPrint("showDetails");
+                                                Navigator.push(
+                                                  context,
+                                                  PageTransition(
+                                                    type: PageTransitionType
+                                                        .rightToLeftWithFade,
+                                                    curve: Curves.decelerate,
+                                                    duration: const Duration(
+                                                        milliseconds: 800),
+                                                    reverseDuration:
+                                                        const Duration(
+                                                            milliseconds: 800),
+                                                    child: ChatScreen(
+                                                        restaurantId:
+                                                            "restaurantId"),
                                                   ),
-                                                ),
-                                                Expanded(
-                                                  child: Column(
+                                                );
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 14.0,
+                                                        horizontal: 3),
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
-                                                            .start,
+                                                            .center,
                                                     children: [
                                                       Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 8.0,
-                                                                horizontal: 0),
-                                                        child: Text(e,
-                                                            style: heading),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                vertical: 4.0),
-                                                        child: Text(
-                                                          faker.lorem
-                                                              .words(Random()
-                                                                  .nextInt(12))
-                                                              .join(" "),
-                                                          style: TextStyle(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                              .8,
-                                                            ),
+                                                                    .only(
+                                                                right: 12.0),
+                                                        child: CircleAvatar(
+                                                          child:
+                                                              CachedNetworkImage(
+                                                            imageUrl: restaurant
+                                                                .businessPhoto,
+                                                            errorWidget:
+                                                                (_, __, ___) {
+                                                              return Lottie.asset(
+                                                                  "assets/no-connection2.json");
+                                                            },
+                                                            width: 40,
+                                                            height: 40,
+                                                            fit: BoxFit.cover,
+                                                            alignment: Alignment
+                                                                .center,
                                                           ),
                                                         ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                                Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    const FittedBox(
-                                                        child: Text("12 Jun",
-                                                            style: smallText)),
-                                                    IconButton(
-                                                        icon: const Icon(Icons
-                                                            .star_border_rounded),
-                                                        iconSize: 24,
-                                                        onPressed: () {}),
-                                                  ],
-                                                ),
-                                              ]),
+                                                      ),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 8.0,
+                                                                  horizontal:
+                                                                      0),
+                                                              child: Text(
+                                                                  restaurant
+                                                                      .companyName,
+                                                                  style:
+                                                                      heading),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .symmetric(
+                                                                      vertical:
+                                                                          4.0),
+                                                              child: Text(
+                                                                message
+                                                                    .lastmessage,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                    .8,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          FittedBox(
+                                                              child: Text(
+                                                                  message.lastMessageTime ==
+                                                                          null
+                                                                      ? timeAgo.format(
+                                                                          DateTime
+                                                                              .now())
+                                                                      : timeAgo.format(message
+                                                                          .lastMessageTime!
+                                                                          .toDate()),
+                                                                  style:
+                                                                      smallText)),
+                                                          IconButton(
+                                                              icon: const Icon(Icons
+                                                                  .star_border_rounded),
+                                                              iconSize: 24,
+                                                              onPressed: () {}),
+                                                        ],
+                                                      ),
+                                                    ]),
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            )
+                                      );
+                                    },
+                                  );
+                                })
                           ],
                         ),
                       ),
                     ],
                   ),
-                  Center(child: Text("show me the information"))
+                  const AllOrders()
                 ],
               ))
         ]),

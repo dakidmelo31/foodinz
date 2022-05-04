@@ -1,9 +1,16 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:foodinz/local_notif.dart';
+import 'package:foodinz/providers/data.dart';
+import 'package:foodinz/providers/message_database.dart';
+import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
+import '../models/chats_model.dart';
 import '../models/order_model.dart';
 import '../themes/light_theme.dart';
 
@@ -38,28 +45,48 @@ class CartData with ChangeNotifier {
     List<int> quantities = myCart.map((e) {
       return e.quantity;
     }).toList();
+    int friendlyId = Random().nextInt(99999);
+    debugPrint("friendly Id Number: $friendlyId");
 
     final order = Order(
       homeDelivery: isHomeDelivery,
+      friendlyId: friendlyId,
       names: names,
       quantities: quantities,
       deliveryCost: deliveryCost,
       prices: prices,
       restaurantId: myCart[0].restaurantId,
-      time: DateTime.now(),
+      time: Timestamp.now(),
       userId: auth.currentUser!.uid,
       status: 'pending',
     );
-    firestore.collection("orders").doc().set(order.toMap()).then((value) {
+    firestore.collection("orders").doc().set(order.toMap()).then((value) async {
       debugPrint("Done placing order");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Checkout Successful.", style: Primary.whiteText),
         backgroundColor: Colors.green,
       ));
       Navigator.pop(context, true);
+      await initAwesomeNotification();
       myCart.clear();
     }).catchError((onError) {
       debugPrint(onError.toString());
+    });
+  }
+
+  updateField({required String field, required dynamic value}) async {
+    firestore
+        .collection("orders")
+        .where("userId", isEqualTo: auth.currentUser!.uid)
+        .get()
+        .then((value) {
+      for (var i = 0; i < value.docs.length; i++) {
+        firestore
+            .collection("orders")
+            .doc(value.docs[i].id)
+            .set({"friendlyId": Random().nextInt(99999)});
+        debugPrint("done updating ${value.docs[i].id}");
+      }
     });
   }
 
@@ -102,6 +129,22 @@ class CartData with ChangeNotifier {
 
   void removeFromCart(String id) {
     myCart.removeWhere((element) => element.foodId == id);
+
+    for (Cart item in myCart) {
+      for (Cart test in myCart) {
+        if (test.restaurantId != item.restaurantId) {
+          debugPrint("multiple restaurants");
+          isMultipleRestaurants = true;
+          break;
+        } else {
+          debugPrint("is not multi restaurants");
+          isMultipleRestaurants = false;
+        }
+        if (isMultipleRestaurants) {
+          break;
+        }
+      }
+    }
     updateTotal();
     notifyListeners();
   }
