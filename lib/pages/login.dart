@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:foodinz/global.dart';
 import 'package:foodinz/main.dart';
 import 'package:foodinz/pages/home.dart';
 import 'package:geolocator/geolocator.dart';
@@ -67,6 +70,9 @@ class _LoginState extends State<Login> {
     debugPrint("latitude: $lat, and logitude: $lng");
   }
 
+  final _otpFormKey = GlobalKey<FormState>();
+  String v1 = "", v2 = "", v3 = "", v4 = "", v5 = "", v6 = "";
+
   OTP _formState = OTP.notSent;
   late PhoneAuthCredential credential;
   int seconds = 60;
@@ -82,11 +88,13 @@ class _LoginState extends State<Login> {
       phoneNumber: phoneNumber,
       timeout: const Duration(seconds: 70),
       codeAutoRetrievalTimeout: (String verificationId) {
-        setState(
-          () {
-            verificationCode = verificationId;
-          },
-        );
+        Future.delayed(Duration.zero, () {
+          setState(
+            () {
+              verificationCode = verificationId;
+            },
+          );
+        });
       },
       verificationCompleted: (PhoneAuthCredential credential) async {
         // ANDROID ONLY!
@@ -188,30 +196,232 @@ class _LoginState extends State<Login> {
                               const Spacer(flex: 2),
                               Column(
                                 children: [
-                                  TextField(
-                                    controller: _otpController,
-                                    maxLength: 6,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                            color: Colors.white, width: 2),
-                                      ),
-                                      labelStyle: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                      label: Text(
-                                        "OTP Verification",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      hintText: "Enter Verification code",
+                                  SizedBox(
+                                    height: 80,
+                                    child: Form(
+                                      key: _formKey,
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            SizedBox(
+                                              height: 68,
+                                              width: 45,
+                                              child: TextFormField(
+                                                onSaved: ((newValue) {}),
+                                                onChanged: (val) {
+                                                  if (val.length == 1) {
+                                                    v1 = val;
+                                                    FocusScope.of(context)
+                                                        .nextFocus();
+                                                  }
+                                                },
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      1),
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 68,
+                                              width: 45,
+                                              child: TextFormField(
+                                                onSaved: ((newValue) {}),
+                                                onChanged: (val) {
+                                                  if (val.length == 1) {
+                                                    v2 = val;
+                                                    FocusScope.of(context)
+                                                        .nextFocus();
+                                                  }
+                                                },
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      1),
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 68,
+                                              width: 45,
+                                              child: TextFormField(
+                                                onSaved: ((newValue) {}),
+                                                onChanged: (val) {
+                                                  if (val.length == 1) {
+                                                    v3 = val;
+                                                    FocusScope.of(context)
+                                                        .nextFocus();
+                                                  }
+                                                },
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      1),
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 68,
+                                              width: 45,
+                                              child: TextFormField(
+                                                onSaved: ((newValue) {}),
+                                                onChanged: (val) {
+                                                  if (val.length == 1) {
+                                                    v4 = val;
+                                                    FocusScope.of(context)
+                                                        .nextFocus();
+                                                  }
+                                                },
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      1),
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 68,
+                                              width: 45,
+                                              child: TextFormField(
+                                                onSaved: ((newValue) {}),
+                                                onChanged: (val) {
+                                                  if (val.length == 1) {
+                                                    v5 = val;
+                                                    FocusScope.of(context)
+                                                        .nextFocus();
+                                                  }
+                                                },
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      1),
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 68,
+                                              width: 45,
+                                              child: TextFormField(
+                                                onSaved: ((newValue) {}),
+                                                onChanged: (val) {
+                                                  if (val.length == 1) {
+                                                    v6 = val;
+
+                                                    FocusScope.of(context)
+                                                        .nextFocus();
+                                                  }
+                                                },
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                inputFormatters: [
+                                                  LengthLimitingTextInputFormatter(
+                                                      1),
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            )
+                                          ]),
                                     ),
                                   ),
                                   SizedBox(height: 20),
@@ -248,11 +458,12 @@ class _LoginState extends State<Login> {
                                       .signInWithCredential(
                                     PhoneAuthProvider.credential(
                                       verificationId: verificationCode,
-                                      smsCode: _otpController.text.trim(),
+                                      smsCode: "$v1$v2$v3$v4$v5$v6",
                                     ),
                                   )
                                       .then(
                                     (value) async {
+                                      String? deviceId = await getToken();
                                       firestore
                                           .collection("users")
                                           .doc(auth.currentUser!.uid)
@@ -262,11 +473,19 @@ class _LoginState extends State<Login> {
                                         "image": "",
                                         "lat": lat,
                                         "long": lng,
+                                        "deviceId": deviceId,
                                         "created_at":
                                             FieldValue.serverTimestamp(),
-                                      }).then((value) {
+                                      }).then((value) async {
+                                        sendNotif(
+                                          title:
+                                              "Well Done ${_nameController.text.trim()}",
+                                          description:
+                                              "You can start exploring Foodin. make sure to upload your profile photo",
+                                        );
                                         debugPrint(
                                             "done adding user to firebase");
+
                                         Navigator.pushReplacement(
                                           context,
                                           PageRouteBuilder(
@@ -408,72 +627,31 @@ class _LoginState extends State<Login> {
                                         child: OpacityTween(
                                           child: SlideUpTween(
                                             begin: Offset(100, 10),
-                                            child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 40),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    blurRadius: 10,
-                                                    color: Colors.grey
-                                                        .withOpacity(.5),
-                                                    offset: Offset(
-                                                      5,
-                                                      15,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: TextField(
-                                                keyboardType:
-                                                    TextInputType.phone,
-                                                controller: _otpController,
-                                                decoration: InputDecoration(
-                                                  hintText: "Enter Code ",
-                                                  label: Text(
-                                                    "OTP Code",
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+                                            child: Text(
+                                                "change number if it fails"),
+                                            // child: Container(
+                                            //   margin:
+                                            //       const EdgeInsets.symmetric(
+                                            //           horizontal: 40),
+                                            //   decoration: BoxDecoration(
+                                            //     color: Colors.white,
+                                            //     boxShadow: [
+                                            //       BoxShadow(
+                                            //         blurRadius: 10,
+                                            //         color: Colors.grey
+                                            //             .withOpacity(.5),
+                                            //         offset: Offset(
+                                            //           5,
+                                            //           15,
+                                            //         ),
+                                            //       ),
+                                            //     ],
+                                            //   ),
+                                            //   child: ,
+                                            // ),
                                           ),
                                         ),
                                       ),
-                                    SizedBox(
-                                        height: 45,
-                                        child: Center(
-                                          child: InkWell(
-                                            onTap: () {
-                                              setState(() {
-                                                _showPassword = !_showPassword;
-                                              });
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  "Show password",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                                CupertinoSwitch(
-                                                    trackColor: Colors.grey,
-                                                    value: _showPassword,
-                                                    activeColor: Colors.orange,
-                                                    onChanged: (onChanged) {
-                                                      setState(() {
-                                                        _showPassword =
-                                                            onChanged;
-                                                      });
-                                                    }),
-                                              ],
-                                            ),
-                                          ),
-                                        )),
                                   ],
                                 ),
                                 Padding(

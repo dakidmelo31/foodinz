@@ -112,7 +112,7 @@ class MealsData with ChangeNotifier {
               cat.toLowerCase().contains("vegetables") ||
               cat.toLowerCase().contains("healthy") ||
               cat.toLowerCase().contains("fruit")) {
-            debugPrint(cat);
+            // debugPrint(cat);
             filterList.add(item);
             break;
           }
@@ -133,8 +133,8 @@ class MealsData with ChangeNotifier {
         .then((QuerySnapshot querySnapshot) async {
           for (var data in querySnapshot.docs) {
             String foodId = data.id;
-            debugPrint(
-                "going through $foodId now and items of meals array are ${meals.length}");
+            // debugPrint(
+            //     "going through $foodId now and items of meals array are ${meals.length}");
 
             bool isFavorite = await favorites.checkFavorite(foodId: foodId);
 
@@ -236,13 +236,13 @@ class MealsData with ChangeNotifier {
 
   void loadMenu(String id) {
     restaurantMenu.clear();
-    debugPrint("restaurant id is $id");
+    // debugPrint("restaurant id is $id");
 
     for (var food in meals) {
-      debugPrint(food.name);
+      // debugPrint(food.name);
       food.restaurantId == id ? restaurantMenu.add(food) : null;
     }
-    debugPrint(restaurantMenu.length.toString());
+    // debugPrint(restaurantMenu.length.toString());
   }
 
   toggleLike(

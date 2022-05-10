@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/all_chats.dart';
+import 'package:foodinz/pages/all_orders.dart';
+import 'package:foodinz/pages/login.dart';
+import 'package:foodinz/providers/global_data.dart';
 import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/restaurant_info_table.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
@@ -31,47 +35,54 @@ class RestaurantDetails extends StatelessWidget {
         return Scaffold(
           floatingActionButton: FloatingActionButton(
               onPressed: () async {
-                final user = Provider.of<UserData>(context, listen: false);
+                var currentUser = FirebaseAuth.instance.currentUser;
+                if (currentUser != null) {
+                  debugPrint("user found");
+                  final user = Provider.of<UserData>(context, listen: false);
+                  // debugPrint("userid is: ${user.userId}");
 
-                Chat newChat = Chat(
-                    userId: user.userId,
-                    lastMessageTime: Timestamp.now(),
-                    lastmessage: "Hi, I'd like to follow up on my order",
-                    restaurantId: restaurant.restaurantId,
-                    restaurantName: restaurant.companyName,
-                    restaurantImage: restaurant.businessPhoto,
-                    userImage: user.photoURL);
+                  Chat newChat = Chat(
+                      userId: currentUser.uid,
+                      lastMessageTime: DateTime.now(),
+                      lastmessage: "Hi, I'd like to follow up on my order",
+                      restaurantId: restaurant.restaurantId,
+                      restaurantName: restaurant.companyName,
+                      sender: "",
+                      restaurantImage: restaurant.businessPhoto,
+                      userImage: "lottie",
+                      type: '');
 
-                DatabaseHelper.instance.addChat(chats: newChat);
-                DatabaseHelper.instance.getChats().then(
-                      (value) => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                                "The number of chats are: ${value.length}"),
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          margin: EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 40),
-                        ),
-                      ),
-                    );
+                  newChat.toString();
 
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    duration: const Duration(milliseconds: 400),
-                    child: ChatScreen(restaurantId: restaurant.restaurantId),
-                    type: PageTransitionType.rightToLeft,
-                  ),
-                );
+                  if (!await DBManager.instance
+                      .overviewExists(restaurantId: newChat.restaurantId)) {
+                    debugPrint("this part played");
+                    await DBManager.instance
+                        .addOverview(chat: newChat)
+                        .catchError((onError) {
+                      debugPrint("error while adding new overview: $onError");
+                    });
+                  } else {
+                    debugPrint("this part skipped");
+                  }
+
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      duration: const Duration(milliseconds: 400),
+                      child: ChatScreen(restaurantId: restaurant.restaurantId),
+                      type: PageTransitionType.rightToLeft,
+                    ),
+                  );
+                }
               },
               backgroundColor: const Color.fromARGB(255, 35, 39, 243),
               child: const Icon(Icons.message_rounded, color: Colors.white)),
           body: CustomScrollView(
             scrollDirection: Axis.vertical,
-            physics: const AlwaysScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             slivers: [
               SliverAppBar(
                 actions: [
@@ -160,10 +171,9 @@ class RestaurantDetails extends StatelessWidget {
                           EdgeInsets.only(top: 15.0, left: 10.0, bottom: 10.0),
                       child: Text(
                         "Recent Comments",
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -173,7 +183,6 @@ class RestaurantDetails extends StatelessWidget {
                       child:
                           RecentComments(restaurantId: restaurant.restaurantId),
                     ),
-                    const SizedBox(height: 20)
                   ],
                 ),
               ),

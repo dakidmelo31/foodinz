@@ -75,426 +75,429 @@ class _FoodDetailsState extends State<FoodDetails>
       body: AnimatedBuilder(animation: _animation, builder: (_, widget){
         return SizedBox(
         height: size.height,
+        width: size.width,
         child: Column(
           children: [
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              height: size.height - kToolbarHeight,
+              padding: const EdgeInsets.only(top: 25),
               width: size.width,
-              child: Container(
-                padding: const EdgeInsets.only(top: 25),
-                width: size.width,
-                height: size.height - kToolbarHeight,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Column(
-                    children: [
-                      const Spacer(),
-                      OpacityTween(
-                        duration: const Duration(milliseconds: 900),
-                        curve: Curves.decelerate,
-                        child: SlideUpTween(
-                          begin: const Offset(0, -100),
-                          curve: Curves.decelerate,
-                          duration: const Duration(milliseconds: 550),
-                          child: MealGallery(meal: meal)),
-                      ),
-                      const Spacer(),
-                      OpacityTween(
-                        duration: const Duration(milliseconds: 800),
-                        child: Text(
-                          meal.name,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+              height: size.height - kToolbarHeight,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      child: ListView(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        physics: const BouncingScrollPhysics(parent: const AlwaysScrollableScrollPhysics()),
+                        children: [
+                          const SizedBox(height: 10),
+                          OpacityTween(
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.decelerate,
+                            child: SlideUpTween(
+                              begin: const Offset(0, -100),
+                              curve: Curves.decelerate,
+                              duration: const Duration(milliseconds: 550),
+                              child: MealGallery(meal: meal)),
                           ),
-                        ),
-                      ),
-                      const Spacer(),
-                      OpacityTween(
-                        child: SlideUpTween(
-                        duration: const Duration(milliseconds: 800),
-                          begin: const Offset(0, 30),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: Text(
-                              meal.description,
-                              style: const TextStyle(
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w400,
+                          const SizedBox(height: 10),
+                          OpacityTween(
+                            duration: const Duration(milliseconds: 800),
+                            child: Hero(
+                              tag: meal.foodId + meal.foodId,
+                              child: Text(
+                                meal.name,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                      const Spacer(),
-                      const OpacityTween(child: SlideUpTween(begin: Offset(0, 55),child: Text("Available With Meal"))),
-                      OpacityTween(
-                        duration: const Duration(milliseconds: 800),
-                        child: SlideUpTween(
-                          begin: const Offset(100, 0),
-                          child: SizedBox(
-                            height: 60,
-                            width: size.width,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: meal.accessories.length,
-                              itemBuilder: (_, index) {
-                                final compliment = meal.accessories[index];
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: InkWell(
-                                    onTap: () {
-                                      debugPrint("show info");
-                                      setState(() {
-                                        meal.toggle(meal.accessories[index]);
-                                      });
-                                    },
-                                    child: Chip(
-                                        backgroundColor:
-                                            meal.complimentExists(compliment)
-                                                ? Colors.orange
-                                                : Colors.grey.withOpacity(.3),
-                                        elevation: 10,
-                                        label: Text(
-                                          compliment,
-                                          style: TextStyle(
-                                            color: meal.complimentExists(compliment)
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                        avatar: const Icon(
-                                            Icons.restaurant_menu_rounded,
-                                            color: Colors.white)),
+                          const SizedBox(height: 10),
+                          OpacityTween(
+                            child: SlideUpTween(
+                            duration: const Duration(milliseconds: 800),
+                              begin: const Offset(0, 30),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                child: Text(
+                                  meal.description,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w400,
                                   ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          const OpacityTween(child: SlideUpTween(begin: Offset(0, 55),child: Text("Available With Meal"))),
+                          OpacityTween(
+                            duration: const Duration(milliseconds: 800),
+                            child: SlideUpTween(
+                              begin: const Offset(100, 0),
+                              child: SizedBox(
+                                height: 60,
+                                width: size.width,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: meal.accessories.length,
+                                  itemBuilder: (_, index) {
+                                    final compliment = meal.accessories[index];
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: InkWell(
+                                        onTap: () {
+                                          debugPrint("show info");
+                                          setState(() {
+                                            meal.toggle(meal.accessories[index]);
+                                          });
+                                        },
+                                        child: Chip(
+                                            backgroundColor:
+                                                meal.complimentExists(compliment)
+                                                    ? Colors.orange
+                                                    : Colors.grey.withOpacity(.3),
+                                            elevation: 10,
+                                            label: Text(
+                                              compliment,
+                                              style: TextStyle(
+                                                color: meal.complimentExists(compliment)
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                            avatar: const Icon(
+                                                Icons.restaurant_menu_rounded,
+                                                color: Colors.white)),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          OpacityTween(child: FoodInfoTable(meal: meal)),
+                          const SizedBox(height: 10),
+                          DropdownButton(
+                            enableFeedback: true,
+                            dropdownColor: Colors.black,
+                            alignment: Alignment.center,
+                            elevation: 10,
+                            isDense: true,
+                            iconEnabledColor: Colors.deepOrange,
+                            hint: _dropDownValue == null
+                                ? const Text('Select what to eat with your meal')
+                                : Text(
+                                    _dropDownValue,
+                                    style: const TextStyle(
+                                      color: Colors.orange,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                            isExpanded: true,
+                            iconSize: 30.0,
+                            style:
+                                const TextStyle(color: Colors.white, fontSize: 18),
+                            items: meal.accessories.map(
+                              (val) {
+                                return DropdownMenuItem<String>(
+                                  value: val,
+                                  child: Text(val),
                                 );
                               },
-                            ),
+                            ).toList(),
+                            onChanged: (String? val) {},
                           ),
-                        ),
-                      ),
-                      const Spacer(),
-                      OpacityTween(child: FoodInfoTable(meal: meal)),
-                      const Spacer(),
-                      DropdownButton(
-                        enableFeedback: true,
-                        dropdownColor: Colors.black,
-                        alignment: Alignment.center,
-                        elevation: 10,
-                        isDense: true,
-                        iconEnabledColor: Colors.deepOrange,
-                        hint: _dropDownValue == null
-                            ? const Text('Select what to eat with your meal')
-                            : Text(
-                                _dropDownValue,
-                                style: const TextStyle(
-                                  color: Colors.orange,
+                          const SizedBox(height: 10),
+                          if (isAlreadyInCart != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete_forever_rounded,
+                                    color: Colors.pink,
+                                    size: 25,
+                                  ),
+                                  onPressed: () {
+                                    debugPrint("drop");
+                                    setState(() {
+                                      _cart.myCart.remove(isAlreadyInCart);
+                                    });
+                                  },
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                        isExpanded: true,
-                        iconSize: 30.0,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 18),
-                        items: meal.accessories.map(
-                          (val) {
-                            return DropdownMenuItem<String>(
-                              value: val,
-                              child: Text(val),
-                            );
-                          },
-                        ).toList(),
-                        onChanged: (String? val) {},
-                      ),
-                      const Spacer(),
-                      if (isAlreadyInCart != null)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete_forever_rounded,
-                                color: Colors.pink,
-                                size: 25,
-                              ),
-                              onPressed: () {
-                                debugPrint("drop");
-                                setState(() {
-                                  _cart.myCart.remove(isAlreadyInCart);
-                                });
-                              },
-                            ),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(25),
-                              child: Material(
-                                color: Colors.black.withOpacity(.1),
-                                child: SizedBox(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TextButton(
-                                            child: const Text(
-                                              "-",
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 30,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _counter = _counter < 2
-                                                    ? 1
-                                                    : _counter - 1;
-                                              });
-                                              debugPrint(
-                                                  "update count to $_counter");
-                                            }),
-                                        FittedBox(
-                                          fit: BoxFit.fill,
-                                          child: Text(
-                                            _counter.toString(),
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          child: const Text(
-                                            "+",
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _counter++;
-                                              debugPrint(
-                                                  "update count to $_counter");
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    height: 50,
-                                    width: 150),
-                              ),
-                            ),
-                            Card(
-                              color: Colors.black,
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _cart.updateCart(
-                                        item: Cart(
-                                            foodId: meal.foodId,
-                                        name: meal.name,
-                                            image: meal.image,
-                                            price: meal.price,
-                                            quantity: _counter,
-                                            restaurantId: meal.restaurantId));
-                                  });
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          duration: const Duration(
-                                            milliseconds: 1670,
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                          dismissDirection:
-                                              DismissDirection.down,
-                                          backgroundColor: Colors.white,
-                                          elevation: 20,
-                                          width: size.width - 70,
-                                          content: Row(
-                                            children: [
-                                              const Text(
-                                                "Cart: ",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              const Spacer(),
-                                              Text(
-                                                _cart.myCart.length == 1? _cart.myCart.length.toString() + " item" : _cart.myCart.length.toString() + " items" ,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: Material(
+                                    color: Colors.black.withOpacity(.1),
+                                    child: SizedBox(
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextButton(
+                                                child: const Text(
+                                                  "-",
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 30,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _counter = _counter < 2
+                                                        ? 1
+                                                        : _counter - 1;
+                                                  });
+                                                  debugPrint(
+                                                      "update count to $_counter");
+                                                }),
+                                            FittedBox(
+                                              fit: BoxFit.fill,
+                                              child: Text(
+                                                _counter.toString(),
                                                 style: const TextStyle(
                                                   color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              const Spacer(),
-                                              Text(
-                                                "${_cart.total.toInt()} CFA",
+                                            ),
+                                            TextButton(
+                                              child: const Text(
+                                                "+",
                                                 style: const TextStyle(
                                                   color: Colors.black,
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            ],
-                                          )));
-                                  // Navigator.pop(context, true);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    "Update ${NumberFormat().format((isAlreadyInCart.price * isAlreadyInCart.quantity).toInt())} CFA",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                    ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _counter++;
+                                                  debugPrint(
+                                                      "update count to $_counter");
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        height: 50,
+                                        width: 150),
                                   ),
                                 ),
-                              ),
+                                Card(
+                                  color: Colors.black,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _cart.updateCart(
+                                            item: Cart(
+                                                foodId: meal.foodId,
+                                            name: meal.name,
+                                                image: meal.image,
+                                                price: meal.price,
+                                                quantity: _counter,
+                                                restaurantId: meal.restaurantId));
+                                      });
+                    
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                              duration: const Duration(
+                                                milliseconds: 1670,
+                                              ),
+                                              behavior: SnackBarBehavior.floating,
+                                              dismissDirection:
+                                                  DismissDirection.down,
+                                              backgroundColor: Colors.white,
+                                              elevation: 20,
+                                              width: size.width - 70,
+                                              content: Row(
+                                                children: [
+                                                  const Text(
+                                                    "Cart: ",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ),
+                                                  const Spacer(),
+                                                  Text(
+                                                    _cart.myCart.length == 1? _cart.myCart.length.toString() + " item" : _cart.myCart.length.toString() + " items" ,
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  const Spacer(),
+                                                  Text(
+                                                    "${_cart.total.toInt()} CFA",
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )));
+                                      // Navigator.pop(context, true);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Text(
+                                        "Update ${NumberFormat().format((isAlreadyInCart.price * isAlreadyInCart.quantity).toInt())} CFA",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
                             )
-                          ],
-                        )
-                      else
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(25),
-                              child: Material(
-                                color: Colors.black.withOpacity(.1),
-                                child: SizedBox(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TextButton(
-                                            child: const Text(
-                                              "-",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 30,
-                                                fontWeight: FontWeight.bold,
+                          else
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: Material(
+                                    color: Colors.black.withOpacity(.1),
+                                    child: SizedBox(
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextButton(
+                                                child: const Text(
+                                                  "-",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 30,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _counter = _counter < 2
+                                                        ? 1
+                                                        : _counter - 1;
+                                                  });
+                                                }),
+                                            FittedBox(
+                                              child: Text(
+                                                _counter.toString(),
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _counter = _counter < 2
-                                                    ? 1
-                                                    : _counter - 1;
-                                              });
-                                            }),
-                                        FittedBox(
-                                          child: Text(
-                                            _counter.toString(),
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          child: const Text(
-                                            "+",
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _counter = _counter + 1;
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    height: 50,
-                                    width: 150),
-                              ),
-                            ),
-                            Card(
-                              color: Colors.black,
-                              child: InkWell(
-                                onTap: () {
-                                  debugPrint("$_counter");
-
-                                  setState(() {
-                                    _cart.addToCart(Cart(
-                                      foodId: meal.foodId,
-                                      image: meal.image,
-                                        name: meal.name,
-                                      price: meal.price,
-                                      restaurantId: meal.restaurantId,
-                                      compliments: meal.compliments,
-                                      quantity: _counter,
-                                    ));
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          duration: const Duration(
-                                            milliseconds: 1550,
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                          dismissDirection:
-                                              DismissDirection.down,
-                                          backgroundColor: Colors.white,
-                                          elevation: 20,
-                                          width: size.width - 70,
-                                          content: Row(
-                                            children: [
-                                              const Text(
-                                                "Cart",
+                                            TextButton(
+                                              child: const Text(
+                                                "+",
                                                 style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              const Spacer(),
-                                              Text(
-                                                _cart.myCart.length == 1? _cart.myCart.length.toString() + " item" : _cart.myCart.length.toString() + " items" ,
-                                                style: const TextStyle(
                                                   color: Colors.black,
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              const Spacer(),
-                                              Text(
-                                                "${_cart.total.toInt()} CFA",
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _counter = _counter + 1;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        height: 50,
+                                        width: 150),
+                                  ),
+                                ),
+                                Card(
+                                  color: Colors.black,
+                                  child: InkWell(
+                                    onTap: () {
+                                      debugPrint("$_counter");
+                    
+                                      setState(() {
+                                        _cart.addToCart(Cart(
+                                          foodId: meal.foodId,
+                                          image: meal.image,
+                                            name: meal.name,
+                                          price: meal.price,
+                                          restaurantId: meal.restaurantId,
+                                          compliments: meal.compliments,
+                                          quantity: _counter,
+                                        ));
+                                      });
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                              duration: const Duration(
+                                                milliseconds: 1550,
                                               ),
-                                            ],
-                                          )));
-                                  // Navigator.pop(context, true);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    "Add to Cart  ${meal.price.toInt()} CFA",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14,
+                                              behavior: SnackBarBehavior.floating,
+                                              dismissDirection:
+                                                  DismissDirection.down,
+                                              backgroundColor: Colors.white,
+                                              elevation: 20,
+                                              width: size.width - 70,
+                                              content: Row(
+                                                children: [
+                                                  const Text(
+                                                    "Cart",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ),
+                                                  const Spacer(),
+                                                  Text(
+                                                    _cart.myCart.length == 1? _cart.myCart.length.toString() + " item" : _cart.myCart.length.toString() + " items" ,
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  const Spacer(),
+                                                  Text(
+                                                    "${_cart.total.toInt()} CFA",
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )));
+                                      // Navigator.pop(context, true);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Text(
+                                        "Add to Cart  ${meal.price.toInt()} CFA",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      const Spacer()
-                    ],
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
             OpacityTween(
@@ -720,3 +723,4 @@ class _FoodDetailsState extends State<FoodDetails>
     );
   }
 }
+

@@ -2,24 +2,51 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../providers/message_database.dart';
+
+final String chatTable = "chats";
+
+class ChatFields {
+  static final String restaurantId = "restaurantId";
+  static final String restaurantImage = "restaurantImage";
+  static final String userId = "userId";
+  static final String lastMessage = "lastMessage";
+  static final String lastMessageTime = "lastMessageTime";
+  static final String sender = "sender";
+  static final String userImage = "userImage";
+  static final String restaurantName = "restaurantName";
+  static final List<String> values = [
+    restaurantId,
+    restaurantImage,
+    restaurantName,
+    userId,
+    userImage,
+    sender,
+    lastMessage,
+    lastMessageTime
+  ];
+}
+
 class Chat {
   final String restaurantId;
   final String restaurantImage;
   final String restaurantName;
   final String userId;
-  final String? sender;
+  final String sender;
+  final String type;
   final String userImage;
   String lastmessage;
-  Timestamp? lastMessageTime;
+  DateTime lastMessageTime;
   Chat({
     required this.restaurantId,
     required this.restaurantImage,
     required this.restaurantName,
     required this.userId,
-    this.sender,
+    required this.sender,
+    required this.type,
     required this.userImage,
     required this.lastmessage,
-    this.lastMessageTime,
+    required this.lastMessageTime,
   });
 
   userSent() {
@@ -32,18 +59,21 @@ class Chat {
   Chat copyWith({
     String? restaurantId,
     String? restaurantImage,
+    String? restaurantName,
     String? userId,
     String? sender,
+    String? type,
     String? userImage,
     String? lastmessage,
-    Timestamp? lastMessageTime,
+    DateTime? lastMessageTime,
   }) {
     return Chat(
       restaurantId: restaurantId ?? this.restaurantId,
-      restaurantName: restaurantId ?? this.restaurantName,
       restaurantImage: restaurantImage ?? this.restaurantImage,
+      restaurantName: restaurantName ?? this.restaurantName,
       userId: userId ?? this.userId,
       sender: sender ?? this.sender,
+      type: type ?? this.type,
       userImage: userImage ?? this.userImage,
       lastmessage: lastmessage ?? this.lastmessage,
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,
@@ -54,22 +84,28 @@ class Chat {
     return {
       'restaurantId': restaurantId,
       'restaurantImage': restaurantImage,
+      'restaurantName': restaurantName,
       'userId': userId,
       'sender': sender,
+      'type': type,
       'userImage': userImage,
       'lastmessage': lastmessage,
+      'lastMessageTime': lastMessageTime.millisecondsSinceEpoch,
     };
   }
 
   factory Chat.fromMap(Map<String, dynamic> map) {
     return Chat(
       restaurantId: map['restaurantId'],
-      restaurantName: map['restaurantName'],
       restaurantImage: map['restaurantImage'],
+      restaurantName: map['restaurantName'],
       userId: map['userId'],
       sender: map['sender'],
+      type: map['type'],
       userImage: map['userImage'],
       lastmessage: map['lastmessage'],
+      lastMessageTime:
+          DateTime.fromMillisecondsSinceEpoch(map['lastMessageTime']),
     );
   }
 
@@ -79,7 +115,7 @@ class Chat {
 
   @override
   String toString() {
-    return 'Chat(restaurantId: $restaurantId, restaurantImage: $restaurantImage, userId: $userId, sender: $sender, userImage: $userImage, lastmessage: $lastmessage, lastMessageTime: $lastMessageTime)';
+    return 'Chat(restaurantId: $restaurantId, restaurantImage: $restaurantImage, restaurantName: $restaurantName, userId: $userId, sender: $sender, type: $type, userImage: $userImage, lastmessage: $lastmessage, lastMessageTime: $lastMessageTime)';
   }
 
   @override
@@ -89,8 +125,10 @@ class Chat {
     return other is Chat &&
         other.restaurantId == restaurantId &&
         other.restaurantImage == restaurantImage &&
+        other.restaurantName == restaurantName &&
         other.userId == userId &&
         other.sender == sender &&
+        other.type == type &&
         other.userImage == userImage &&
         other.lastmessage == lastmessage &&
         other.lastMessageTime == lastMessageTime;
@@ -100,8 +138,10 @@ class Chat {
   int get hashCode {
     return restaurantId.hashCode ^
         restaurantImage.hashCode ^
+        restaurantName.hashCode ^
         userId.hashCode ^
         sender.hashCode ^
+        type.hashCode ^
         userImage.hashCode ^
         lastmessage.hashCode ^
         lastMessageTime.hashCode;

@@ -82,12 +82,17 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
               const SizedBox(height: 25),
               const Padding(
                 padding: EdgeInsets.all(15.0),
-                child: const Text("Showing All Orders", style: heading),
+                child: Hero(
+                    tag: "showAll",
+                    child: Material(
+                        child:
+                            const Text("Showing All Orders", style: heading))),
               ),
               StreamBuilder<QuerySnapshot>(
                   stream: _firestore
                       .collection("orders")
                       .where("userId", isEqualTo: auth.currentUser!.uid)
+                      .orderBy("time", descending: true)
                       .snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) {
@@ -112,25 +117,28 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                       String documentId = doc.id;
 
                       debugPrint(documentId);
+
                       if (!checkId(orderId: documentId)) {
+                        var currentOrder = Order(
+                          restaurantId: doc['restaurantId'],
+                          status: doc["status"] ?? "pending",
+                          friendlyId:
+                              doc["friendlyId"] ?? Random().nextInt(65000),
+                          quantities: List<int>.from(doc['quantities']),
+                          names: List<String>.from(doc['names']),
+                          prices: List<double>.from(doc['prices']),
+                          homeDelivery: doc['homeDelivery'] ?? false,
+                          deliveryCost: doc['deliveryCost']?.toInt() ?? 0,
+                          time: doc["time"],
+                          userId: doc['userId'] ?? "no user",
+                        );
+                        currentOrder.orderId = documentId;
                         ordersList.add(
-                          Order(
-                            restaurantId: doc['restaurantId'],
-                            status: doc["status"] ?? "pending",
-                            friendlyId:
-                                doc["friendlyId"] ?? Random().nextInt(65000),
-                            quantities: List<int>.from(doc['quantities']),
-                            names: List<String>.from(doc['names']),
-                            prices: List<double>.from(doc['prices']),
-                            homeDelivery: doc['homeDelivery'] ?? false,
-                            deliveryCost: doc['deliveryCost']?.toInt() ?? 0,
-                            time: doc["time"],
-                            userId: doc['userId'] ?? "no user",
-                          ),
+                          currentOrder,
                         );
                       }
 
-                      debugPrint(List<String>.from(doc['names']).join(", "));
+                      // debugPrint(List<String>.from(doc['names']).join(", "));
                     }
 
                     return SizedBox(
@@ -179,20 +187,23 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                                         const Color.fromARGB(26, 59, 4, 209),
                                     onTap: () {
                                       Navigator.push(
-                                        context,
-                                        PageTransition(
-                                          type: PageTransitionType
-                                              .rightToLeftWithFade,
-                                          curve: Curves.decelerate,
-                                          duration:
-                                              const Duration(milliseconds: 800),
-                                          reverseDuration:
-                                              const Duration(milliseconds: 800),
-                                          child: OrderDetails(
-                                              order: order,
-                                              total: orderTotal.toInt()),
-                                        ),
-                                      );
+                                          context,
+                                          PageRouteBuilder(
+                                              transitionDuration:
+                                                  Duration(milliseconds: 400),
+                                              reverseTransitionDuration:
+                                                  Duration(milliseconds: 400),
+                                              opaque: true,
+                                              barrierColor: Colors.white,
+                                              pageBuilder: ((context, animation,
+                                                  secondaryAnimation) {
+                                                return FadeTransition(
+                                                    opacity: animation,
+                                                    child: OrderDetails(
+                                                      order: order,
+                                                      total: orderTotal.toInt(),
+                                                    ));
+                                              })));
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -226,7 +237,7 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                                                                     .purple[800]
                                                                 : Colors.pink,
                                                 child: const Icon(
-                                                  Icons.chair_rounded,
+                                                  Icons.restaurant_menu_rounded,
                                                   color: Colors.white,
                                                 ),
                                               ),
@@ -251,14 +262,19 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                                                     padding: const EdgeInsets
                                                             .symmetric(
                                                         vertical: 4.0),
-                                                    child: Text(
-                                                      NumberFormat().format(
-                                                              (orderTotal)) +
-                                                          " CFA",
-                                                      style: TextStyle(
-                                                        color: Colors.black
-                                                            .withOpacity(
-                                                          .9,
+                                                    child: Hero(
+                                                      tag: order.friendlyId,
+                                                      child: Material(
+                                                        child: Text(
+                                                          NumberFormat().format(
+                                                                  (orderTotal)) +
+                                                              " CFA",
+                                                          style: TextStyle(
+                                                            color: Colors.black
+                                                                .withOpacity(
+                                                              .9,
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
@@ -271,39 +287,56 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
+                                                  CrossAxisAlignment.end,
                                               children: [
                                                 FittedBox(
+                                                    child: Hero(
+                                                  tag: order.restaurantId
+                                                          .toString() +
+                                                      order.friendlyId
+                                                          .toString(),
+                                                  child: Material(
                                                     child: Text(
-                                                  timeAgo.format(
-                                                    order.time.toDate(),
+                                                      timeAgo.format(
+                                                        order.time.toDate(),
+                                                      ),
+                                                    ),
                                                   ),
                                                 )),
                                                 const SizedBox(height: 5),
-                                                ClipOval(
-                                                  child: Container(
-                                                    color: order.status
-                                                                .toLowerCase() ==
-                                                            "pending"
-                                                        ? Colors.deepOrange
-                                                        : order.status
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 8.0),
+                                                  child: ClipOval(
+                                                    child: Hero(
+                                                      tag: order.friendlyId
+                                                              .toString() +
+                                                          "status",
+                                                      child: Container(
+                                                        color: order.status
                                                                     .toLowerCase() ==
-                                                                "processing"
-                                                            ? Colors.blue
+                                                                "pending"
+                                                            ? Colors.deepOrange
                                                             : order.status
                                                                         .toLowerCase() ==
-                                                                    "takeout"
-                                                                ? Colors
-                                                                    .green[700]
+                                                                    "processing"
+                                                                ? Colors.blue
                                                                 : order.status
                                                                             .toLowerCase() ==
-                                                                        "complete"
-                                                                    ? Colors.purple[
-                                                                        800]
-                                                                    : Colors
-                                                                        .pink,
-                                                    width: 10,
-                                                    height: 10,
+                                                                        "takeout"
+                                                                    ? Colors.green[
+                                                                        700]
+                                                                    : order.status.toLowerCase() ==
+                                                                            "complete"
+                                                                        ? Colors.purple[
+                                                                            800]
+                                                                        : Colors
+                                                                            .pink,
+                                                        width: 10,
+                                                        height: 10,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ],

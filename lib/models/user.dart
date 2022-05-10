@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 class UserModel {
-  final String name;
-  final String image;
-  final String userId;
-  final String phone;
+  String? name;
+  String? image;
+  String? userId;
+  String? phone;
+  String? deviceToken;
   double lat;
   double long;
   UserModel({
@@ -12,6 +13,7 @@ class UserModel {
     required this.image,
     required this.userId,
     required this.phone,
+    this.deviceToken,
     required this.lat,
     required this.long,
   });
@@ -21,6 +23,7 @@ class UserModel {
     String? image,
     String? userId,
     String? phone,
+    String? deviceToken,
     double? lat,
     double? long,
   }) {
@@ -29,32 +32,33 @@ class UserModel {
       image: image ?? this.image,
       userId: userId ?? this.userId,
       phone: phone ?? this.phone,
+      deviceToken: deviceToken ?? this.deviceToken,
       lat: lat ?? this.lat,
       long: long ?? this.long,
     );
   }
 
   Map<String, dynamic> toMap() {
-    final result = <String, dynamic>{};
-
-    result.addAll({'name': name});
-    result.addAll({'image': image});
-    result.addAll({'userId': userId});
-    result.addAll({'phone': phone});
-    result.addAll({'lat': lat});
-    result.addAll({'long': long});
-
-    return result;
+    return {
+      'name': name,
+      'image': image,
+      'userId': userId,
+      'phone': phone,
+      'deviceToken': deviceToken,
+      'lat': lat,
+      'long': long,
+    };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      name: map['name'] ?? '',
-      image: map['image'] ?? '',
-      userId: map['userId'] ?? '',
-      phone: map['phone'] ?? '',
-      lat: map['lat']?.toDouble() ?? 0.0,
-      long: map['long']?.toDouble() ?? 0.0,
+      name: map['name'] != null ? map['name'] : null,
+      image: map['image'] != null ? map['image'] : null,
+      userId: map['userId'] != null ? map['userId'] : null,
+      phone: map['phone'] != null ? map['phone'] : null,
+      deviceToken: map['deviceToken'] != null ? map['deviceToken'] : null,
+      lat: map['lat'],
+      long: map['long'],
     );
   }
 
@@ -65,7 +69,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(name: $name, image: $image, userId: $userId, phone: $phone, lat: $lat, long: $long)';
+    return 'UserModel(name: $name, image: $image, userId: $userId, phone: $phone, deviceToken: $deviceToken, lat: $lat, long: $long)';
   }
 
   @override
@@ -77,6 +81,7 @@ class UserModel {
         other.image == image &&
         other.userId == userId &&
         other.phone == phone &&
+        other.deviceToken == deviceToken &&
         other.lat == lat &&
         other.long == long;
   }
@@ -87,6 +92,7 @@ class UserModel {
         image.hashCode ^
         userId.hashCode ^
         phone.hashCode ^
+        deviceToken.hashCode ^
         lat.hashCode ^
         long.hashCode;
   }

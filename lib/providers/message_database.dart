@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:foodinz/models/bookmark.dart';
 import 'package:path/path.dart';
@@ -18,8 +19,7 @@ class DatabaseHelper with ChangeNotifier {
 
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path,
-        "messages_" + DateTime.now().toString() + ".db");
+    String path = join(documentsDirectory.path, "messages.db");
 
     return await openDatabase(
       path,
@@ -30,7 +30,7 @@ class DatabaseHelper with ChangeNotifier {
 
   _onCreate(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE messages(
+    CREATE TABLE IF NOT EXISTS  messages(
       id int PRIMARY KEY,
       senderName TEXT, 
       senderId Text,
@@ -45,7 +45,7 @@ class DatabaseHelper with ChangeNotifier {
       // debugPrint("messages table created successfully.");
     });
     await db.execute('''
-    CREATE TABLE recentMeals(
+    CREATE TABLE IF NOT EXISTS  recentMeals(
       id int PRIMARY KEY,
       foodId TEXT,
       restaurantId TEXT
@@ -55,7 +55,7 @@ class DatabaseHelper with ChangeNotifier {
       // debugPrint("recent meals created successfully");
     });
     await db.execute('''
-    CREATE TABLE recentSearches(
+    CREATE TABLE IF NOT EXISTS  recentSearches(
       id int PRIMARY KEY,
       keyword TEXT
     )
@@ -63,16 +63,16 @@ class DatabaseHelper with ChangeNotifier {
       // debugPrint("recent searches table created successfully");
     });
     await db.execute('''
-    CREATE TABLE favorites(
+    CREATE TABLE IF NOT EXISTS  favorites(
       id int PRIMARY KEY,
       foodId TEXT,
       name TEXT
     )
 ''').then((value) {
-      debugPrint("done creating favorites table successfully");
+      // debugPrint("done creating favorites table successfully");
     });
     await db.execute('''
-    CREATE TABLE bookmarks(
+    CREATE TABLE IF NOT EXISTS bookmarks(
       id int PRIMARY KEY,
       foodId TEXT,
       name TEXT
@@ -81,7 +81,7 @@ class DatabaseHelper with ChangeNotifier {
       // debugPrint("done creating bookmarks table successfully");
     });
     await db.execute('''
-    CREATE TABLE orders(
+    CREATE TABLE IF NOT EXISTS  orders(
       orderId TEXT PRIMARY KEY,
       restaurantId TEXT,
       restaurantPhone TEXT,
@@ -92,7 +92,7 @@ class DatabaseHelper with ChangeNotifier {
       // debugPrint("done creating orders table");
     });
     await db.execute('''
-    CREATE TABLE orderedItems(
+    CREATE TABLE IF NOT EXISTS  orderedItems(
       id int PRIMARY KEY,
       orderId TEXT,
       foodId TEXT,
@@ -102,37 +102,74 @@ class DatabaseHelper with ChangeNotifier {
     )
 ''').then((value) {
       // debugPrint("created orderd Items table successfully");
-    }).then((value) => debugPrint("done creating orders table"));
+    }).then((value) {
+      // debugPrint("done creating orders table");
+    });
+    // await db.execute("drop table chats");
+    // await db.execute("drop table mychats");
     await db.execute('''
-    CREATE TABLE chats(
+    CREATE TABLE IF NOT EXISTS chats(
       restaurantId TEXT,
       restaurantImage TEXT,
+      restaurantName,
       userId TEXT,
       userImage TEXT,
       lastMessage TEXT,
       sender TEXT,
-      Timestamp lastMessageTime
+      lastMessageTime integer
     )
 ''').then((value) {
       // debugPrint("created chats table successfully");
     });
-    ;
-    debugPrint("done building tables");
+    // debugPrint("done building tables");
+  }
+
+  static int currentTimeInSeconds() {
+    var ms = (new DateTime.now()).millisecondsSinceEpoch;
+    return (ms / 1000).round();
+  }
+
+  Future<bool> checkMessageOverview({required String restaurantId}) async {
+    Database db = await instance.database;
+
+    var test = await db
+        .rawQuery("SELECT * FROM chats WHERE restaurantId='$restaurantId'");
+
+    return test.length > 0;
   }
 
   addChat({required Chat chats}) async {
     Database _db = await instance.database;
-    // debugPrint("search term is: ");
-    return _db
-        .rawInsert(
-            "INSERT INTO chats(restaurantId, restaurantImage, restaurantName, lastMessage, userImage, sender, userId, lastMessageTime) "
-            "VALUES('${chats.restaurantId}', '${chats.restaurantImage}', '${chats.restaurantName}', \"${chats.lastmessage}\", '${chats.userImage}', '${chats.sender}', '${chats.userId}', Current_timestamp)")
-        .then(
-          (value) => debugPrint("done inserting chat overview term $value"),
-        )
-        .catchError((onError) {
-      debugPrint("error while inserting: $onError");
-    });
+
+//check if already exists
+    if (await checkMessageOverview(restaurantId: chats.restaurantId)) {
+      debugPrint("restaurant already there");
+    } else {
+      // debugPrint("search term is: ");
+
+      var row = {
+        "restaurantId": chats.restaurantId,
+        "restaurantImage": chats.restaurantImage,
+        "restaurantName": chats.restaurantName,
+        "lastMessage": chats.lastmessage,
+        "userImage": chats.userImage,
+        "sender": chats.sender,
+        "userId": chats.userId,
+        "lastMessageTime": currentTimeInSeconds()
+      };
+      return _db
+          .insert("chats", row)
+          .then(
+            (value) => debugPrint("$value added to overview"),
+          )
+          .catchError((onError) {
+        debugPrint("error while inserting: $onError");
+      });
+    }
+
+    var length = await _db.rawQuery("SELECT * FROM chats");
+    var total = length.length;
+    // debugPrint("total chats are $total");
   }
 
   Future<List<Message>> getMessages({required String senderId}) async {

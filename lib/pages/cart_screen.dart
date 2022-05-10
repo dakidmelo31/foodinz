@@ -2,10 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
+import 'package:foodinz/providers/global_data.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -88,61 +90,13 @@ class _CartScreenState extends State<CartScreen> {
                       if (index == 0) start = item.restaurantId;
 
                       return Dismissible(
+                        behavior: HitTestBehavior.translucent,
+                        direction: DismissDirection.horizontal,
+                        movementDuration: const Duration(milliseconds: 350),
+                        dragStartBehavior: DragStartBehavior.down,
                         confirmDismiss: (direction) async {
-                          bool outcome = await showCupertinoDialog(
-                              context: context,
-                              builder: (_) {
-                                return Center(
-                                  child: Card(
-                                    elevation: 15,
-                                    child: SizedBox(
-                                      width: size.width - 100,
-                                      height: 100,
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: FittedBox(
-                                              child: Text(
-                                                  "Drop ${_cartData.myCart[index].name}?",
-                                                  style: Primary.heading),
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context, true);
-                                                },
-                                                child: const Text("Yes",
-                                                    style: TextStyle(
-                                                        fontSize: 20)),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context, false);
-                                                },
-                                                child: const Text("No",
-                                                    style: TextStyle(
-                                                        fontSize: 20)),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                              barrierDismissible: true,
-                              barrierLabel: "Confirm");
-
-                          if (outcome) {
-                            _cartData.removeFromCart(item.foodId);
-                          }
+                          _cartData
+                              .removeFromCart(item.foodId); // drop from cart
                         },
                         key: GlobalKey(),
                         background: ClipRRect(
@@ -158,151 +112,143 @@ class _CartScreenState extends State<CartScreen> {
                               height: 70,
                               width: size.width * .9),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Card(
-                            color: item.restaurantId != start
-                                ? Colors.orange
-                                : Colors.white,
-                            elevation: 15,
-                            shadowColor: Colors.grey.withOpacity(.3),
-                            child: Center(
-                              child: SizedBox(
-                                height: 70,
-                                width: double.infinity,
-                                child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: Hero(
-                                          tag: item.image + "33302",
-                                          child: InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (_) => Material(
-                                                    child: Material(
-                                                      child: Center(
-                                                        child: Hero(
-                                                          tag: item.image +
-                                                              "33302",
-                                                          child:
-                                                              CachedNetworkImage(
-                                                            imageUrl:
-                                                                item.image,
-                                                            errorWidget: (_,
-                                                                error,
-                                                                stackTrace) {
-                                                              return Material(
-                                                                child: Lottie.asset(
-                                                                    "assets/no-connection1.json",
-                                                                    width: double
-                                                                        .infinity,
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .center,
-                                                                    fit: BoxFit
-                                                                        .cover),
-                                                              );
-                                                            },
-                                                            width:
-                                                                double.infinity,
-                                                            alignment: Alignment
-                                                                .center,
-                                                            fit: BoxFit.cover,
-                                                          ),
+                        child: Card(
+                          color: item.restaurantId != start
+                              ? Colors.orange
+                              : Colors.white,
+                          elevation: 15,
+                          shadowColor: Colors.grey.withOpacity(.3),
+                          child: Center(
+                            child: SizedBox(
+                              height: 70,
+                              width: double.infinity,
+                              child: Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: Hero(
+                                        tag: item.image + "33302",
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => Material(
+                                                  child: Material(
+                                                    child: Center(
+                                                      child: Hero(
+                                                        tag: item.image +
+                                                            "33302",
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: item.image,
+                                                          errorWidget: (_,
+                                                              error,
+                                                              stackTrace) {
+                                                            return Material(
+                                                              child: Lottie.asset(
+                                                                  "assets/no-connection1.json",
+                                                                  width: double
+                                                                      .infinity,
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  fit: BoxFit
+                                                                      .cover),
+                                                            );
+                                                          },
+                                                          width:
+                                                              double.infinity,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          fit: BoxFit.cover,
                                                         ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              );
+                                              ),
+                                            );
+                                          },
+                                          child: CachedNetworkImage(
+                                            imageUrl: item.image,
+                                            errorWidget:
+                                                (_, error, stackTrace) {
+                                              return Lottie.asset(
+                                                  "assets/no-connection1.json",
+                                                  width: 60,
+                                                  height: 70,
+                                                  alignment: Alignment.center,
+                                                  fit: BoxFit.cover);
                                             },
-                                            child: CachedNetworkImage(
-                                              imageUrl: item.image,
-                                              errorWidget:
-                                                  (_, error, stackTrace) {
-                                                return Lottie.asset(
-                                                    "assets/no-connection1.json",
-                                                    width: 60,
-                                                    height: 70,
-                                                    alignment: Alignment.center,
-                                                    fit: BoxFit.cover);
-                                              },
-                                              width: 60,
-                                              height: 70,
-                                              alignment: Alignment.center,
-                                              fit: BoxFit.cover,
-                                            ),
+                                            width: 60,
+                                            height: 70,
+                                            alignment: Alignment.center,
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
-                                      Expanded(
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(item.name,
-                                                  style: TextStyle(
-                                                      color:
-                                                          item.restaurantId ==
-                                                                  start
-                                                              ? Colors.black
-                                                              : Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                      overflow: TextOverflow
-                                                          .ellipsis)),
-                                            ),
-                                            Text(item.compliments.join(", "),
-                                                style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 12)),
-                                            Text(
-                                                item.quantity.toString() +
-                                                    " * Unit price " +
-                                                    NumberFormat().format(
-                                                        (item.price).toInt()) +
-                                                    " F",
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(item.name,
                                                 style: TextStyle(
                                                     color: item.restaurantId ==
                                                             start
-                                                        ? Color.fromARGB(
-                                                            255, 0, 0, 0)
-                                                        : Color.fromARGB(
-                                                            255, 0, 0, 0),
-                                                    fontSize: 12))
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 4.0),
-                                        child: Center(
-                                          child: Text(
-                                              NumberFormat().format(
-                                                      (item.price *
-                                                              item.quantity)
-                                                          .toInt()) +
+                                                        ? Colors.black
+                                                        : Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    overflow:
+                                                        TextOverflow.ellipsis)),
+                                          ),
+                                          Text(item.compliments.join(", "),
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12)),
+                                          Text(
+                                              item.quantity.toString() +
+                                                  " * Unit price " +
+                                                  NumberFormat().format(
+                                                      (item.price).toInt()) +
                                                   " F",
                                               style: TextStyle(
-                                                  color:
-                                                      item.restaurantId == start
-                                                          ? Colors.black
-                                                          : Colors.white,
-                                                  fontSize: 14)),
-                                        ),
-                                      )
-                                    ]),
-                              ),
+                                                  color: item.restaurantId ==
+                                                          start
+                                                      ? Color.fromARGB(
+                                                          255, 0, 0, 0)
+                                                      : Color.fromARGB(
+                                                          255, 0, 0, 0),
+                                                  fontSize: 12))
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 4.0),
+                                      child: Center(
+                                        child: Text(
+                                            NumberFormat().format(
+                                                    (item.price * item.quantity)
+                                                        .toInt()) +
+                                                " F",
+                                            style: TextStyle(
+                                                color:
+                                                    item.restaurantId == start
+                                                        ? Colors.black
+                                                        : Colors.white,
+                                                fontSize: 14)),
+                                      ),
+                                    )
+                                  ]),
                             ),
                           ),
                         ),
@@ -311,10 +257,12 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: size.height * .25,
+                  height:
+                      size.height < 600 ? size.height * .3 : size.height * .25,
                   width: size.width,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 8.0),
                     child: Column(mainAxisSize: MainAxisSize.max, children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -359,16 +307,11 @@ class _CartScreenState extends State<CartScreen> {
                             if (_cartData.isMultipleRestaurants) {
                               MaterialBanner materialBanner = MaterialBanner(
                                   elevation: 10,
-                                  backgroundColor: Colors.pink,
+                                  backgroundColor: Colors.deepOrange,
                                   content: const Text(
                                       "You cannot order from multiple restaurants at once.",
                                       style: Primary.whiteText),
                                   actions: [
-                                    IconButton(
-                                      icon: const FaIcon(FontAwesomeIcons.eye,
-                                          color: Colors.white),
-                                      onPressed: () {},
-                                    ),
                                     TextButton(
                                         onPressed: () {
                                           ScaffoldMessenger.of(context)
@@ -393,20 +336,22 @@ class _CartScreenState extends State<CartScreen> {
                                   Provider.of<UserData>(context, listen: false);
 
                               Chat newChat = Chat(
-                                  userId: user.userId,
-                                  lastMessageTime: Timestamp.now(),
+                                  userId: user.userId ?? "",
+                                  lastMessageTime: DateTime.now(),
                                   lastmessage:
                                       "Hi, I'd like to follow up on my order",
                                   restaurantId:
                                       _cartData.myCart[0].restaurantId,
                                   restaurantName: restaurant.companyName,
                                   restaurantImage: restaurant.companyName,
-                                  userImage: user.photoURL);
+                                  userImage: user.photoURL ?? "",
+                                  sender: '',
+                                  type: '');
 
-                              DatabaseHelper.instance.addChat(chats: newChat);
+                              // DBManager.instance.addChat(chats: newChat);
 
                               _cartData.checkout(
-                                  isHomeDelivery: deliveryCost > 0,
+                                  isHomeDelivery: homeDelivery,
                                   context: context,
                                   deliveryCost: deliveryCost);
                             }

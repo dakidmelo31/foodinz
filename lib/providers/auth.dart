@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:foodinz/global.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,15 +13,23 @@ FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class UserData with ChangeNotifier {
   UserModel? user;
-  late final String name;
-  late final String photoURL;
-  late final String userId;
+  String? name;
+  String? photoURL;
+  String? userId;
+  String? deviceToken;
   UserData() {
     loadUser();
     isLocationSet();
   }
 
   loadUser() async {
+    var userTokenId = await getToken();
+    if (userTokenId == null) {
+      debugPrint("no token found");
+    } else {
+      debugPrint("user token is this: $userTokenId");
+    }
+
     _firestore
         .collection("users")
         .doc(auth.currentUser!.uid)
@@ -30,6 +39,7 @@ class UserData with ChangeNotifier {
       this.name = user!.name;
       this.photoURL = user!.image;
       this.userId = user!.userId;
+      this.deviceToken = userTokenId;
       debugPrint(user!.name);
       debugPrint("user is done loading");
       notifyListeners();

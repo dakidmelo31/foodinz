@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -12,7 +13,11 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  onDidReceiveLocalNotification(a, b, c, d) {}
+
+  onDidReceiveLocalNotification(a, b, c, d) {
+    debugPrint("what the heck is this");
+  }
+
   init() async {
     final AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings("ic_launcher");
@@ -34,5 +39,7 @@ class NotificationService {
         onSelectNotification: selectNotification);
   }
 
-  Future selectNotification(String? payload) async {}
+  Future selectNotification(String? payload) async {
+    debugPrint("notification was clicked. Payload is: $payload");
+  }
 }

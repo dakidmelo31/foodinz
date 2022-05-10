@@ -81,23 +81,20 @@ class _MealGalleryState extends State<MealGallery> {
                     ),
                   );
                 },
-                child: Hero(
-                  tag: meal.image,
-                  child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: widget.meal.image,
-                      alignment: Alignment.center,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, text, __) {
-                        return Lottie.asset(
-                          "assets/no-connection2.json",
-                          width: size.width * .5,
-                          height: size.width * .5,
-                        );
-                      },
-                      width: size.width * .5,
-                      height: size.width * .5,
-                    ),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: widget.meal.image,
+                    alignment: Alignment.center,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, text, __) {
+                      return Lottie.asset(
+                        "assets/no-connection2.json",
+                        width: size.width * .5,
+                        height: size.width * .5,
+                      );
+                    },
+                    width: size.width * .5,
+                    height: size.width * .5,
                   ),
                 ),
               ),

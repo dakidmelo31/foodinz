@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/providers/meals.dart';
 import 'package:foodinz/widgets/food_card.dart';
 import 'package:foodinz/widgets/meal_bottom_sheet.dart';
@@ -39,14 +40,29 @@ class TodayMenu extends StatelessWidget {
                 width: size.width * .36,
                 child: InkWell(
                   onTap: () {
-                    showBottomSheet(
-                        elevation: 20,
-                        enableDrag: true,
-                        backgroundColor: Colors.black.withOpacity(.37),
-                        context: context,
-                        builder: (context) {
-                          return MealBottomSheet(meal: meal);
-                        });
+                    // showBottomSheet(
+                    //     elevation: 20,
+                    //     enableDrag: true,
+                    //     backgroundColor: Colors.black.withOpacity(.37),
+                    //     context: context,
+                    //     builder: (context) {
+                    //       return MealBottomSheet(meal: meal);
+                    //     });
+
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 600),
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: FoodDetails(
+                              meal: meal,
+                            ),
+                          );
+                        },
+                      ),
+                    );
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,12 +72,19 @@ class TodayMenu extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: CachedNetworkImage(
+                            child: Hero(
+                              tag: meal.foodId.toLowerCase(),
+                              child: CachedNetworkImage(
                                 imageUrl: meal.image,
+                                placeholder: (_, data) {
+                                  return Lottie.asset("assets/loading5.json");
+                                },
                                 alignment: Alignment.center,
                                 fit: BoxFit.cover,
                                 height: size.height * .17,
-                                width: double.infinity),
+                                width: double.infinity,
+                              ),
+                            ),
                           ),
                           Positioned(
                             right: 5,

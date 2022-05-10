@@ -1,12 +1,10 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/pages/all_orders.dart';
 import 'package:foodinz/providers/data.dart';
+import 'package:foodinz/providers/global_data.dart';
 import 'package:foodinz/providers/message_database.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -14,7 +12,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import '../models/chats_model.dart';
-import '../models/message.dart';
 import '../theme/main_theme.dart';
 import 'all_chats.dart';
 
@@ -31,6 +28,8 @@ class _MessagesOverviewState extends State<MessagesOverview>
   late Animation<double> progressAnimation;
   late ScrollController _sliverController;
   double _scrollValue = 0;
+  late List<Chat> chatOverviews;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -43,10 +42,20 @@ class _MessagesOverviewState extends State<MessagesOverview>
     super.initState();
   }
 
+  refreshNotes() async {
+    setState(() {
+      isLoading = true;
+    });
+    this.chatOverviews = await DBManager.instance.getChatOverviews();
+    setState(() {
+      isLoading = false;
+    });
+    debugPrint("done loading chats");
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final faker = Faker();
     bool _showCancelled = true,
         _showPending = true,
         _showReady = true,
@@ -62,7 +71,6 @@ class _MessagesOverviewState extends State<MessagesOverview>
       ),
     );
 
-    List<String> list = List.generate(20, (index) => faker.lorem.sentence());
     return Scaffold(
       body: SafeArea(
         child: Stack(alignment: Alignment.topCenter, children: [
@@ -429,13 +437,31 @@ class _MessagesOverviewState extends State<MessagesOverview>
                           [
                             const SizedBox(height: 25),
                             FutureBuilder(
-                                future: DatabaseHelper.instance.getChats(),
+                                future: DBManager.instance.getOverviews(),
                                 builder:
                                     (_, AsyncSnapshot<List<Chat>> snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Center(
+                                        child: Text(
+                                            "Error ooo, ei don bad: ${snapshot.error}"));
+                                  }
                                   if (!snapshot.hasData) {
                                     return Center(
-                                      child: Text(
-                                          "Your messages with restaurants will show up here."),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Lottie.asset(
+                                            "assets/loading5.json",
+                                            fit: BoxFit.contain,
+                                            width: 200,
+                                            height: 200,
+                                            alignment: Alignment.center,
+                                          ),
+                                          Text(
+                                              "Your messages with restaurants will show up here."),
+                                        ],
+                                      ),
                                     );
                                   }
                                   if (snapshot.data!.length == 0) {
@@ -471,9 +497,6 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                       final user =
                                           Provider.of<UserInfo>(context);
 
-                                      debugPrint(restaurant.companyName +
-                                          "user: " +
-                                          user.displayName.toString());
                                       return SizedBox(
                                         width: size.width,
                                         child: ClipRRect(
@@ -615,9 +638,9 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                                                       ? timeAgo.format(
                                                                           DateTime
                                                                               .now())
-                                                                      : timeAgo.format(message
-                                                                          .lastMessageTime!
-                                                                          .toDate()),
+                                                                      : timeAgo.format(
+                                                                          message
+                                                                              .lastMessageTime),
                                                                   style:
                                                                       smallText)),
                                                           IconButton(

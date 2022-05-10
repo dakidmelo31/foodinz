@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:foodinz/global.dart';
 import 'package:foodinz/local_notif.dart';
+import 'package:foodinz/models/cloud_notification.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/message_database.dart';
 import 'package:provider/provider.dart';
@@ -61,14 +64,35 @@ class CartData with ChangeNotifier {
       status: 'pending',
     );
     firestore.collection("orders").doc().set(order.toMap()).then((value) async {
+      CloudNotification cloudNotification = CloudNotification(
+        title: "New Order for you ",
+        description: "Wrap things up with your customer right away.",
+        userId: auth.currentUser!.uid,
+        payload: order.restaurantId,
+        restaurantId: order.restaurantId,
+      );
+      firestore.collection("notifications").add(cloudNotification.toMap());
       debugPrint("Done placing order");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Checkout Successful.", style: Primary.whiteText),
-        backgroundColor: Colors.green,
-      ));
-      Navigator.pop(context, true);
-      await initAwesomeNotification();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Checkout Successful.", style: Primary.whiteText),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      final restaurant = Provider.of<RestaurantData>(context, listen: false)
+          .getRestaurant(order.restaurantId);
+      final restaurantName = restaurant.companyName;
+
+      sendNotif(
+          title: "Order Placed",
+          description:
+              "You ordered ${order.names.length} items  from $restaurantName just Now. Contact them for payment and scheduling.",
+          payload: restaurant.restaurantId);
+
       myCart.clear();
+      total = 0.0;
+      Navigator.pop(context, true);
     }).catchError((onError) {
       debugPrint(onError.toString());
     });

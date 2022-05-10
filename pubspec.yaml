@@ -31,6 +31,7 @@ dependencies:
   lottie:
   dio:
   pdf:
+  workmanager:
   path_provider:
   cached_network_image:
   intl:
@@ -54,6 +55,7 @@ dependencies:
   google_maps_flutter:
   flutter_polyline_points:
   font_awesome_flutter:
+  firebase_in_app_messaging:
   faker:
   flutter_countdown_timer:
   intl_phone_field:

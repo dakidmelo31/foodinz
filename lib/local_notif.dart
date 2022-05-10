@@ -1,47 +1,96 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 
-Future initAwesomeNotification() async {
-  await AwesomeNotifications().initialize('resource://drawable/ic_launcher', [
-    NotificationChannel(
-      channelKey: "scheduled",
-      channelName: "All notifications",
-      channelDescription: "Notification with information about status",
-      enableVibration: true,
-      defaultRingtoneType: DefaultRingtoneType.Alarm,
-    ),
-  ]);
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-  Future<void> showNotificationAtScheduledTime(
-      {required int id,
-      required BuildContext context,
-      required String title,
-      required String content}) async {
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-          id: id,
-          channelKey: "scheduled",
-          title: title,
-          body: content,
-          payload: {"$title": "$content"},
-          autoDismissible: false,
-          displayOnBackground: true,
-          displayOnForeground: true,
-          wakeUpScreen: true),
-      actionButtons: [
-        NotificationActionButton(
-            key: "1",
-            label: "Cancel",
-            autoDismissible: true,
-            buttonType: ActionButtonType.Default)
-      ],
-      schedule: NotificationCalendar.fromDate(
-        date: DateTime.now().add(
-          Duration(
-            seconds: 5,
-          ),
-        ),
-      ),
+class CloudMsgService {
+  static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  static final FlutterLocalNotificationsPlugin _localNotification =
+      FlutterLocalNotificationsPlugin();
+
+  static Future<void> _requestPermission() async {
+    if (Platform.isAndroid) return;
+
+    await _messaging.requestPermission();
+    await _messaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
     );
+  }
+
+  static Stream<RemoteMessage> get onMessage => FirebaseMessaging.onMessage;
+  static Stream<RemoteMessage> get onMessageOpenedApp =>
+      FirebaseMessaging.onMessageOpenedApp;
+
+  static Future<void> initialize(
+    SelectNotificationCallback onSelectNotification,
+  ) async {
+    print(await _messaging.getToken());
+    await _requestPermission();
+
+    await _initializeLocalNotification(onSelectNotification);
+    await _configureAndroidChannel();
+
+    await _openInitialScreenFromMessage(onSelectNotification);
+  }
+
+  static void invokeLocalNotification(RemoteMessage remoteMessage) async {
+    print("Received notification ${remoteMessage.data}");
+    RemoteNotification? notification = remoteMessage.notification;
+    AndroidNotification? android = remoteMessage.notification?.android;
+
+    if (notification != null && android != null) {
+      await _localNotification.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails("channel", "Foodin City",
+              icon: android.smallIcon),
+        ),
+        payload: jsonEncode(
+          remoteMessage.data,
+        ),
+      );
+    }
+  }
+
+  static Future<void> _configureAndroidChannel() async {
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      "FoodinCityChannel",
+      "Main Foodin News",
+      description: "every food you need is right here for you.",
+      importance: Importance.max,
+    );
+
+    await _localNotification
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }
+
+  static Future<void> _openInitialScreenFromMessage(
+    SelectNotificationCallback onSelectNotification,
+  ) async {
+    RemoteMessage? initialMessage = await _messaging.getInitialMessage();
+    if (initialMessage?.data != null) {
+      onSelectNotification(jsonEncode(initialMessage!.data));
+    }
+  }
+
+  static Future<void> _initializeLocalNotification(
+    SelectNotificationCallback onSelectNotification,
+  ) async {
+    final android = AndroidInitializationSettings(
+      "ic_launcher",
+    );
+    final ios = IOSInitializationSettings();
+    final initSetting = InitializationSettings(android: android, iOS: ios);
+
+    await _localNotification.initialize(initSetting,
+        onSelectNotification: onSelectNotification);
   }
 }

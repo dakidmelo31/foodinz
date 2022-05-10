@@ -21,11 +21,24 @@
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
 <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
    <application
    android:usesCleartextTraffic="true"
         android:label="foodinz"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+                <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:foodinz/widgets/searh_page.dart';
+import 'package:foodinz/widgets/search_page.dart';
 import 'package:foodinz/widgets/street_restaurants.dart';
 import 'package:provider/provider.dart';
 

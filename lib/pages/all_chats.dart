@@ -103,7 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             .then((QuerySnapshot querySnapshot) {
                           for (var doc in querySnapshot.docs) {
                             String documentId = doc.id;
-                            debugPrint(documentId);
+                            // debugPrint(documentId);
                             if (!checkId(orderId: documentId)) {
                               ordersList.add(
                                 Order(
@@ -123,10 +123,11 @@ class _ChatScreenState extends State<ChatScreen> {
                               );
                             }
 
-                            debugPrint(
-                                List<String>.from(doc['names']).join(", "));
+                            // debugPrint(
+                            //     List<String>.from(doc['names']).join(", "));
                           }
-                          debugPrint(ordersList.length.toString());
+                          debugPrint("Number of Orders: " +
+                              ordersList.length.toString());
                         });
 
                         if (ordersSnapshot.hasError ||
@@ -211,39 +212,40 @@ class _ChatScreenState extends State<ChatScreen> {
               color: Colors.grey.withOpacity(.15),
               child: Column(
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: TextField(
-                            controller: _editingController,
-                            decoration: InputDecoration(
-                              prefix: IconButton(
-                                  icon: const FaIcon(
-                                    FontAwesomeIcons.faceSmileWink,
-                                  ),
-                                  onPressed: () {
-                                    ;
-                                  }),
-                              hintText: "Message",
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: const OutlineInputBorder(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(30),
-                                  ),
-                                  borderSide: BorderSide.none),
+                  if (false)
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: TextField(
+                              controller: _editingController,
+                              decoration: InputDecoration(
+                                prefix: IconButton(
+                                    icon: const FaIcon(
+                                      FontAwesomeIcons.faceSmileWink,
+                                    ),
+                                    onPressed: () {
+                                      ;
+                                    }),
+                                hintText: "Message",
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: const OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(30),
+                                    ),
+                                    borderSide: BorderSide.none),
+                              ),
+                              maxLines: 2,
+                              minLines: 1,
                             ),
-                            maxLines: 2,
-                            minLines: 1,
                           ),
-                        ),
-                        FloatingActionButton.small(
-                          onPressed: () {},
-                          child: const Icon(Icons.send),
-                        )
-                      ]),
+                          FloatingActionButton.small(
+                            onPressed: () {},
+                            child: const Icon(Icons.send),
+                          )
+                        ]),
                 ],
               ),
             ),

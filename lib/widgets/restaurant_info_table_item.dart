@@ -36,13 +36,17 @@ class RestaurantInfoTableItem extends StatelessWidget {
           Row(
             children: [
               icon,
-              Text(
-                description,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
+              FittedBox(
+                child: Text(
+                  description,
+                  style: const TextStyle(
+                    // fontSize: 12,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
+                fit: BoxFit.fill,
+                alignment: Alignment.center,
               ),
             ],
           ),

@@ -29,7 +29,7 @@ class _MealsBlockState extends State<MealsBlock> {
   @override
   Widget build(BuildContext context) {
     final _cartData = Provider.of<CartData>(context, listen: true);
-    final filteredMeals = Provider.of<MealsData>(context, listen: true);
+    var filteredMeals = Provider.of<MealsData>(context, listen: true);
     final filteredList = filteredMeals.filterCategory(keyword: widget.filter);
     Size size = MediaQuery.of(context).size;
 
@@ -99,15 +99,18 @@ class _MealsBlockState extends State<MealsBlock> {
                               shadowColor: Colors.grey.withOpacity(.4),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
-                                child: CachedNetworkImage(
-                                  imageUrl: meal.image,
-                                  errorWidget: (_, style, stackTrace) {
-                                    return Lottie.asset(
-                                        "assets/no-connection2.json");
-                                  },
-                                  fit: BoxFit.cover,
-                                  alignment: Alignment.center,
-                                  width: size.width * .40,
+                                child: Hero(
+                                  tag: meal.image + "_from_cards",
+                                  child: CachedNetworkImage(
+                                    imageUrl: meal.image,
+                                    errorWidget: (_, style, stackTrace) {
+                                      return Lottie.asset(
+                                          "assets/no-connection2.json");
+                                    },
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                    width: size.width * .40,
+                                  ),
                                 ),
                               ),
                             ),

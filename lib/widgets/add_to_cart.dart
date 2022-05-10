@@ -30,7 +30,7 @@ class AddToCart extends StatelessWidget {
                   double newPadding = 40;
 
                   return StatefulBuilder(builder: (_, StateSetter setState) {
-                    return Container(
+                    return SizedBox(
                         width: size.width,
                         height: size.height * .35,
                         child: Column(

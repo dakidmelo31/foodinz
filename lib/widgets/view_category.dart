@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/pages/meal_details.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
@@ -29,10 +30,11 @@ class ViewCategory extends StatelessWidget {
           width: size.width,
           child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2 / 3,
-                mainAxisSpacing: 1,
-                crossAxisSpacing: 3),
+              crossAxisCount: 2,
+              childAspectRatio: 2 / 3,
+              mainAxisSpacing: 1,
+              crossAxisSpacing: 3,
+            ),
             physics: const BouncingScrollPhysics(),
             itemCount: mealCategory.length,
             itemBuilder: (_, index) {
@@ -45,18 +47,43 @@ class ViewCategory extends StatelessWidget {
                     child: Card(
                       elevation: 5,
                       shadowColor: Colors.grey.withOpacity(.4),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: Hero(
-                          tag: meal.image.toUpperCase() + "aaa",
-                          child: CachedNetworkImage(
-                            imageUrl: meal.image,
-                            errorWidget: (_, style, stackTrace) {
-                              return Lottie.asset("assets/no-connection2.json");
-                            },
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            alignment: Alignment.center,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration:
+                                  const Duration(milliseconds: 500),
+                              reverseTransitionDuration:
+                                  const Duration(milliseconds: 500),
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      FadeTransition(
+                                opacity: animation,
+                                child: FoodDetails(
+                                  meal: meal,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Hero(
+                            tag: meal.image.toUpperCase() + "aaa",
+                            child: CachedNetworkImage(
+                              imageUrl: meal.image,
+                              placeholder: (_, data) {
+                                return Lottie.asset("assets/loading5.json");
+                              },
+                              errorWidget: (_, style, stackTrace) {
+                                return Lottie.asset(
+                                    "assets/no-connection2.json");
+                              },
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                            ),
                           ),
                         ),
                       ),

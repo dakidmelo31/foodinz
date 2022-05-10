@@ -128,7 +128,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                   }),
             ),
             SizedBox(
-              height: h * .60,
+              height: size.height < 600 ? h * .4 : h * .70,
               width: w * .85,
               child: PageView.builder(
                 physics: const BouncingScrollPhysics(
@@ -243,12 +243,14 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 18.0, horizontal: 10),
-                                        child: Text(
-                                          restaurant.companyName,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                        child: FittedBox(
+                                          child: Text(
+                                            restaurant.companyName,
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                overflow:
+                                                    TextOverflow.ellipsis),
                                           ),
                                         ),
                                       ),
@@ -277,7 +279,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
             ),
             const SizedBox(height: 30),
             SizedBox(
-              height: h * .15,
+              height: size.height < 600 ? h * .25 : h * .15,
               child: PageView.builder(
                 itemCount: restaurants.length,
                 physics: const NeverScrollableScrollPhysics(),

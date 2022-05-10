@@ -130,14 +130,6 @@ class _RecentCommentsState extends State<RecentComments> {
                           limit += 20;
                         }),
                     child: Text("Load More"))
-              else
-                TextButton.icon(
-                  icon: Icon(
-                    Icons.add,
-                  ),
-                  label: Text("Add review now"),
-                  onPressed: () {},
-                )
             ],
           );
         });

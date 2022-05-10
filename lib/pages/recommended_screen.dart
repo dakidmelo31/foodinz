@@ -2,15 +2,18 @@ import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/pages/street_food.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:foodinz/widgets/slideshows.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lottie/lottie.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../models/food.dart';
@@ -48,6 +51,21 @@ class _ShowcaseState extends State<Showcase> {
   }
 
   getCurrentLocation() async {
+    var locationStatus = await Permission.location.status;
+    if (locationStatus.isGranted) {
+      debugPrint("is granted");
+    } else {
+      if (locationStatus.isDenied) {
+        debugPrint("Not granted");
+        Map<Permission, PermissionStatus> status =
+            await [Permission.location].request();
+      } else {
+        if (locationStatus.isPermanentlyDenied) {
+          openAppSettings().then((value) {});
+        }
+      }
+    }
+
     var position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
@@ -148,6 +166,7 @@ class _ShowcaseState extends State<Showcase> {
                             itemCount: meals.length,
                             itemBuilder: (_, index) {
                               final Food meal = meals[index];
+                              final mealGallery = meal.gallery;
                               final progress = (_cardPage - index);
                               final scale = lerpDouble(1, .8, progress.abs())!;
                               final isScrolling = _cardPageController
@@ -215,16 +234,82 @@ class _ShowcaseState extends State<Showcase> {
                                         child: ClipRRect(
                                           borderRadius: const BorderRadius.all(
                                               Radius.circular(10)),
-                                          child: CachedNetworkImage(
-                                            imageUrl: meal.image,
-                                            alignment: Alignment.center,
-                                            fit: BoxFit.cover,
-                                            filterQuality: FilterQuality.high,
-                                            errorWidget:
-                                                (_, string, stackTrace) {
-                                              return Lottie.asset(
-                                                  "assets/no-connection2.json");
-                                            },
+                                          child: GridTile(
+                                            child: CachedNetworkImage(
+                                              imageUrl: meal.image,
+                                              alignment: Alignment.center,
+                                              fit: BoxFit.cover,
+                                              filterQuality: FilterQuality.high,
+                                              errorWidget:
+                                                  (_, string, stackTrace) {
+                                                return Lottie.asset(
+                                                    "assets/no-connection2.json");
+                                              },
+                                            ),
+                                            footer: SizedBox(
+                                              height: size.height * .08,
+                                              width: double.infinity,
+                                              child: CarouselSlider.builder(
+                                                itemCount: mealGallery.length,
+                                                itemBuilder:
+                                                    (_, index, index2) {
+                                                  return ClipOval(
+                                                    child: AnimatedContainer(
+                                                      duration: const Duration(
+                                                          milliseconds: 400),
+                                                      curve: Curves.easeInOut,
+                                                      transform:
+                                                          Matrix4.identity()
+                                                            ..translate(
+                                                              isCurrentPage
+                                                                  ? 0.0
+                                                                  : -5.0,
+                                                              isCurrentPage
+                                                                  ? 0.0
+                                                                  : 0.0,
+                                                            ),
+                                                      height: size.height * .08,
+                                                      width: size.height * .08,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      color: Colors.white,
+                                                      child: ClipOval(
+                                                        child:
+                                                            CachedNetworkImage(
+                                                                placeholder:
+                                                                    (_, data) {
+                                                                  return Lottie
+                                                                      .asset(
+                                                                          "assets/loading5.json");
+                                                                },
+                                                                height:
+                                                                    size.height *
+                                                                        .07,
+                                                                width:
+                                                                    size.height *
+                                                                        .07,
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                imageUrl:
+                                                                    mealGallery[
+                                                                        index]),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                options: CarouselOptions(
+                                                  viewportFraction: .33,
+                                                  autoPlay: true,
+                                                  enableInfiniteScroll: true,
+                                                  autoPlayInterval:
+                                                      const Duration(
+                                                          seconds: 6),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -364,6 +449,8 @@ class _ShowcaseState extends State<Showcase> {
 
                     const MealsBlock(filter: "Desserts", title: "Desserts"),
 
+                    const ShowcaseSlideshow(),
+
                     const MealsBlock(filter: "grocery", title: "Groceries"),
 
                     SizedBox(
@@ -398,7 +485,7 @@ class _ShowcaseState extends State<Showcase> {
                                   fit: BoxFit.contain),
                             ),
                           ),
-                          Align(
+                          const Align(
                             alignment: Alignment.bottomCenter,
                             child: Text("You don't have to wait anymore.",
                                 style: Primary.heading),

@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:foodinz/local_notif.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/meals.dart';
@@ -24,17 +29,64 @@ FirebaseAuth auth = FirebaseAuth.instance;
 
 class _StartPageState extends State<StartPage> {
   checkUser() async {
+    CloudMsgService.initialize(onSelectNotification).then(
+      (value) => firebaseCloudMessagingListeners(),
+    );
     auth.currentUser != null
         ? Future.delayed(Duration.zero, () {
             Navigator.pushReplacementNamed(context, Home.routeName);
           })
-        : null;
+        : welcomeUser();
+  }
+
+  void firebaseCloudMessagingListeners() async {
+    CloudMsgService.onMessage.listen(CloudMsgService.invokeLocalNotification);
+    CloudMsgService.onMessageOpenedApp.listen(_pageOpenOnLaunch);
+  }
+
+  _pageOpenOnLaunch(RemoteMessage remoteMessage) async {
+    final Map<String, dynamic> message = remoteMessage.data;
+    onSelectNotification(jsonEncode(message));
+  }
+
+  Future onSelectNotification(String? payload) async {
+    print(payload);
+  }
+
+  welcomeUser() async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      "channelId",
+      "Foodin City",
+      channelDescription: "Welcome to foodin",
+      importance: Importance.high,
+      fullScreenIntent: true,
+      enableLights: true,
+      ledOnMs: 600,
+      priority: Priority.high,
+      channelShowBadge: true,
+    );
+    const IOSNotificationDetails iosNotificationDetails =
+        IOSNotificationDetails(subtitle: "foodin city");
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        iOS: iosNotificationDetails,
+        android: androidNotificationDetails,
+        macOS: null);
+
+    await FlutterLocalNotificationsPlugin().show(
+      1,
+      "Welcome to Foodin City",
+      "Let's connect you with talented chefs and quality Meals.",
+      platformChannelSpecifics,
+    );
   }
 
   @override
   void initState() {
     // TODO: implement initState
     checkUser();
+
     if (auth.currentUser != null) {
       // Navigator.pushReplacementNamed(context, Home.routeName);
     }

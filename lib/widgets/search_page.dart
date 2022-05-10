@@ -90,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       [
                         ClipRRect(
                           child: Container(
-                            height: 60,
+                            height: 80,
                             alignment: Alignment.center,
                             width: size.width,
                             decoration: BoxDecoration(
@@ -98,6 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
+                                mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
@@ -105,7 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       onPressed: widget.closeFunction,
                                       icon: const FaIcon(
                                           FontAwesomeIcons.arrowLeftLong)),
-                                  Flexible(
+                                  Expanded(
                                       child: Form(
                                     key: _formKey,
                                     child: TextFormField(
@@ -139,12 +140,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                       ),
                                     ),
                                   )),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: const FaIcon(
-                                        FontAwesomeIcons.filterCircleDollar,
-                                        color: Colors.black),
-                                  ),
                                 ]),
                           ),
                         ),
