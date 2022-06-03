@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/pages/custom_messages.dart';
 import 'package:foodinz/pages/order_details.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import '../models/order_model.dart';
@@ -47,6 +47,9 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
         vsync: this, duration: const Duration(milliseconds: 1250));
     iconAnimation =
         CurvedAnimation(parent: animationController, curve: Curves.bounceInOut);
+    timeAgo.setDefaultLocale(
+      "en",
+    );
     super.initState();
   }
 

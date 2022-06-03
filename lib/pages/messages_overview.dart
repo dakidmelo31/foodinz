@@ -1,8 +1,14 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foodinz/global.dart';
+import 'package:foodinz/models/message_data.dart';
 import 'package:foodinz/pages/all_orders.dart';
+import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/global_data.dart';
 import 'package:foodinz/providers/message_database.dart';
@@ -13,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import '../models/chats_model.dart';
 import '../theme/main_theme.dart';
+import '../themes/light_theme.dart';
 import 'all_chats.dart';
 
 class MessagesOverview extends StatefulWidget {
@@ -436,15 +443,18 @@ class _MessagesOverviewState extends State<MessagesOverview>
                         delegate: SliverChildListDelegate(
                           [
                             const SizedBox(height: 25),
-                            FutureBuilder(
-                                future: DBManager.instance.getOverviews(),
-                                builder:
-                                    (_, AsyncSnapshot<List<Chat>> snapshot) {
+                            FutureBuilder<List<MessageData>>(
+                                future: DBManager.instance.restaurantChats(),
+                                builder: (_,
+                                    AsyncSnapshot<List<MessageData>> snapshot) {
                                   if (snapshot.hasError) {
+                                    debugPrint(snapshot.error.toString());
                                     return Center(
-                                        child: Text(
-                                            "Error ooo, ei don bad: ${snapshot.error}"));
+                                      child: Text(
+                                          "Error ooo, ei don bad: ${snapshot.error}"),
+                                    );
                                   }
+
                                   if (!snapshot.hasData) {
                                     return Center(
                                       child: Column(
@@ -483,8 +493,8 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                       alignment: Alignment.center,
                                     );
                                   }
-                                  debugPrint("total new chats" +
-                                      snapshot.data!.length.toString());
+                                  // debugPrint("total new chats" +
+                                  //     snapshot.data!.length.toString());
                                   return ListView.builder(
                                     shrinkWrap: true,
                                     itemCount: snapshot.data!.length,
@@ -495,7 +505,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                               .getRestaurant(
                                                   message.restaurantId);
                                       final user =
-                                          Provider.of<UserInfo>(context);
+                                          Provider.of<UserData>(context);
 
                                       return SizedBox(
                                         width: size.width,
@@ -503,45 +513,138 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                           borderRadius:
                                               BorderRadius.circular(8),
                                           child: Dismissible(
+                                            confirmDismiss: ((direction) {
+                                              return showCupertinoModalPopup(
+                                                  filter: ImageFilter.blur(
+                                                    sigmaX: 3,
+                                                    sigmaY: 3,
+                                                  ),
+                                                  context: context,
+                                                  builder: (builder) {
+                                                    return Center(
+                                                      child: Card(
+                                                          margin: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal:
+                                                                      30),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .stretch,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        top: 10,
+                                                                        left:
+                                                                            50.0),
+                                                                child: Text(
+                                                                    "Delete this chat?",
+                                                                    style: Primary
+                                                                        .bigHeading),
+                                                              ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .only(
+                                                                        right:
+                                                                            12.0),
+                                                                    child:
+                                                                        TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        debugPrint(
+                                                                            "delete");
+                                                                        Navigator.pop(
+                                                                            context,
+                                                                            true);
+                                                                      },
+                                                                      child: Text(
+                                                                          "Delete"),
+                                                                    ),
+                                                                  ),
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      debugPrint(
+                                                                          "cancel");
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          false);
+                                                                    },
+                                                                    child: Text(
+                                                                        "Cancel"),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                            ],
+                                                          )),
+                                                    );
+                                                  });
+                                            }),
+                                            onDismissed: (direction) =>
+                                                deleteChatOverview(
+                                                    restaurantId:
+                                                        message.restaurantId),
                                             key: GlobalKey(),
                                             background: Container(
-                                                color: const Color.fromARGB(
-                                                    255, 43, 146, 39),
-                                                child: const Icon(
-                                                  Icons.home,
-                                                  color: Colors.white,
-                                                )),
+                                              alignment: Alignment.centerLeft,
+                                              color: Color.fromARGB(
+                                                  255, 170, 15, 72),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 15.0),
+                                                child: Lottie.network(
+                                                  "https://assets3.lottiefiles.com/private_files/lf30_f3azacpb.json",
+                                                  width: 40,
+                                                  height: 0,
+                                                  fit: BoxFit.contain,
+                                                  alignment: Alignment.center,
+                                                  reverse: true,
+                                                  options: LottieOptions(
+                                                    enableMergePaths: true,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
                                             behavior:
                                                 HitTestBehavior.deferToChild,
                                             direction:
-                                                DismissDirection.endToStart,
-                                            secondaryBackground: Container(
-                                                color: Colors.deepPurple,
-                                                child: const Icon(
-                                                  Icons.home,
-                                                  color: Colors.white,
-                                                )),
+                                                DismissDirection.startToEnd,
                                             child: InkWell(
                                               splashColor: const Color.fromARGB(
                                                   26, 59, 4, 209),
                                               highlightColor:
                                                   Colors.transparent,
-                                              onTap: () {
+                                              onTap: () async {
                                                 debugPrint("showDetails");
-                                                Navigator.push(
+                                                bool outcome =
+                                                    await Navigator.push(
                                                   context,
-                                                  PageTransition(
-                                                    type: PageTransitionType
-                                                        .rightToLeftWithFade,
-                                                    curve: Curves.decelerate,
-                                                    duration: const Duration(
-                                                        milliseconds: 800),
-                                                    reverseDuration:
-                                                        const Duration(
-                                                            milliseconds: 800),
-                                                    child: ChatScreen(
-                                                        restaurantId:
-                                                            "restaurantId"),
+                                                  PageRouteBuilder(
+                                                    transitionDuration:
+                                                        Duration(
+                                                            milliseconds: 300),
+                                                    reverseTransitionDuration:
+                                                        Duration(
+                                                            milliseconds: 200),
+                                                    pageBuilder: (_, animation,
+                                                        secondaryAnimation) {
+                                                      return FadeTransition(
+                                                        opacity: animation,
+                                                        child: ChatScreen(
+                                                            restaurantId: message
+                                                                .restaurantId),
+                                                      );
+                                                    },
                                                   ),
                                                 );
                                               },
@@ -571,7 +674,11 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                                             errorWidget:
                                                                 (_, __, ___) {
                                                               return Lottie.asset(
-                                                                  "assets/no-connection2.json");
+                                                                  "assets/no-connection2.json",
+                                                                  width: 40,
+                                                                  height: 40,
+                                                                  fit: BoxFit
+                                                                      .contain);
                                                             },
                                                             width: 40,
                                                             height: 40,
@@ -599,6 +706,29 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                                                   style:
                                                                       heading),
                                                             ),
+                                                            if (message.message
+                                                                .isNotEmpty)
+                                                              Padding(
+                                                                padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                    vertical:
+                                                                        4.0),
+                                                                child: Text(
+                                                                  message
+                                                                      .message,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                      .8,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
                                                             Padding(
                                                               padding:
                                                                   const EdgeInsets
@@ -606,8 +736,15 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                                                       vertical:
                                                                           4.0),
                                                               child: Text(
-                                                                message
-                                                                    .lastmessage,
+                                                                timeAgo.format(
+                                                                    message
+                                                                        .messageDate,
+                                                                    // message
+                                                                    //     .messageDate,
+                                                                    clock: DateTime
+                                                                        .now(),
+                                                                    locale:
+                                                                        "en"),
                                                                 style:
                                                                     TextStyle(
                                                                   color: Colors
@@ -633,14 +770,10 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                                         children: [
                                                           FittedBox(
                                                               child: Text(
-                                                                  message.lastMessageTime ==
-                                                                          null
-                                                                      ? timeAgo.format(
-                                                                          DateTime
-                                                                              .now())
-                                                                      : timeAgo.format(
-                                                                          message
-                                                                              .lastMessageTime),
+                                                                  "show this",
+                                                                  // timeAgo.format(
+                                                                  //     message
+                                                                  //         .messageDate),
                                                                   style:
                                                                       smallText)),
                                                           IconButton(

@@ -1,24 +1,24 @@
-import 'dart:math';
-import 'package:timeago/timeago.dart' as timeAgo;
+// ignore_for_file: prefer_const_constructors
 
-import 'package:animations/animations.dart';
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:concentric_transition/page_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:foodinz/pages/order_details.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeAgo;
+import 'package:foodinz/providers/global_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/providers/data.dart';
-import 'package:foodinz/providers/message_database.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-
-import '../models/message.dart';
-import '../models/message_data.dart';
+import '../models/chats_model.dart';
 import '../models/order_model.dart';
 import '../models/restaurants.dart';
-import '../widgets/message_tile.dart';
-import '../widgets/order_details.dart';
-import '../widgets/order_dialog.dart';
+import 'custom_messages.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.restaurantId}) : super(key: key);
@@ -29,10 +29,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late List<Widget> mixedList;
-  late List<Order> ordersList;
-  late List<Message> messageList;
-  TextEditingController _editingController = TextEditingController();
+  late var _chatStream;
+  late var _orderStream;
+
+  List<Order> ordersList = [];
   bool checkId({required String orderId}) {
     bool answer = false;
     for (Order item in ordersList) {
@@ -45,212 +45,561 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void initState() {
+    timeAgo.setLocaleMessages("en", TimeAgoMessages());
+    super.initState();
+    _chatStream = firestore
+        .collection("messages")
+        .where("restaurantId", isEqualTo: widget.restaurantId)
+        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .orderBy("lastMessageTime", descending: false)
+        .snapshots();
+    _orderStream = firestore
+        .collection("orders")
+        .where("restaurantId", isEqualTo: widget.restaurantId)
+        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .orderBy("time", descending: false)
+        .snapshots();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    mixedList = [];
-    messageList = [];
-    ordersList = [];
     final Restaurant restaurant =
-        Provider.of<RestaurantData>(context).getRestaurant(widget.restaurantId);
-    final orders = firestore.collection("orders").get();
+        Provider.of<RestaurantData>(context, listen: false)
+            .getRestaurant(widget.restaurantId);
 
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.maybePop(context);
-            },
-            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white)),
-        actions: [
-          IconButton(
-            color: Colors.amber,
-            onPressed: () {},
-            icon: const FaIcon(FontAwesomeIcons.ellipsisVertical),
-          )
-        ],
-        centerTitle: true,
-        title: Text(restaurant.companyName,
-            style: const TextStyle(color: Colors.white)),
-        elevation: 10,
-        shadowColor: Colors.white,
-        backgroundColor: const Color(0xFF101D42),
-      ),
-      body: Container(
-        width: size.width,
-        height: size.height,
-        color: const Color.fromARGB(255, 255, 255, 255).withOpacity(.15),
-        child: Column(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
           children: [
             StreamBuilder<QuerySnapshot>(
-                stream: firestore.collection("orders").snapshots(),
-                builder:
-                    (context, AsyncSnapshot<QuerySnapshot> ordersSnapshot) {
-                  return FutureBuilder<List<Message>>(
-                      future: DatabaseHelper.instance
-                          .getMessages(senderId: restaurant.restaurantId),
-                      builder: (context, messagesSnapshot) {
-                        if (messagesSnapshot.hasError) {
-                          return const Text(
-                              "Error, please logout and signing again");
-                        }
-                        //collecting Orders
-                        firestore
-                            .collection("orders")
-                            .where("restaurantId",
-                                isEqualTo: restaurant.restaurantId)
-                            .where("userId", isEqualTo: auth.currentUser!.uid)
-                            .get()
-                            .then((QuerySnapshot querySnapshot) {
-                          for (var doc in querySnapshot.docs) {
-                            String documentId = doc.id;
-                            // debugPrint(documentId);
-                            if (!checkId(orderId: documentId)) {
-                              ordersList.add(
-                                Order(
-                                  friendlyId: doc["friendlyId"] ??
-                                      Random().nextInt(65000),
-                                  restaurantId: doc['restaurantId'],
-                                  status: doc["status"] ?? "pending",
-                                  quantities: List<int>.from(doc['quantities']),
-                                  names: List<String>.from(doc['names']),
-                                  prices: List<double>.from(doc['prices']),
-                                  homeDelivery: doc['homeDelivery'] ?? false,
-                                  deliveryCost:
-                                      doc['deliveryCost']?.toInt() ?? 0,
-                                  time: doc["time"],
-                                  userId: doc['userId'] ?? "no user",
-                                ),
-                              );
-                            }
+                stream: _orderStream,
+                builder: (context, AsyncSnapshot ordersnaps) {
+                  if (ordersnaps.hasError) {
+                    return Center(
+                      child: Text("please log back in"),
+                    );
+                  }
 
-                            // debugPrint(
-                            //     List<String>.from(doc['names']).join(", "));
+                  if (ordersnaps.connectionState == ConnectionState.waiting) {
+                    return Lottie.asset("assets/loading4.json",
+                        width: size.width,
+                        height: 80,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center);
+                  }
+
+                  debugPrint(" total orders: " +
+                      ordersnaps.data!.docs.length.toString());
+                  for (var doc in ordersnaps.data!.docs) {
+                    String documentId = doc.id;
+
+                    debugPrint(documentId);
+
+                    if (!checkId(orderId: documentId)) {
+                      var currentOrder = Order(
+                        restaurantId: doc['restaurantId'],
+                        status: doc["status"] ?? "pending",
+                        friendlyId:
+                            doc["friendlyId"] ?? Random().nextInt(65000),
+                        quantities: List<int>.from(doc['quantities']),
+                        names: List<String>.from(doc['names']),
+                        prices: List<double>.from(doc['prices']),
+                        homeDelivery: doc['homeDelivery'] ?? false,
+                        deliveryCost: doc['deliveryCost']?.toInt() ?? 0,
+                        time: doc["time"],
+                        userId: doc['userId'] ?? "no user",
+                      );
+                      currentOrder.orderId = documentId;
+                      ordersList.add(
+                        currentOrder,
+                      );
+                    }
+
+                    // debugPrint(List<String>.from(doc['names']).join(", "));
+                  }
+
+                  return SizedBox(
+                      width: double.infinity,
+                      height: size.height * .155,
+                      child: ListView.builder(
+                        itemCount: ordersList.length,
+                        physics: BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics()),
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (_, index) {
+                          final Order order = ordersList[index];
+                          int totalCost = 0;
+
+                          for (int i = 0; i < order.prices.length; i++) {
+                            var price = order.prices[i];
+                            var qty = order.quantities[i];
+                            totalCost += (price * qty).toInt();
                           }
-                          debugPrint("Number of Orders: " +
-                              ordersList.length.toString());
-                        });
 
-                        if (ordersSnapshot.hasError ||
-                            messagesSnapshot.hasError) {
-                          debugPrint("error found");
-                          return const Text("Error met");
-                        } else {
-                          debugPrint("no errors");
-                        }
-                        if (ordersSnapshot.connectionState ==
-                                ConnectionState.waiting &&
-                            messagesSnapshot == ConnectionState.waiting) {
-                          return Lottie.asset(
-                            "assets/loading6.json",
-                            width: size.width - 150,
-                            height: 150,
-                            alignment: Alignment.center,
-                            fit: BoxFit.contain,
+                          return Card(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            elevation: 12,
+                            shadowColor: Colors.black.withOpacity(.21),
+                            child: InkWell(
+                              onTap: () {
+                                debugPrint("move to orders");
+                                Navigator.push(
+                                    context,
+                                    ConcentricPageRoute(
+                                        builder: (_) => OrderDetails(
+                                            order: order, total: totalCost)));
+
+                                // Navigator.push(
+                                //   context,
+                                //   PageTransition(
+                                //     child: OrderDetails(
+                                //       order: order,
+                                //       total: totalCost,
+                                //     ),
+                                //     type: PageTransitionType.topToBottom,
+                                //     alignment: Alignment.topCenter,
+                                //     duration: Duration(milliseconds: 700),
+                                //     curve: Curves.decelerate,
+                                //   ),
+                                // );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                    width: size.width * .4,
+                                    height: size.height * .15,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Hero(
+                                          tag: order.orderId,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text("Total"),
+                                              ClipOval(
+                                                child: Container(
+                                                  width: 15,
+                                                  height: 15,
+                                                  color: order.status
+                                                              .toLowerCase() ==
+                                                          "pending"
+                                                      ? Colors.deepOrange
+                                                      : order.status
+                                                                  .toLowerCase() ==
+                                                              "processing"
+                                                          ? Colors.blue
+                                                          : order.status
+                                                                      .toLowerCase() ==
+                                                                  "takeout"
+                                                              ? Colors
+                                                                  .green[700]
+                                                              : order.status
+                                                                          .toLowerCase() ==
+                                                                      "complete"
+                                                                  ? Colors
+                                                                      .purple[800]
+                                                                  : Colors.pink,
+                                                ),
+                                              ),
+                                              Text(NumberFormat()
+                                                      .format(totalCost) +
+                                                  " CFA"),
+                                            ],
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("Items"),
+                                            Text(order.names.length.toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w700)),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: const [
+                                            Text("Home Delivery"),
+                                            Text("Applied",
+                                                style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontWeight:
+                                                        FontWeight.w700)),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("Date"),
+                                            Text(
+                                              timeAgo
+                                                  .format(order.time.toDate()),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    )),
+                              ),
+                            ),
                           );
-                        }
-                        var orderWidgets = ordersList.map<Widget>(((e) {
-                          return OpenContainer(
-                            openBuilder: (_, __) =>
-                                OrderDetails(orderId: e.orderId),
-                            closedBuilder: (_, openContainer) => Card(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 15, horizontal: 25),
-                              elevation: 15,
-                              child: InkWell(
-                                onTap: openContainer,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30.0, vertical: 30),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          ClipOval(
-                                            child: Container(
-                                              width: 15,
-                                              height: 15,
-                                              color: Colors.pink,
+                        },
+                      ));
+                }),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: _chatStream,
+                  builder: (context, AsyncSnapshot snapshot) {
+                    if (snapshot.hasError) {
+                      return Text("Error loading message: " +
+                          snapshot.error.toString());
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Lottie.asset(
+                        "assets/search-list.json",
+                        fit: BoxFit.contain,
+                        width: size.width - 100,
+                        height: size.width - 100,
+                      );
+                    }
+                    List<DocumentSnapshot<Map<String, dynamic>>> chatMessages =
+                        snapshot.data!.docs;
+                    var dateTracker;
+                    return ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: chatMessages
+                            .length, // snapshot.data!.docChanges.length,
+                        reverse: true,
+                        itemBuilder: (_, index) {
+                          var map =
+                              chatMessages[chatMessages.length - 1 - index];
+                          Chat msg = Chat(
+                            restaurantId: map['restaurantId'],
+                            restaurantImage: map['restaurantImage'],
+                            restaurantName: map['restaurantName'],
+                            userId: map['userId'],
+                            sender: map['sender'],
+                            userImage: map['userImage'],
+                            lastmessage: map['lastmessage'],
+                            lastMessageTime:
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    map['lastMessageTime']),
+                          );
+                          msg.messageId = map.id;
+                          DateTime time = msg.lastMessageTime;
+                          bool mergeTimes = false;
+
+                          Duration difference;
+                          if (dateTracker == null) {
+                            dateTracker = time;
+                          } else {
+                            difference = dateTracker.difference(time);
+
+                            debugPrint(difference.inMinutes.toString());
+                            if (difference.inMinutes <= 1) {
+                              mergeTimes = true;
+                            }
+                            dateTracker = time;
+                          }
+
+                          var moment = timeAgo.format(
+                            time,
+                            allowFromNow: false,
+                            clock: DateTime.now(),
+                          );
+
+                          return msg.sender == ""
+                              ? Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        ClipOval(
+                                          child: CachedNetworkImage(
+                                            imageUrl: restaurant.avatar,
+                                            width: size.width * .1,
+                                            height: size.width * .1,
+                                            errorWidget: (_, __, ___) =>
+                                                Lottie.asset(
+                                                    "assets/personal-cook.json",
+                                                    width: size.width * .1,
+                                                    height: size.width * .1,
+                                                    fit: BoxFit.cover,
+                                                    reverse: true,
+                                                    options: LottieOptions(
+                                                        enableMergePaths:
+                                                            true)),
+                                            maxHeightDiskCache: 54,
+                                            maxWidthDiskCache:
+                                                ((size.width * .1) * 100)
+                                                    .ceil(),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                            width: size.width * .9,
+                                            child: Align(
+                                              alignment: Alignment.centerRight,
+                                              child: SizedBox(
+                                                child: Card(
+                                                    elevation: 0,
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 10),
+                                                    color: Color.fromARGB(
+                                                        255, 231, 66, 0),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              12.0),
+                                                      child: Text(
+                                                          "this would not seem to be very nice since the day started and you know now how far this would go.",
+                                                          style: TextStyle(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      255,
+                                                                      255,
+                                                                      255))),
+                                                    )),
+                                              ),
+                                            )),
+                                      ],
+                                    ),
+                                    if (!mergeTimes)
+                                      Align(
+                                          alignment: Alignment.topRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  moment,
+                                                  style: TextStyle(
+                                                      color: Colors.black
+                                                          .withOpacity(.4),
+                                                      fontSize: 12),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
+                                                  child: ClipOval(
+                                                    child: Container(
+                                                      width: 5,
+                                                      height: 5,
+                                                      color: Color.fromARGB(
+                                                          255, 157, 101, 255),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
+                                                  child: Text(
+                                                    "You",
+                                                    style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 68, 0, 255),
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        SizedBox(
+                                          width: size.width * .9,
+                                          child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: SizedBox(
+                                              child: Card(
+                                                elevation: 0,
+                                                margin: EdgeInsets.only(
+                                                    right: 10, top: 10),
+                                                color: Color.fromARGB(
+                                                    255, 10, 15, 255),
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 18.0,
+                                                      vertical: 10),
+                                                  child: Text(msg.lastmessage,
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                          Text("New order"),
-                                          Text(
-                                            timeAgo.format(e.time.toDate()),
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        e.names.join(
-                                          ", ",
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        })).toList();
-
-                        return Expanded(
-                          child: ListView.builder(
-                            reverse: true,
-                            itemCount: orderWidgets.length,
-                            itemBuilder: (_, index) {
-                              return orderWidgets[index];
-                            },
-                          ),
-                        );
-                      });
-                }),
-            Container(
-              width: size.width,
-              height: size.height * .13,
-              color: Colors.grey.withOpacity(.15),
-              child: Column(
-                children: [
-                  if (false)
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: TextField(
-                              controller: _editingController,
-                              decoration: InputDecoration(
-                                prefix: IconButton(
-                                    icon: const FaIcon(
-                                      FontAwesomeIcons.faceSmileWink,
+                                      ],
                                     ),
-                                    onPressed: () {
-                                      ;
-                                    }),
-                                hintText: "Message",
-                                filled: true,
-                                fillColor: Colors.white,
-                                border: const OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(30),
-                                    ),
-                                    borderSide: BorderSide.none),
-                              ),
-                              maxLines: 2,
-                              minLines: 1,
-                            ),
-                          ),
-                          FloatingActionButton.small(
-                            onPressed: () {},
-                            child: const Icon(Icons.send),
-                          )
-                        ]),
-                ],
-              ),
+                                    if (!mergeTimes)
+                                      Align(
+                                          alignment: Alignment.topRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  moment,
+                                                  style: TextStyle(
+                                                      color: Colors.black
+                                                          .withOpacity(.4),
+                                                      fontSize: 12),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
+                                                  child: ClipOval(
+                                                    child: Container(
+                                                      width: 5,
+                                                      height: 5,
+                                                      color: Color.fromARGB(
+                                                          255, 157, 101, 255),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
+                                                  child: Text(
+                                                    "You",
+                                                    style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 68, 0, 255),
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )),
+                                  ],
+                                );
+                        });
+                  }),
             ),
+            TextWidget(restaurantId: widget.restaurantId),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class TextWidget extends StatefulWidget {
+  const TextWidget({Key? key, required this.restaurantId}) : super(key: key);
+  final String restaurantId;
+
+  @override
+  State<TextWidget> createState() => _TextWidgetState();
+}
+
+class _TextWidgetState extends State<TextWidget> {
+  late TextEditingController _editingController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _editingController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    final Restaurant restaurant =
+        Provider.of<RestaurantData>(context, listen: false)
+            .getRestaurant(widget.restaurantId);
+    return SizedBox(
+      height: kToolbarHeight,
+      width: size.width,
+      child: Row(
+        children: [
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(.05),
+                        blurRadius: 5,
+                        offset: const Offset(0, -2))
+                  ]),
+              child: TextField(
+                controller: _editingController,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: "Message",
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 15,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: FloatingActionButton(
+                onPressed: () async {
+                  Chat chat = Chat(
+                    lastMessageTime: DateTime.now(),
+                    lastmessage: _editingController.text,
+                    restaurantId: restaurant.restaurantId,
+                    restaurantImage: restaurant.businessPhoto,
+                    restaurantName: restaurant.companyName,
+                    sender: FirebaseAuth.instance.currentUser!.uid,
+                    userId: FirebaseAuth.instance.currentUser!.uid,
+                    userImage: "",
+                  );
+                  if (_editingController.text.isNotEmpty) {
+                    sendMessage(chat: chat);
+                    _editingController.text = "";
+                  } else {
+                    debugPrint("no text sent");
+                  }
+                },
+                child: const Icon(
+                  Icons.send_outlined,
+                  color: Colors.white,
+                ),
+                elevation: 6),
+          ),
+        ],
       ),
     );
   }

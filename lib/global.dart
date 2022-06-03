@@ -48,3 +48,29 @@ Future<String?> getToken() async {
   final fcmToken = await FirebaseMessaging.instance.getToken();
   return fcmToken;
 }
+
+getCount({required String collection, required String field}) async {
+  int count = await FirebaseFirestore.instance
+      .collection(collection)
+      .where("foodId", isEqualTo: field)
+      .get()
+      .then((querySnapshot) {
+    return querySnapshot.docs.length;
+  });
+
+  return count;
+}
+
+updateData(
+    {required String collection,
+    required String doc,
+    required dynamic data,
+    required String field}) async {
+  await FirebaseFirestore.instance.collection("reviews").doc(doc).delete();
+  // FirebaseFirestore.instance
+  //     .collection(collection)
+  //     .doc(doc)
+  //     .set({field: data}, SetOptions(merge: true)).then(
+  //   (value) => debugPrint("update info"),
+  // );
+}

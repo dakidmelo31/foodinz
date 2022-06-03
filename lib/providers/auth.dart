@@ -21,7 +21,6 @@ class UserData with ChangeNotifier {
     loadUser();
     isLocationSet();
   }
-
   loadUser() async {
     var userTokenId = await getToken();
     if (userTokenId == null) {
@@ -29,21 +28,23 @@ class UserData with ChangeNotifier {
     } else {
       debugPrint("user token is this: $userTokenId");
     }
-
-    _firestore
-        .collection("users")
-        .doc(auth.currentUser!.uid)
-        .get()
-        .then((value) {
-      user = UserModel.fromMap(value.data()!);
-      this.name = user!.name;
-      this.photoURL = user!.image;
-      this.userId = user!.userId;
-      this.deviceToken = userTokenId;
-      debugPrint(user!.name);
-      debugPrint("user is done loading");
-      notifyListeners();
-    });
+    if (auth.currentUser == null) {
+      _firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .get()
+          .then((value) {
+        user = UserModel.fromMap(value.data()!);
+        name = user!.name;
+        photoURL = user!.image;
+        userId = user!.userId;
+        deviceToken = userTokenId;
+        debugPrint(user!.name);
+        debugPrint("User Image URL IS: " + user!.image.toString());
+        debugPrint("user is done loading");
+        notifyListeners();
+      });
+    }
   }
 
   isLocationSet() async {

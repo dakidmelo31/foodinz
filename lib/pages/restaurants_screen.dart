@@ -1,23 +1,16 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foodinz/pages/meal_details.dart';
+import 'package:foodinz/pages/restaurant_briefing.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart' as map;
 import 'package:lottie/lottie.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-import '../models/food.dart';
 import '../models/restaurants.dart';
 import '../providers/data.dart';
-import '../themes/light_theme.dart';
-import '../widgets/recent_comments.dart';
-import '../widgets/restaurant_info_table.dart';
 import '../widgets/slide_up_tween.dart';
 import 'restaurant_details.dart';
 
@@ -77,7 +70,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
         return Column(
           children: [
             SizedBox(
-              height: 100,
+              height: 80,
               width: size.width,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -128,7 +121,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                   }),
             ),
             SizedBox(
-              height: size.height < 600 ? h * .4 : h * .70,
+              height: size.height < 600 ? h * .4 : h * .55,
               width: w * .85,
               child: PageView.builder(
                 physics: const BouncingScrollPhysics(
@@ -279,7 +272,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
             ),
             const SizedBox(height: 30),
             SizedBox(
-              height: size.height < 600 ? h * .25 : h * .15,
+              height: size.height < 600 ? h * .25 : h * .2,
               child: PageView.builder(
                 itemCount: restaurants.length,
                 physics: const NeverScrollableScrollPhysics(),
@@ -294,6 +287,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                     child: Opacity(
                       opacity: 1 - opacity,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Hero(
@@ -307,10 +301,34 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                     fontSize: 25,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ),
                             ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const Text("Phone Number"),
+                              Text(restaurant.phoneNumber
+                                  .split("+237")
+                                  .join(" ")),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const Text("Home Delivery"),
+                              Text(
+                                  restaurant.homeDelivery
+                                      ? "Available"
+                                      : "Not available",
+                                  style: TextStyle(
+                                      color: restaurant.homeDelivery
+                                          ? Colors.green
+                                          : Colors.pink)),
+                            ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -331,145 +349,15 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                   ),
                                 ),
                               ),
-                              TextButton.icon(
-                                icon: const Icon(Icons.directions_run_rounded,
-                                    size: 30),
-                                onPressed: () {
-                                  showCupertinoModalBottomSheet(
-                                      bounce: true,
-                                      elevation: 15,
-                                      isDismissible: false,
-                                      enableDrag: true,
-                                      animationCurve: Curves.bounceInOut,
-                                      duration: Duration(milliseconds: 550),
-                                      topRadius: Radius.circular(40),
-                                      expand: true,
-                                      context: context,
-                                      builder: (_) {
-                                        final initialPosition = CameraPosition(
-                                            tilt: 20,
-                                            target: LatLng(restaurant.lat,
-                                                restaurant.long),
-                                            zoom: 14.6);
-                                        late GoogleMapController _mapController;
-                                        return Material(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                alignment: Alignment.center,
-                                                width: size.width,
-                                                height: size.height * .45,
-                                                color: Colors.blue,
-                                                child: GoogleMap(
-                                                    mapToolbarEnabled: true,
-                                                    myLocationButtonEnabled:
-                                                        true,
-                                                    zoomControlsEnabled: true,
-                                                    buildingsEnabled: true,
-                                                    zoomGesturesEnabled: true,
-                                                    initialCameraPosition:
-                                                        initialPosition,
-                                                    onMapCreated: (controller) {
-                                                      _mapController =
-                                                          controller;
-                                                    },
-                                                    markers: {
-                                                      map.Marker(
-                                                        markerId: MarkerId(
-                                                            restaurant
-                                                                .restaurantId),
-                                                        infoWindow: InfoWindow(
-                                                            title: restaurant
-                                                                .companyName),
-                                                        icon: BitmapDescriptor
-                                                            .defaultMarkerWithHue(
-                                                                BitmapDescriptor
-                                                                    .hueViolet),
-                                                        position: LatLng(
-                                                          restaurant.lat,
-                                                          restaurant.long,
-                                                        ),
-                                                      ),
-                                                      map.Marker(
-                                                        markerId: MarkerId(
-                                                            "myLocation"),
-                                                        infoWindow: InfoWindow(
-                                                          title: "You",
-                                                        ),
-                                                        icon: BitmapDescriptor
-                                                            .defaultMarkerWithHue(
-                                                                BitmapDescriptor
-                                                                    .hueRose),
-                                                        position: LatLng(
-                                                          lat,
-                                                          long,
-                                                        ),
-                                                      ),
-                                                    },
-                                                    mapType: MapType.normal,
-                                                    indoorViewEnabled: true),
-                                              ),
-                                              Card(
-                                                color: Colors.white,
-                                                elevation: 15,
-                                                shadowColor: Colors.grey
-                                                    .withOpacity(.25),
-                                                margin: EdgeInsets.symmetric(
-                                                  horizontal: w * 0.03,
-                                                  vertical: 10,
-                                                ),
-                                                child: Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: w * 0.1,
-                                                    vertical: 10,
-                                                  ),
-                                                  child: RestaurantInfoTable(
-                                                      restaurant: restaurant),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 30),
-                                              Text(
-                                                restaurant.companyName,
-                                                style: const TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w300,
-                                                ),
-                                              ),
-                                              const Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: 15.0,
-                                                    left: 10.0,
-                                                    bottom: 10.0),
-                                                child: Text(
-                                                  "Recent Comments",
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 15.0,
-                                                    left: 10.0,
-                                                    bottom: 10.0),
-                                                child: RecentComments(
-                                                    restaurantId: restaurant
-                                                        .restaurantId),
-                                              ),
-                                              const SizedBox(height: 20)
-                                            ],
-                                          ),
-                                        );
-                                      });
-                                },
-                                label: const Text("Get directions"),
-                              )
                             ],
                           ),
+                          if (restaurant.ghostKitchen)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: const [
+                                Text("You can hire us"),
+                              ],
+                            ),
                         ],
                       ),
                     ),

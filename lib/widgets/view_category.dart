@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/meal_details.dart';
@@ -39,6 +41,9 @@ class ViewCategory extends StatelessWidget {
             itemCount: mealCategory.length,
             itemBuilder: (_, index) {
               Food meal = mealCategory[index];
+              final String myTag = meal.foodId +
+                  (Random().nextDouble() * 999999999999).toString();
+
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5.0),
                 child: Column(children: [
@@ -62,6 +67,7 @@ class ViewCategory extends StatelessWidget {
                                 opacity: animation,
                                 child: FoodDetails(
                                   meal: meal,
+                                  heroTag: myTag,
                                 ),
                               ),
                             ),

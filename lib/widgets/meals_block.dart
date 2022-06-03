@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foodinz/pages/recommended_screen.dart';
 import 'package:foodinz/providers/cart.dart';
 import 'package:foodinz/providers/meals.dart';
 import 'package:foodinz/widgets/view_category.dart';
@@ -70,21 +73,36 @@ class _MealsBlockState extends State<MealsBlock> {
               Food meal = filteredList[index];
               final isAlreadyInCart =
                   _cartData.isAlreadyInCart(foodId: meal.foodId);
+              final String myTag = meal.foodId +
+                  (Random().nextDouble() * -999999999999).toString();
 
               return InkWell(
                 onTap: () {
+                  const transitionDuration = Duration(milliseconds: 700);
                   Navigator.push(
                       context,
-                      PageTransition(
-                        child: FoodDetails(meal: meal),
-                        type: PageTransitionType.bottomToTop,
-                        curve: Curves.easeInOut,
-                        duration: Duration(milliseconds: 550),
-                      ));
+                      PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 700),
+                          transitionsBuilder: (_, Animation<double> animation1,
+                              animation2, child) {
+                            return ScaleTransition(
+                              scale: animation1,
+                              filterQuality: FilterQuality.high,
+                              alignment: Alignment.center,
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (_, animation, animation2) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: FoodDetails(meal: meal, heroTag: myTag),
+                            );
+                          }));
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Column(children: [
+                    const SizedBox.shrink(),
                     Expanded(
                       child: Stack(
                         alignment: Alignment.center,
@@ -97,10 +115,10 @@ class _MealsBlockState extends State<MealsBlock> {
                             child: Card(
                               elevation: 5,
                               shadowColor: Colors.grey.withOpacity(.4),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: Hero(
-                                  tag: meal.image + "_from_cards",
+                              child: Hero(
+                                tag: myTag,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
                                   child: CachedNetworkImage(
                                     imageUrl: meal.image,
                                     errorWidget: (_, style, stackTrace) {
@@ -122,7 +140,7 @@ class _MealsBlockState extends State<MealsBlock> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Already in Cart",
                                     style: TextStyle(
                                       fontSize: 20,
@@ -130,9 +148,10 @@ class _MealsBlockState extends State<MealsBlock> {
                                     ),
                                   ),
                                   TextButton.icon(
-                                    icon: FaIcon(FontAwesomeIcons.trashCan),
-                                    label:
-                                        Text("Drop", style: Primary.bigHeading),
+                                    icon:
+                                        const FaIcon(FontAwesomeIcons.trashCan),
+                                    label: const Text("Drop",
+                                        style: Primary.bigHeading),
                                     onPressed: () {
                                       _cartData.removeFromCart(meal.foodId);
                                       setState(() {
@@ -156,19 +175,19 @@ class _MealsBlockState extends State<MealsBlock> {
                                                       flex: 7,
                                                       child: Text(
                                                         meal.name,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             color: Colors.black,
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis),
                                                       ),
                                                     ),
-                                                    Spacer(),
-                                                    Flexible(
+                                                    const Spacer(),
+                                                    const Flexible(
                                                       flex: 1,
                                                       child: Text(
                                                         " Dropped ",
-                                                        style: const TextStyle(
+                                                        style: TextStyle(
                                                           color: Colors.black,
                                                         ),
                                                       ),

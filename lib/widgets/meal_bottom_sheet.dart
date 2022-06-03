@@ -36,6 +36,9 @@ class _MealBottomSheetState extends State<MealBottomSheet> {
     double selectedStartTime = 0, selectedEndTime = 20;
     String? updateText;
     return StatefulBuilder(builder: (context, setState) {
+      final String myTag =
+          meal.foodId + (Random().nextDouble() * 999999999999).toString();
+
       return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -75,7 +78,7 @@ class _MealBottomSheetState extends State<MealBottomSheet> {
                       child: Column(
                         children: [
                           const Spacer(),
-                          MealGallery(meal: meal),
+                          MealGallery(meal: meal, heroTag: myTag),
                           const Spacer(),
                           Text(
                             meal.name,

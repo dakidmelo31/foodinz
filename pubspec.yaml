@@ -36,8 +36,14 @@ dependencies:
   cached_network_image:
   intl:
   firebase_core:
+  flutter_staggered_grid_view: 
+  shimmer: 
+  image_crop: 
   google_fonts:
   cloud_firestore:
+  uuid: 
+  ticket_material:
+  concentric_transition:
   firebase_auth:
   stylish_bottom_bar:
   carousel_slider:
@@ -51,6 +57,7 @@ dependencies:
   timeago:
   firebase_analytics:
   awesome_notifications:
+  web_socket_channel:
   image_picker:
   google_maps_flutter:
   flutter_polyline_points:

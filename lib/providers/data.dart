@@ -71,6 +71,8 @@ class RestaurantData with ChangeNotifier {
           restaurants.add(
             Restaurant(
                 address: doc["address"] ?? "",
+                comments: doc['comments'] ?? 0,
+                likes: doc['likes'] ?? 0,
                 categories: convertList(doc["categories"]),
                 lat: doc["lat"] ?? 0.0,
                 long: doc["long"] ?? 0.0,

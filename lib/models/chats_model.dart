@@ -33,17 +33,17 @@ class Chat {
   final String restaurantName;
   final String userId;
   final String sender;
-  final String type;
   final String userImage;
   String lastmessage;
   DateTime lastMessageTime;
+  String messageId = "";
   Chat({
     required this.restaurantId,
+    this.messageId = "",
     required this.restaurantImage,
     required this.restaurantName,
     required this.userId,
     required this.sender,
-    required this.type,
     required this.userImage,
     required this.lastmessage,
     required this.lastMessageTime,
@@ -62,7 +62,6 @@ class Chat {
     String? restaurantName,
     String? userId,
     String? sender,
-    String? type,
     String? userImage,
     String? lastmessage,
     DateTime? lastMessageTime,
@@ -73,7 +72,6 @@ class Chat {
       restaurantName: restaurantName ?? this.restaurantName,
       userId: userId ?? this.userId,
       sender: sender ?? this.sender,
-      type: type ?? this.type,
       userImage: userImage ?? this.userImage,
       lastmessage: lastmessage ?? this.lastmessage,
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,
@@ -87,25 +85,25 @@ class Chat {
       'restaurantName': restaurantName,
       'userId': userId,
       'sender': sender,
-      'type': type,
       'userImage': userImage,
       'lastmessage': lastmessage,
       'lastMessageTime': lastMessageTime.millisecondsSinceEpoch,
     };
   }
 
-  factory Chat.fromMap(Map<String, dynamic> map) {
+  factory Chat.fromMap(map) {
+    String val = map['lastMessageTime'];
+    DateTime date = DateTime.tryParse(val) as DateTime;
     return Chat(
-      restaurantId: map['restaurantId'],
-      restaurantImage: map['restaurantImage'],
-      restaurantName: map['restaurantName'],
-      userId: map['userId'],
-      sender: map['sender'],
-      type: map['type'],
-      userImage: map['userImage'],
-      lastmessage: map['lastmessage'],
-      lastMessageTime:
-          DateTime.fromMillisecondsSinceEpoch(map['lastMessageTime']),
+      restaurantId: map['restaurantId'] ?? "",
+      restaurantImage: map['restaurantImage'] ?? "",
+      restaurantName: map['restaurantName'] ?? "",
+      userId: map['userId'] ?? "",
+      sender: map['sender'] ?? "",
+      userImage: map['userImage'] ?? "",
+      messageId: "",
+      lastmessage: map['lastmessage'] ?? "",
+      lastMessageTime: date,
     );
   }
 
@@ -115,35 +113,6 @@ class Chat {
 
   @override
   String toString() {
-    return 'Chat(restaurantId: $restaurantId, restaurantImage: $restaurantImage, restaurantName: $restaurantName, userId: $userId, sender: $sender, type: $type, userImage: $userImage, lastmessage: $lastmessage, lastMessageTime: $lastMessageTime)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Chat &&
-        other.restaurantId == restaurantId &&
-        other.restaurantImage == restaurantImage &&
-        other.restaurantName == restaurantName &&
-        other.userId == userId &&
-        other.sender == sender &&
-        other.type == type &&
-        other.userImage == userImage &&
-        other.lastmessage == lastmessage &&
-        other.lastMessageTime == lastMessageTime;
-  }
-
-  @override
-  int get hashCode {
-    return restaurantId.hashCode ^
-        restaurantImage.hashCode ^
-        restaurantName.hashCode ^
-        userId.hashCode ^
-        sender.hashCode ^
-        type.hashCode ^
-        userImage.hashCode ^
-        lastmessage.hashCode ^
-        lastMessageTime.hashCode;
+    return 'Chat(restaurantId: $restaurantId, restaurantImage: $restaurantImage, restaurantName: $restaurantName, userId: $userId, sender: $sender, userImage: $userImage, lastmessage: $lastmessage, lastMessageTime: $lastMessageTime)';
   }
 }

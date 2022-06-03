@@ -66,8 +66,7 @@ class _ShowcaseSlideshowState extends State<ShowcaseSlideshow> {
             right: 0,
             bottom: 0,
             width: size.width * .7,
-            child: Lottie.network(
-                "https://assets7.lottiefiles.com/packages/lf20_vkuv7mpr.json",
+            child: Lottie.asset("assets/order.json",
                 width: double.infinity,
                 reverse: true,
                 options: LottieOptions(enableMergePaths: true),

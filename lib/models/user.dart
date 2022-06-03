@@ -3,6 +3,8 @@ import 'dart:convert';
 class UserModel {
   String? name;
   String? image;
+  String? email;
+  String? address;
   String? userId;
   String? phone;
   String? deviceToken;
@@ -20,6 +22,8 @@ class UserModel {
 
   UserModel copyWith({
     String? name,
+    String? email,
+    String? address,
     String? image,
     String? userId,
     String? phone,
@@ -42,6 +46,8 @@ class UserModel {
     return {
       'name': name,
       'image': image,
+      'email': email,
+      'address': address,
       'userId': userId,
       'phone': phone,
       'deviceToken': deviceToken,

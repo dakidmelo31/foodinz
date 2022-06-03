@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/meal_details.dart';
@@ -35,6 +37,9 @@ class TodayMenu extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               final Food meal = restaurantMenu[index];
+              final String myTag = meal.foodId +
+                  (Random().nextDouble() * 999999999999).toString();
+
               return Container(
                 margin: EdgeInsets.symmetric(horizontal: 6),
                 width: size.width * .36,
@@ -58,6 +63,7 @@ class TodayMenu extends StatelessWidget {
                             opacity: animation,
                             child: FoodDetails(
                               meal: meal,
+                              heroTag: myTag,
                             ),
                           );
                         },

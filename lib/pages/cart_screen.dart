@@ -1,13 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
-import 'package:foodinz/providers/global_data.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +12,6 @@ import 'package:provider/provider.dart';
 import '../models/cart.dart';
 import '../models/chats_model.dart';
 import '../providers/cart.dart';
-import '../providers/message_database.dart';
 import '../themes/light_theme.dart';
 
 class CartScreen extends StatefulWidget {
@@ -32,9 +28,9 @@ class _CartScreenState extends State<CartScreen> {
   int deliveryCost = 0;
   @override
   Widget build(BuildContext context) {
-    final _cartData = Provider.of<CartData>(context, listen: true);
+    final _cartData = Provider.of<CartData>(context, listen: false);
     deliveryCost = _cartData.myCart.length > 0 && homeDelivery
-        ? Provider.of<RestaurantData>(context)
+        ? Provider.of<RestaurantData>(context, listen: false)
             .selectRestaurant(restaurantId: _cartData.myCart[0].restaurantId)
             .deliveryCost
         : 0;
@@ -131,66 +127,55 @@ class _CartScreenState extends State<CartScreen> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(4),
-                                      child: Hero(
-                                        tag: item.image + "33302",
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => Material(
-                                                  child: Material(
-                                                    child: Center(
-                                                      child: Hero(
-                                                        tag: item.image +
-                                                            "33302",
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          imageUrl: item.image,
-                                                          errorWidget: (_,
-                                                              error,
-                                                              stackTrace) {
-                                                            return Material(
-                                                              child: Lottie.asset(
-                                                                  "assets/no-connection1.json",
-                                                                  width: double
-                                                                      .infinity,
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  fit: BoxFit
-                                                                      .cover),
-                                                            );
-                                                          },
-                                                          width:
-                                                              double.infinity,
-                                                          alignment:
-                                                              Alignment.center,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => Material(
+                                                child: Material(
+                                                  child: Center(
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: item.image,
+                                                      errorWidget: (_, error,
+                                                          stackTrace) {
+                                                        return Material(
+                                                          child: Lottie.asset(
+                                                              "assets/no-connection1.json",
+                                                              width: double
+                                                                  .infinity,
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              fit:
+                                                                  BoxFit.cover),
+                                                        );
+                                                      },
+                                                      width: double.infinity,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      fit: BoxFit.cover,
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            );
+                                            ),
+                                          );
+                                        },
+                                        child: CachedNetworkImage(
+                                          imageUrl: item.image,
+                                          errorWidget: (_, error, stackTrace) {
+                                            return Lottie.asset(
+                                                "assets/no-connection1.json",
+                                                width: 60,
+                                                height: 70,
+                                                alignment: Alignment.center,
+                                                fit: BoxFit.cover);
                                           },
-                                          child: CachedNetworkImage(
-                                            imageUrl: item.image,
-                                            errorWidget:
-                                                (_, error, stackTrace) {
-                                              return Lottie.asset(
-                                                  "assets/no-connection1.json",
-                                                  width: 60,
-                                                  height: 70,
-                                                  alignment: Alignment.center,
-                                                  fit: BoxFit.cover);
-                                            },
-                                            width: 60,
-                                            height: 70,
-                                            alignment: Alignment.center,
-                                            fit: BoxFit.cover,
-                                          ),
+                                          width: 60,
+                                          height: 70,
+                                          alignment: Alignment.center,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
                                     ),
@@ -336,19 +321,18 @@ class _CartScreenState extends State<CartScreen> {
                                   Provider.of<UserData>(context, listen: false);
 
                               Chat newChat = Chat(
-                                  userId: user.userId ?? "",
-                                  lastMessageTime: DateTime.now(),
-                                  lastmessage:
-                                      "Hi, I'd like to follow up on my order",
-                                  restaurantId:
-                                      _cartData.myCart[0].restaurantId,
-                                  restaurantName: restaurant.companyName,
-                                  restaurantImage: restaurant.companyName,
-                                  userImage: user.photoURL ?? "",
-                                  sender: '',
-                                  type: '');
+                                userId: FirebaseAuth.instance.currentUser!.uid,
+                                lastMessageTime: DateTime.now(),
+                                lastmessage:
+                                    "Hi, I'd like to follow up on my order",
+                                restaurantId: _cartData.myCart[0].restaurantId,
+                                restaurantName: restaurant.companyName,
+                                restaurantImage: restaurant.companyName,
+                                userImage: user.photoURL ?? "",
+                                sender: FirebaseAuth.instance.currentUser!.uid,
+                              );
 
-                              // DBManager.instance.addChat(chats: newChat);
+                              // DBManager.instance.addOverview(chat: newChat);
 
                               _cartData.checkout(
                                   isHomeDelivery: homeDelivery,

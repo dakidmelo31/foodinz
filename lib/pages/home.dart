@@ -1,17 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:foodinz/pages/all_orders.dart';
-import 'package:foodinz/pages/calls.dart';
 import 'package:foodinz/pages/cart_screen.dart';
-import 'package:foodinz/pages/messages.dart';
 import 'package:foodinz/pages/messages_overview.dart';
 import 'package:foodinz/pages/recent_contacts.dart';
-import 'package:foodinz/pages/stories.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
-
+import '../global.dart';
 import '../widgets/home_screen.dart';
 import 'my_favorites.dart';
+import 'my_settings.dart';
 
 //
 //Example to setup Stylish Bottom Bar with PageView
@@ -23,25 +20,31 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
-  var selected;
+class _HomeState extends State<Home> with TickerProviderStateMixin {
+  bool uploading = false;
   int _pageIndex = 0;
-  final List<Widget> pages = const [
-    HomeScreen(),
-    MessagesOverview(),
-    MyFavorites(),
-    RecentContacts(),
-    CallsScreen(),
+  final List<Widget> pages = [
+    const HomeScreen(),
+    const MessagesOverview(),
+    const MyFavorites(),
+    const MySettings(),
   ];
 
-  var bgColor;
   var heart = false;
-
+  late AnimationController _animationController;
   PageController controller = PageController(initialPage: 0);
+  @override
+  void initState() {
+    // auth.signOut();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600));
+    super.initState();
+  }
 
   @override
   void dispose() {
     controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -52,7 +55,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       body: GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus();
+          FocusScope.of(context).requestFocus();
         },
         child: PageView(
           physics: const BouncingScrollPhysics(),
@@ -70,7 +73,7 @@ class _HomeState extends State<Home> {
       ),
       bottomNavigationBar: StylishBottomBar(
         inkEffect: true,
-        padding: EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         bubbleFillStyle: BubbleFillStyle.outlined,
         elevation: 0,
         barStyle: BubbleBarStyle.horizotnal,
@@ -92,7 +95,7 @@ class _HomeState extends State<Home> {
             selectedColor: Colors.pink,
             backgroundColor: Colors.amber,
             title: const Text(
-              'Orders',
+              'History',
             ),
           ),
           AnimatedBarItems(
@@ -101,18 +104,18 @@ class _HomeState extends State<Home> {
             backgroundColor: Colors.blue,
             selectedColor: Colors.pink,
             title: const Text(
-              'Support',
+              'Favorites',
             ),
           ),
           AnimatedBarItems(
-              icon: const FaIcon(FontAwesomeIcons.phoneFlip),
-              selectedIcon: const FaIcon(FontAwesomeIcons.phoneFlip),
+              icon: const Icon(Icons.person),
+              selectedIcon: const FaIcon(FontAwesomeIcons.gear),
               backgroundColor: Colors.amber,
               selectedColor: Colors.pinkAccent,
-              title: const Text('Calls')),
+              title: const Text('Settings')),
         ],
         iconSize: 16,
-        barAnimation: BarAnimation.liquid,
+        barAnimation: BarAnimation.transform3D,
         iconStyle: IconStyle.animated,
         hasNotch: true,
         fabLocation: StylishBarFabLocation.end,
@@ -139,12 +142,14 @@ class _HomeState extends State<Home> {
                     child: const CartScreen(),
                   );
                 },
-              ));
+              )).then((value) {
+            debugPrint("done with cart");
+          });
         },
         backgroundColor: Colors.white,
         child: Icon(
           heart ? CupertinoIcons.shopping_cart : CupertinoIcons.shopping_cart,
-          color: Colors.red,
+          color: Theme.of(context).primaryColor,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

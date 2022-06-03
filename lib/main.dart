@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodinz/models/cloud_notification.dart';
@@ -76,8 +75,8 @@ void callbackDispatcher() {
 
     debugPrint("show notification in background");
     Workmanager().registerPeriodicTask("foodin_city", "foodin_city_app",
-        frequency: Duration(minutes: 15),
-        initialDelay: Duration(minutes: 1),
+        frequency: const Duration(minutes: 15),
+        initialDelay: const Duration(minutes: 1),
         inputData: {"data1": "value1", "data2": "value2"});
 
     return Future.value(true);
@@ -92,8 +91,8 @@ void main() async {
   await Workmanager().registerPeriodicTask(
     "foodin_city",
     "foodin_notifications",
-    initialDelay: Duration(minutes: 1),
-    frequency: Duration(minutes: 15),
+    initialDelay: const Duration(minutes: 1),
+    frequency: const Duration(minutes: 15),
     inputData: {"data1": "value1", "data2": "value2"},
   );
 
@@ -128,18 +127,14 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => CartData()),
         ChangeNotifierProvider(create: (_) => CommentsData()),
         ChangeNotifierProvider(create: (_) => BookmarkData()),
-        ChangeNotifierProvider(
-          create: (_) => UserData(),
-        ),
+        ChangeNotifierProvider(create: (_) => BookmarkData()),
+        ChangeNotifierProvider(create: (_) => UserData()),
       ],
       child: MaterialApp(
           // showPerformanceOverlay: true,
           debugShowCheckedModeBanner: false,
           theme: Primary.primaryTheme,
-          routes: {
-            StartPage.routeName: (_) => const StartPage(),
-            Home.routeName: (_) => const NotificationStream(child: const Home())
-          }),
+          home: const StartPage()),
     );
   }
 }

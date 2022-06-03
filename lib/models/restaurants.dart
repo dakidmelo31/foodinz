@@ -22,6 +22,8 @@ class Restaurant {
   final double lat, long;
   final List<String> categories;
   int deliveryCost = 500;
+  int comments = 0;
+  int likes = 0;
 
   Restaurant(
       {required this.address,
@@ -29,6 +31,8 @@ class Restaurant {
       required this.categories,
       required this.long,
       required this.lat,
+      this.comments = 0,
+      this.likes = 0,
       this.deliveryCost = 500,
       required this.restaurantId,
       required this.businessPhoto,

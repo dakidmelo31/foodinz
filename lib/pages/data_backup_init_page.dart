@@ -27,7 +27,7 @@ class _DataBackupInitPageState extends State<DataBackupInitPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
+            const Expanded(
               flex: 3,
               child: Text(
                 "Create Meal",
@@ -49,7 +49,7 @@ class _DataBackupInitPageState extends State<DataBackupInitPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
+                      const Text(
                         "Creating Meal",
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -57,7 +57,7 @@ class _DataBackupInitPageState extends State<DataBackupInitPage> {
                             color: Colors.black,
                             fontWeight: FontWeight.w300),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Expanded(
                         child: FittedBox(
                           child: Padding(
@@ -91,7 +91,7 @@ class _DataBackupInitPageState extends State<DataBackupInitPage> {
                     });
                   },
                   child: Column(
-                    children: [
+                    children: const [
                       Text(
                         "Last Meal created",
                       ),
@@ -116,8 +116,8 @@ class _DataBackupInitPageState extends State<DataBackupInitPage> {
                         },
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                        child: const Padding(
+                          padding: EdgeInsets.all(20.0),
                           child: Text(
                             "Save and Publish",
                             style: TextStyle(
@@ -126,12 +126,10 @@ class _DataBackupInitPageState extends State<DataBackupInitPage> {
                           ),
                         ),
                         color: mainDataBackupColor)
-                    : OutlineButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
+                    : OutlinedButton(
                         onPressed: () {},
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
                               vertical: 20.0, horizontal: 40.0),
                           child: Text("Cancel",
                               style: TextStyle(color: mainDataBackupColor)),

@@ -1,13 +1,15 @@
 class MessageData {
-  final String name, message, senderName, senderId, dateMessage, profilePicture;
+  final String message, senderId, profilePicture, restaurantId;
   final DateTime messageDate;
 
   MessageData(
-      {required this.name,
-      required this.senderName,
+      {required this.restaurantId,
       required this.message,
       required this.senderId,
-      required this.dateMessage,
       required this.profilePicture,
       required this.messageDate});
+
+  @override
+  String toString() =>
+      'MessageData(restaurantId: $restaurantId, messageDate: $messageDate)';
 }

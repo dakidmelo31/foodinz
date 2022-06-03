@@ -3,17 +3,13 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:foodinz/global.dart';
-import 'package:foodinz/local_notif.dart';
 import 'package:foodinz/models/cloud_notification.dart';
+import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
-import 'package:foodinz/providers/message_database.dart';
 import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
-import '../models/chats_model.dart';
 import '../models/order_model.dart';
 import '../themes/light_theme.dart';
 
@@ -50,7 +46,7 @@ class CartData with ChangeNotifier {
     }).toList();
     int friendlyId = Random().nextInt(99999);
     debugPrint("friendly Id Number: $friendlyId");
-
+    final myInfo = Provider.of<UserData>(context, listen: false);
     final order = Order(
       homeDelivery: isHomeDelivery,
       friendlyId: friendlyId,
@@ -67,9 +63,11 @@ class CartData with ChangeNotifier {
       CloudNotification cloudNotification = CloudNotification(
         title: "New Order for you ",
         description: "Wrap things up with your customer right away.",
+        recipient: order.restaurantId,
         userId: auth.currentUser!.uid,
         payload: order.restaurantId,
         restaurantId: order.restaurantId,
+        image: myInfo.photoURL,
       );
       firestore.collection("notifications").add(cloudNotification.toMap());
       debugPrint("Done placing order");
@@ -92,10 +90,12 @@ class CartData with ChangeNotifier {
 
       myCart.clear();
       total = 0.0;
+
       Navigator.pop(context, true);
     }).catchError((onError) {
       debugPrint(onError.toString());
     });
+    notifyListeners();
   }
 
   updateField({required String field, required dynamic value}) async {

@@ -31,7 +31,7 @@ class StorageCompleted extends AnimatedWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 60),
+                const SizedBox(height: 60),
                 Expanded(
                   flex: 2,
                   child: TweenAnimationBuilder(
@@ -50,32 +50,34 @@ class StorageCompleted extends AnimatedWidget {
                     },
                     child: Column(
                       children: [
-                        Text("Meal successfully",
+                        const Text("Meal successfully",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w300,
                             )),
-                        Text("uploaded",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 17,
-                              color: mainDataBackupColor,
-                              fontWeight: FontWeight.w700,
-                            )),
-                        Spacer(),
-                        OutlineButton(
+                        const Text(
+                          "uploaded",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: mainDataBackupColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const Spacer(),
+                        OutlinedButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
                                 horizontal: 40.0, vertical: 20),
                             child: Text("OK",
                                 style: TextStyle(color: mainDataBackupColor)),
                           ),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),
@@ -83,7 +85,7 @@ class StorageCompleted extends AnimatedWidget {
               ],
             )),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 }
 

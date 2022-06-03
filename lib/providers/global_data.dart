@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/global.dart';
 import 'package:foodinz/models/chats_model.dart';
+import 'package:foodinz/models/message_data.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
-import '../models/message.dart';
 
 class DBManager {
   static final DBManager instance = DBManager._init();
@@ -14,7 +15,7 @@ class DBManager {
     if (_database != null) {
       return _database!;
     }
-    _database = await _initDB("chats.db");
+    _database = await _initDB("foodin.db");
     return _database!;
   }
 
@@ -123,39 +124,52 @@ CREATE TABLE IF NOT EXISTS chats (
     return false;
   }
 
-  Future<List<Chat>> getOverviews() async {
+  Future<List<MessageData>> restaurantChats() async {
     Database _db = await instance.database;
+    // await _db.execute('DROP table chats').catchError((onError) {
+    //   debugPrint("error found: $onError");
+    // });
     var messages = await _db.query("chats", orderBy: "lastMessageTime");
-    List<Chat> messageList = messages.isNotEmpty
-        ? messages.map((e) {
-            var chat = Chat.fromMap(e);
-            return chat;
-          }).toList()
-        : [];
+    debugPrint(messages.join());
+    List<MessageData> messageList = [];
+
+    for (Map<String, dynamic> e in messages) {
+      debugPrint("going through number 1");
+      DateTime date = DateTime.tryParse(e["lastMessageTime"]) as DateTime;
+      MessageData chat = MessageData(
+          message: e["lastMessage"],
+          restaurantId: e["restaurantId"],
+          messageDate: date,
+          senderId: e["sender"],
+          profilePicture: e["userImage"]);
+      messageList.add(chat);
+    }
+
+    messageList.sort(((b, a) => a.messageDate.compareTo(b.messageDate)));
     return messageList;
   }
 
 // Add chat
-  addChat({required Chat chats}) async {
+  addChat({required Chat chat}) async {
     Database _db = await instance.database;
 
 //check if already exists
-    if (await overviewExists(restaurantId: chats.restaurantId)) {
+    if (await overviewExists(restaurantId: chat.restaurantId)) {
       debugPrint("restaurant already there");
     } else {
       // debugPrint("search term is: ");
 
       var row = {
-        "restaurantId": chats.restaurantId,
-        "restaurantImage": chats.restaurantImage,
-        "restaurantName": chats.restaurantName,
-        "lastMessage": chats.lastmessage,
-        "userImage": chats.userImage,
-        "sender": chats.sender,
-        "userId": chats.userId,
-        "lastMessageTime": chats.lastMessageTime.toIso8601String()
+        "restaurantId": chat.restaurantId,
+        "restaurantImage": chat.restaurantImage,
+        "restaurantName": chat.restaurantName,
+        "lastMessage": chat.lastmessage,
+        "userImage": chat.userImage,
+        "sender": chat.sender,
+        "userId": chat.userId,
+        "lastMessageTime": chat.lastMessageTime.toIso8601String()
       };
-      return _db
+      _db
           .insert("chats", row)
           .then(
             (value) => debugPrint("$value added to overview"),
@@ -168,6 +182,46 @@ CREATE TABLE IF NOT EXISTS chats (
     var length = await _db.rawQuery("SELECT * FROM chats");
     var total = length.length;
     debugPrint("total chats are $total");
+
+    debugPrint("Move to chat screen");
+  }
+
+// Add chat
+  updateChat({required Chat chat}) async {
+    Database _db = await instance.database;
+
+    var row = {
+      "restaurantId": chat.restaurantId,
+      "lastMessage": chat.lastmessage,
+      "lastMessageTime": chat.lastMessageTime.toIso8601String()
+    };
+    _db
+        .rawUpdate(
+            "UPDATE chats SET lastMessage = ?, lastMessageTime = ? WHERE restaurantId = ?",
+            [
+              chat.lastmessage,
+              chat.lastMessageTime.toIso8601String(),
+              chat.restaurantId
+            ])
+        .then((value) => debugPrint("done updating"))
+        .catchError((onError) {
+          debugPrint("error found: $onError");
+        });
+    _db
+        .update("chats", row,
+            where: "restaurantId=?", whereArgs: [chat.restaurantId])
+        .then(
+          (value) => debugPrint("$value added to overview"),
+        )
+        .catchError((onError) {
+          debugPrint("error while inserting: $onError");
+        });
+
+    var length = await _db.rawQuery("SELECT * FROM chats");
+    var total = length.length;
+    debugPrint("total chats are $total");
+
+    debugPrint("Move to chat screen");
   }
 
   dropTable({required String tableName}) async {
@@ -188,4 +242,57 @@ DELETE FROM '${tableName}';
 VACUUM; 
     ''');
   }
+}
+
+deleteChatOverview({required String restaurantId}) async {
+  Database _db = await DBManager.instance.database;
+  _db.rawDelete("DELETE FROM chats WHERE restaurantId = ?",
+      [restaurantId]).catchError((onError) {
+    debugPrint(onError.toString());
+  }).then((value) => debugPrint("done deleting chat"));
+}
+
+sendMessage({required Chat chat}) async {
+  DBManager.instance.addChat(chat: chat);
+  updateMessage(
+      message: chat.lastmessage,
+      newTime: chat.lastMessageTime,
+      resturantId: chat.restaurantId);
+  firestore
+      .collection("messages")
+      .add(chat.toMap())
+      .then((value) => debugPrint("done adding message"))
+      .catchError((onError) {
+    debugPrint("error found: $onError");
+  });
+}
+
+updateMessage(
+    {required String message,
+    required DateTime newTime,
+    required String resturantId}) async {
+  Database _db = await DBManager.instance.database;
+  _db
+      .rawUpdate(
+          "UPDATE chats SET lastMessage = ?, lastMessageTime = ? WHERE restaurantId = ?",
+          [message, newTime.toIso8601String(), resturantId])
+      .then((value) => debugPrint("updated successfully"))
+      .catchError((onError) {
+        debugPrint(onError.toString());
+      });
+}
+
+updateTables(
+    {required String collection,
+    required String id,
+    required Map<String, dynamic> newVal,
+    required bool merge}) async {
+  firestore.collection("restaurants").get().then((snapshot) {
+    for (var data in snapshot.docs) {
+      firestore
+          .collection("restaurants")
+          .doc(data.id)
+          .set(newVal, SetOptions(merge: merge));
+    }
+  });
 }

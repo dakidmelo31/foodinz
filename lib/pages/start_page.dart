@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,8 +10,6 @@ import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/meals.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../main.dart';
 import 'home.dart';
 import 'login.dart';
@@ -34,7 +31,17 @@ class _StartPageState extends State<StartPage> {
     );
     auth.currentUser != null
         ? Future.delayed(Duration.zero, () {
-            Navigator.pushReplacementNamed(context, Home.routeName);
+            Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 850),
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: const Home(),
+                    );
+                  },
+                ));
           })
         : welcomeUser();
   }
@@ -59,11 +66,11 @@ class _StartPageState extends State<StartPage> {
       "channelId",
       "Foodin City",
       channelDescription: "Welcome to foodin",
-      importance: Importance.high,
+      importance: Importance.max,
       fullScreenIntent: true,
       enableLights: true,
       ledOnMs: 600,
-      priority: Priority.high,
+      priority: Priority.max,
       channelShowBadge: true,
     );
     const IOSNotificationDetails iosNotificationDetails =
@@ -84,7 +91,6 @@ class _StartPageState extends State<StartPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     checkUser();
 
     if (auth.currentUser != null) {
@@ -101,10 +107,6 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     final restaurantData = Provider.of<RestaurantData>(context, listen: true);
-    final mealsData = Provider.of<MealsData>(context, listen: true);
-    final categryData = Provider.of<CategoryData>(context, listen: true);
-    debugPrint("${restaurantData.restaurants.length}");
-    debugPrint("${restaurantData.restaurants.length}");
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         body: Container(
@@ -186,7 +188,7 @@ class _StartPageState extends State<StartPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: const [
-                                Text("Log In"),
+                                Text("Create Account"),
                                 SizedBox(
                                   width: 10,
                                 ),
@@ -202,7 +204,7 @@ class _StartPageState extends State<StartPage> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            Text("Start Now"),
+                            Text("Explore First"),
                             SizedBox(
                               width: 10,
                             ),

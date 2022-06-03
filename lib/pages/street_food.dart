@@ -68,6 +68,9 @@ class StreetFood extends StatelessWidget {
                       );
                     }
                   }
+                  final String myTag = food.foodId +
+                      (Random().nextDouble() * -999999999999).toString();
+
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
                     height: double.infinity,
@@ -92,7 +95,10 @@ class StreetFood extends StatelessWidget {
                                         secondaryAnimation) {
                                       return ScaleTransition(
                                         scale: animation,
-                                        child: FoodDetails(meal: food),
+                                        child: FoodDetails(
+                                          meal: food,
+                                          heroTag: myTag,
+                                        ),
                                         alignment: Alignment.bottomCenter,
                                         filterQuality: FilterQuality.high,
                                       );

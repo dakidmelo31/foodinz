@@ -32,6 +32,7 @@ class Comment {
         Icon(
           Icons.star_rounded,
           color: c < stars ? Colors.amber : Colors.grey.withOpacity(.3),
+          size: 14,
         ),
       );
     }

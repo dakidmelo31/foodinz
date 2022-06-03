@@ -115,6 +115,7 @@ class DatabaseHelper with ChangeNotifier {
       userId TEXT,
       userImage TEXT,
       lastMessage TEXT,
+      type TEXT,
       sender TEXT,
       lastMessageTime integer
     )
@@ -122,6 +123,14 @@ class DatabaseHelper with ChangeNotifier {
       // debugPrint("created chats table successfully");
     });
     // debugPrint("done building tables");
+  }
+
+  removeSearch({required String keyword}) async {
+    final db = await instance.database;
+    await db.rawDelete("DELETE FROM recentSearches WHERE keyword=?",
+        [keyword]).catchError((onError) {
+      debugPrint("Done deleting");
+    });
   }
 
   static int currentTimeInSeconds() {
@@ -206,12 +215,14 @@ class DatabaseHelper with ChangeNotifier {
   addSearch({required String keyword}) async {
     Database _db = await instance.database;
     debugPrint("search term is:     $keyword");
-    return _db
-        .insert("recentSearches", {"id": null, "keyword": keyword})
-        .then((value) => debugPrint("done inserting search term $value"))
-        .catchError((onError) {
-          debugPrint("error while inserting: $onError");
-        });
+
+    if (!checkKeyword(foodId: keyword))
+      return _db
+          .insert("recentSearches", {"id": null, "keyword": keyword})
+          .then((value) => debugPrint("done inserting search term $value"))
+          .catchError((onError) {
+            debugPrint("error while inserting: $onError");
+          });
   }
 
   getBookmarks() async {
@@ -242,6 +253,17 @@ class DatabaseHelper with ChangeNotifier {
     bool isFavorite = false;
     for (Favorite state in favorites) {
       if (state.foodId == foodId) {
+        isFavorite = true;
+      }
+    }
+    return isFavorite;
+  }
+
+  checkKeyword({required String foodId}) async {
+    List<Search> favorites = await DatabaseHelper.instance.getRecentSearches();
+    bool isFavorite = false;
+    for (Search state in favorites) {
+      if (state.keyword == foodId) {
         isFavorite = true;
       }
     }

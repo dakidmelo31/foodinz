@@ -6,8 +6,10 @@ import '../providers/cart.dart';
 import '../widgets/meal_gallery_slideshow.dart';
 
 class ProductDetails extends StatefulWidget {
-  const ProductDetails({Key? key, required this.meal}) : super(key: key);
+  const ProductDetails({Key? key, required this.heroTag, required this.meal})
+      : super(key: key);
   final Food meal;
+  final String heroTag;
 
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
@@ -72,7 +74,7 @@ class _ProductDetailsState extends State<ProductDetails>
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
-                                icon: Icon(Icons.arrow_back_rounded,
+                                icon: const Icon(Icons.arrow_back_rounded,
                                     color: Colors.black),
                               ),
                               IconButton(
@@ -92,10 +94,10 @@ class _ProductDetailsState extends State<ProductDetails>
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            MealGallery(meal: meal),
+                            MealGallery(meal: meal, heroTag: widget.heroTag),
                             Text(
                               meal.name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,

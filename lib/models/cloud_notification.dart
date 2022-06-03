@@ -7,12 +7,14 @@ class CloudNotification {
   final String restaurantId;
   final String? payload;
   final String? recipient;
+  String? image;
 
   CloudNotification({
     required this.title,
     required this.description,
     required this.userId,
     required this.restaurantId,
+    this.image,
     this.payload,
     this.recipient,
   });
