@@ -240,6 +240,10 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                       snapshot.data!.data()
                                                           as Map<String,
                                                               dynamic>;
+                                                  debugPrint(
+                                                      "My image is here: " +
+                                                          data['image']
+                                                              .toString());
                                                   return CachedNetworkImage(
                                                     imageUrl: data["image"],
                                                     width: 40,
@@ -391,6 +395,24 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                       Radius.circular(10)),
                                               child: GridTile(
                                                 child: CachedNetworkImage(
+                                                  placeholder: (_, __) =>
+                                                      const Shimmer(
+                                                          child: SizedBox(
+                                                            width:
+                                                                double.infinity,
+                                                            height:
+                                                                double.infinity,
+                                                          ),
+                                                          gradient:
+                                                              LinearGradient(
+                                                                  colors: [
+                                                                Colors.white,
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    241,
+                                                                    241,
+                                                                    241)
+                                                              ])),
                                                   imageUrl: meal.image,
                                                   alignment: Alignment.center,
                                                   fit: BoxFit.cover,
@@ -458,7 +480,14 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                                         .cover,
                                                                     imageUrl:
                                                                         mealGallery[
-                                                                            index]),
+                                                                            index],
+                                                                    errorWidget: (_, __, ___) => Lottie.asset(
+                                                                        "assets/no-connection1.json",
+                                                                        alignment:
+                                                                            Alignment
+                                                                                .center,
+                                                                        fit: BoxFit
+                                                                            .contain)),
                                                           ),
                                                         ),
                                                       );

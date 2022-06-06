@@ -11,13 +11,9 @@ FirebaseAuth auth = FirebaseAuth.instance;
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-class UserData with ChangeNotifier {
-  UserModel? user;
-  String? name;
-  String? photoURL;
-  String? userId;
-  String? deviceToken;
-  UserData() {
+class MyData with ChangeNotifier {
+  late UserModel user;
+  MyData() {
     loadUser();
     isLocationSet();
   }
@@ -28,23 +24,15 @@ class UserData with ChangeNotifier {
     } else {
       debugPrint("user token is this: $userTokenId");
     }
-    if (auth.currentUser == null) {
-      _firestore
-          .collection("users")
-          .doc(auth.currentUser!.uid)
-          .get()
-          .then((value) {
-        user = UserModel.fromMap(value.data()!);
-        name = user!.name;
-        photoURL = user!.image;
-        userId = user!.userId;
-        deviceToken = userTokenId;
-        debugPrint(user!.name);
-        debugPrint("User Image URL IS: " + user!.image.toString());
-        debugPrint("user is done loading");
-        notifyListeners();
-      });
-    }
+    await _firestore
+        .collection("users")
+        .doc(auth.currentUser!.uid)
+        .get()
+        .then((value) {
+      user = UserModel.fromMap(value.data()!);
+      debugPrint("User Image URL IS: " + user.image.toString());
+      notifyListeners();
+    });
   }
 
   isLocationSet() async {

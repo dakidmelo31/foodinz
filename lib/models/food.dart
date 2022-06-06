@@ -11,7 +11,7 @@ class Food {
   String address = "";
   final bool available;
   final double averageRating, price;
-  final int likes;
+  int likes;
   bool favorite = false;
 
   final int comments;

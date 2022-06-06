@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
+import 'package:foodinz/providers/global_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -136,27 +137,29 @@ class MealsData with ChangeNotifier {
             // debugPrint(
             //     "going through $foodId now and items of meals array are ${meals.length}");
 
-            bool isFavorite = await favorites.checkFavorite(foodId: foodId);
+            Food fd = Food(
+              favorite: false,
+              foodId: foodId,
+              likes: convertInt(data['likes']),
+              description: data['description'],
+              comments: convertInt(data['comments']),
+              name: data["name"],
+              available: data["available"],
+              image: data['image'],
+              averageRating: convertInt(data["averageRating"])
+                  .toDouble(), //int.parse(data['averageRating'])
+              price: convertDouble(data['price']) + 0.0,
+              restaurantId: data['restaurantId'],
+              gallery: convertString(data['gallery']),
+              accessories: convertList(data['accessories']),
+              duration: data['duration'],
+              categories: convertList(data['categories']),
+            );
 
+            fd.favorite =
+                await DBManager.instance.checkFavorite(foodId: foodId);
             meals.add(
-              Food(
-                favorite: isFavorite,
-                foodId: foodId,
-                likes: convertInt(data['likes']),
-                description: data['description'],
-                comments: convertInt(data['comments']),
-                name: data["name"],
-                available: data["available"],
-                image: data['image'],
-                averageRating: convertInt(data["averageRating"])
-                    .toDouble(), //int.parse(data['averageRating'])
-                price: convertDouble(data['price']) + 0.0,
-                restaurantId: data['restaurantId'],
-                gallery: convertString(data['gallery']),
-                accessories: convertList(data['accessories']),
-                duration: data['duration'],
-                categories: convertList(data['categories']),
-              ),
+              fd,
             );
           }
 
@@ -217,9 +220,11 @@ class MealsData with ChangeNotifier {
     return meals.firstWhere((element) => element.foodId == foodId);
   }
 
-  void toggleFavorite(String id) {
+  void toggleFavorite(String id) async {
     Food meal = restaurantMenu.firstWhere((element) => element.foodId == id);
+    final dbManager = await DBManager.instance;
 
+    dbManager.addFavorite(foodId: id);
     restaurantMenu.firstWhere((element) => element.foodId == id).favorite =
         !meal.favorite;
 
@@ -228,7 +233,18 @@ class MealsData with ChangeNotifier {
 
   void toggleMeal({required String id}) {
     Food meal = meals.firstWhere((element) => element.foodId == id);
+    final dbManager = DBManager.instance;
 
+    dbManager.addFavorite(foodId: id);
+    if (meal.favorite) {
+      //reduce likes
+      meals.firstWhere((element) => element.foodId == id).likes =
+          meal.likes - 1;
+    } else {
+      //add like
+      meals.firstWhere((element) => element.foodId == id).likes =
+          meal.likes + 1;
+    }
     meals.firstWhere((element) => element.foodId == id).favorite =
         !meal.favorite;
     notifyListeners();

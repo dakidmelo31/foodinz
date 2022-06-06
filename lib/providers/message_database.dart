@@ -64,18 +64,14 @@ class DatabaseHelper with ChangeNotifier {
     });
     await db.execute('''
     CREATE TABLE IF NOT EXISTS  favorites(
-      id int PRIMARY KEY,
-      foodId TEXT,
-      name TEXT
+      foodId TEXT PRIMARY KEY
     )
 ''').then((value) {
       // debugPrint("done creating favorites table successfully");
     });
     await db.execute('''
     CREATE TABLE IF NOT EXISTS bookmarks(
-      id int PRIMARY KEY,
-      foodId TEXT,
-      name TEXT
+      foodId TEXT PRIMARY KEY
     )
 ''').then((value) {
       // debugPrint("done creating bookmarks table successfully");
@@ -123,6 +119,19 @@ class DatabaseHelper with ChangeNotifier {
       // debugPrint("created chats table successfully");
     });
     // debugPrint("done building tables");
+  }
+
+  addFavorite({required String foodId}) async {
+    Database _db = await instance.database;
+    var values =
+        await _db.query("favorites", where: "foodId=?", whereArgs: [foodId]);
+    if (values.isEmpty) {
+      await _db
+          .rawInsert('INSERT INTO favorites(foodId) VALUES("$foodId")')
+          .then((value) => debugPrint("done adding value: $value"));
+    } else {
+      await _db.delete("favorites", where: "foodId=?", whereArgs: [foodId]);
+    }
   }
 
   removeSearch({required String keyword}) async {

@@ -41,6 +41,14 @@ CREATE TABLE IF NOT EXISTS chats (
 ''');
 
     await db.execute('''
+    CREATE TABLE IF NOT EXISTS  favorites(
+      foodId TEXT PRIMARY KEY
+    )
+''').then((value) {
+      // debugPrint("done creating favorites table successfully");
+    });
+
+    await db.execute('''
     CREATE TABLE IF NOT EXISTS chat_messages (
       msgId INTEGER PRIMARY KEY AUTOINCREMENT,
       restaurantId TEXT NOT NULL,
@@ -53,6 +61,61 @@ CREATE TABLE IF NOT EXISTS chats (
       lastMessageTime TEXT NOT NULL
     )
 ''');
+  }
+
+  addFavorite({required String foodId}) async {
+    Database _db = await instance.database;
+    var values =
+        await _db.query("favorites", where: "foodId=?", whereArgs: [foodId]);
+    if (values.isEmpty) {
+      await _db
+          .rawInsert('INSERT INTO favorites(foodId) VALUES("$foodId")')
+          .then((value) => debugPrint("done adding value: $value"));
+
+      firestore.collection("meals").doc(foodId).get().then((value) {
+        Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+        int likes = data['likes'];
+        debugPrint("current likes is: $likes");
+        likes += 1;
+        debugPrint("new likes is: $likes");
+
+        firestore
+            .collection("meals")
+            .doc(foodId)
+            .update({"likes": likes})
+            .then((value) => debugPrint("done adding like"))
+            .catchError((onError) {
+              debugPrint("Error while updating likes: $onError");
+            });
+      });
+    } else {
+      firestore.collection("meals").doc(foodId).get().then((value) {
+        Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+        int likes = data['likes'];
+        debugPrint("current likes is: $likes");
+        likes -= 1;
+        debugPrint("new likes is: $likes");
+
+        firestore
+            .collection("meals")
+            .doc(foodId)
+            .update({"likes": likes})
+            .then((value) => debugPrint("done reducing like"))
+            .catchError((onError) {
+              debugPrint("Error while updating likes: $onError");
+            });
+      });
+
+      await _db.delete("favorites", where: "foodId=?", whereArgs: [foodId]);
+    }
+  }
+
+  checkFavorite({required String foodId}) async {
+    Database _db = await instance.database;
+    var values =
+        await _db.query("favorites", where: "foodId=?", whereArgs: [foodId]);
+
+    return values.isNotEmpty;
   }
 
   Future<int> addOverview({required Chat chat}) async {

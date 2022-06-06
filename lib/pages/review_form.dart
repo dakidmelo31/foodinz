@@ -28,7 +28,7 @@ class _ReviewFormState extends State<ReviewForm> {
   @override
   Widget build(BuildContext context) {
     final meal = widget.meal;
-    final _userData = Provider.of<UserData>(context, listen: true);
+    final _userData = Provider.of<MyData>(context, listen: true);
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: StatefulBuilder(builder: (_, setState) {

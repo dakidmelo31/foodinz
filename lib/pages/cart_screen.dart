@@ -29,6 +29,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final _cartData = Provider.of<CartData>(context, listen: false);
+    final user = Provider.of<MyData>(context, listen: false);
     deliveryCost = _cartData.myCart.length > 0 && homeDelivery
         ? Provider.of<RestaurantData>(context, listen: false)
             .selectRestaurant(restaurantId: _cartData.myCart[0].restaurantId)
@@ -318,9 +319,12 @@ class _CartScreenState extends State<CartScreen> {
                                   .getRestaurant(
                                       _cartData.myCart[0].restaurantId);
                               final user =
-                                  Provider.of<UserData>(context, listen: false);
+                                  Provider.of<MyData>(context, listen: false)
+                                      .user;
 
                               Chat newChat = Chat(
+                                opened: false,
+                                senderName: user.name.toString(),
                                 userId: FirebaseAuth.instance.currentUser!.uid,
                                 lastMessageTime: DateTime.now(),
                                 lastmessage:
@@ -328,7 +332,7 @@ class _CartScreenState extends State<CartScreen> {
                                 restaurantId: _cartData.myCart[0].restaurantId,
                                 restaurantName: restaurant.companyName,
                                 restaurantImage: restaurant.companyName,
-                                userImage: user.photoURL ?? "",
+                                userImage: user.image ?? "",
                                 sender: FirebaseAuth.instance.currentUser!.uid,
                               );
 

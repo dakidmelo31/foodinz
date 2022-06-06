@@ -55,7 +55,7 @@ class _FoodDetailsState extends State<FoodDetails>
   ) {
     final _restaurantData = Provider.of<MealsData>(context, listen: false);
     final _bookmarksData = Provider.of<BookmarkData>(context, listen: false);
-    final _userData = Provider.of<UserData>(context, listen: false);
+    final _userData = Provider.of<MyData>(context, listen: false);
     final Size size = MediaQuery.of(context).size;
     final Food meal = widget.meal;
     final CartData _cart = Provider.of<CartData>(context, listen: false);

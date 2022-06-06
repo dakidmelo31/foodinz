@@ -4,8 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/providers/meals.dart';
-import 'package:foodinz/widgets/food_card.dart';
-import 'package:foodinz/widgets/meal_bottom_sheet.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -30,8 +28,8 @@ class TodayMenu extends StatelessWidget {
         width: size.width,
         height: size.height * .25,
         child: ListView.builder(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics()),
             shrinkWrap: true,
             itemCount: todayMenu.length,
             scrollDirection: Axis.horizontal,
@@ -41,7 +39,7 @@ class TodayMenu extends StatelessWidget {
                   (Random().nextDouble() * 999999999999).toString();
 
               return Container(
-                margin: EdgeInsets.symmetric(horizontal: 6),
+                margin: const EdgeInsets.symmetric(horizontal: 6),
                 width: size.width * .36,
                 child: InkWell(
                   onTap: () {
@@ -57,7 +55,7 @@ class TodayMenu extends StatelessWidget {
                     Navigator.push(
                       context,
                       PageRouteBuilder(
-                        transitionDuration: Duration(milliseconds: 600),
+                        transitionDuration: const Duration(milliseconds: 600),
                         pageBuilder: (context, animation, secondaryAnimation) {
                           return FadeTransition(
                             opacity: animation,
@@ -103,9 +101,10 @@ class TodayMenu extends StatelessWidget {
                                     _restaurantData.toggleFavorite(meal.foodId);
                                   },
                                   icon: meal.favorite
-                                      ? Icon(Icons.favorite_rounded,
+                                      ? const Icon(Icons.favorite_rounded,
                                           color: Colors.pink)
-                                      : Icon(Icons.favorite_border_rounded,
+                                      : const Icon(
+                                          Icons.favorite_border_rounded,
                                           color: Colors.white),
                                 ),
                               ),
@@ -114,11 +113,11 @@ class TodayMenu extends StatelessWidget {
                         ],
                       ),
                       Text(meal.name,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold)),
                       Text(meal.categories.join(", "),
-                          style: TextStyle(color: Colors.orange)),
+                          style: const TextStyle(color: Colors.orange)),
                     ],
                   ),
                 ),

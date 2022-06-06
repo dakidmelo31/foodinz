@@ -1,20 +1,16 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:foodinz/global.dart';
 import 'package:foodinz/models/message_data.dart';
 import 'package:foodinz/pages/all_orders.dart';
 import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/global_data.dart';
-import 'package:foodinz/providers/message_database.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import '../models/chats_model.dart';
@@ -34,7 +30,6 @@ class _MessagesOverviewState extends State<MessagesOverview>
   late AnimationController _animationController;
   late Animation<double> progressAnimation;
   late ScrollController _sliverController;
-  double _scrollValue = 0;
   late List<Chat> chatOverviews;
   bool isLoading = false;
 
@@ -53,7 +48,6 @@ class _MessagesOverviewState extends State<MessagesOverview>
     setState(() {
       isLoading = true;
     });
-    this.chatOverviews = await DBManager.instance.getChatOverviews();
     setState(() {
       isLoading = false;
     });
@@ -504,8 +498,7 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                           Provider.of<RestaurantData>(context)
                                               .getRestaurant(
                                                   message.restaurantId);
-                                      final user =
-                                          Provider.of<UserData>(context);
+                                      final user = Provider.of<MyData>(context);
 
                                       return SizedBox(
                                         width: size.width,

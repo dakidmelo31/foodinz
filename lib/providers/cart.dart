@@ -46,7 +46,7 @@ class CartData with ChangeNotifier {
     }).toList();
     int friendlyId = Random().nextInt(99999);
     debugPrint("friendly Id Number: $friendlyId");
-    final myInfo = Provider.of<UserData>(context, listen: false);
+    final myInfo = Provider.of<MyData>(context, listen: false).user;
     final order = Order(
       homeDelivery: isHomeDelivery,
       friendlyId: friendlyId,
@@ -67,7 +67,7 @@ class CartData with ChangeNotifier {
         userId: auth.currentUser!.uid,
         payload: order.restaurantId,
         restaurantId: order.restaurantId,
-        image: myInfo.photoURL,
+        image: myInfo.image,
       );
       firestore.collection("notifications").add(cloudNotification.toMap());
       debugPrint("Done placing order");

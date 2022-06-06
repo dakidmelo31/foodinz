@@ -28,6 +28,7 @@ class RestaurantDetails extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final h = size.height;
     final w = size.width;
+    final user = Provider.of<MyData>(context, listen: false).user;
 
     return Scaffold(
       body: Column(
@@ -148,11 +149,11 @@ class RestaurantDetails extends StatelessWidget {
                               horizontal: 10, vertical: 9),
                           child: Row(
                             children: [
-                              Icon(Icons.arrow_back_rounded,
+                              const Icon(Icons.arrow_back_rounded,
                                   color: Colors.black),
-                              Material(
+                              const Material(
                                   color: Colors.transparent,
-                                  child: Text("Back")),
+                                  child: const Text("Back")),
                             ],
                           ),
                         ),
@@ -166,6 +167,8 @@ class RestaurantDetails extends StatelessWidget {
                           var currentUser = FirebaseAuth.instance.currentUser;
                           if (currentUser != null) {
                             Chat chat = Chat(
+                              opened: false,
+                              senderName: user.name.toString(),
                               lastMessageTime: DateTime.now(),
                               lastmessage: "",
                               restaurantId: restaurant.restaurantId,
@@ -180,9 +183,9 @@ class RestaurantDetails extends StatelessWidget {
                                 context,
                                 PageRouteBuilder(
                                     transitionDuration:
-                                        Duration(milliseconds: 300),
+                                        const Duration(milliseconds: 300),
                                     reverseTransitionDuration:
-                                        Duration(milliseconds: 200),
+                                        const Duration(milliseconds: 200),
                                     pageBuilder:
                                         (_, animation, secondaryAnimation) {
                                       return FadeTransition(
@@ -198,16 +201,16 @@ class RestaurantDetails extends StatelessWidget {
                               horizontal: 10, vertical: 9),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.message_rounded,
                               ),
-                              Text(
+                              const Text(
                                 "Tap to message business",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                 ),
                               ),
-                              Icon(
+                              const Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 color: Colors.white,
                                 size: 20,

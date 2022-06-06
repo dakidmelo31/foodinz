@@ -68,7 +68,7 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     ordersList = [];
     final mealsData = Provider.of<MealsData>(context);
-    final userData = Provider.of<UserData>(context);
+    final userData = Provider.of<MyData>(context);
     final _restaurantsData = Provider.of<RestaurantData>(context);
 
     final meals = mealsData.meals;

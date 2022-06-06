@@ -128,7 +128,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => CommentsData()),
         ChangeNotifierProvider(create: (_) => BookmarkData()),
         ChangeNotifierProvider(create: (_) => BookmarkData()),
-        ChangeNotifierProvider(create: (_) => UserData()),
+        ChangeNotifierProvider(create: (_) => MyData()),
       ],
       child: MaterialApp(
           // showPerformanceOverlay: true,
