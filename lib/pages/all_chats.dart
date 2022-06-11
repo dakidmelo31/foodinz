@@ -71,26 +71,18 @@ class _ChatScreenState extends State<ChatScreen> {
 
     Size size = MediaQuery.of(context).size;
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            CachedNetworkImage(
-              imageUrl: DateTime.now().hour > 16
-                  ? "https://images.unsplash.com/photo-1517999144091-3d9dca6d1e43?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTU2fHxiYWNrZ3JvdW5kfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                  : "https://unsplash.com/photos/h0Vxgz5tyXA/download?ixid=MnwxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNjU0NDI0NDA0&force=true&w=640",
-              fit: BoxFit.cover,
-              width: size.width,
-              height: size.height,
-              errorWidget: (_, __, ___) => Lottie.asset(
-                  "assets/no-data-animation.json",
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center),
-              placeholder: (_, string) => Lottie.asset("assets/loading7.json",
-                  fit: BoxFit.cover, alignment: Alignment.center),
-            ),
-            Column(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            DateTime.now().hour > 16 ? "assets/b1.jpg" : "assets/b2.jpg",
+            fit: BoxFit.cover,
+            width: size.width,
+            height: size.height,
+          ),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Column(
               children: [
                 StreamBuilder<QuerySnapshot>(
                     stream: _orderStream,
@@ -559,8 +551,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 TextWidget(restaurantId: widget.restaurantId),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
