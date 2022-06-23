@@ -126,8 +126,6 @@ class _ReviewFormState extends State<ReviewForm> {
                     onPressed: () {
                       if (review == 0) debugPrint("add review");
                       final faker = fk.Faker();
-                      late final int rand = Random().nextInt(300);
-                      for (var i = 0; i < rand; i++) {
                         FirebaseFirestore.instance.collection("reviews").add({
                           "restaurantId": meal.restaurantId,
                           "foodId": meal.foodId,
@@ -145,7 +143,6 @@ class _ReviewFormState extends State<ReviewForm> {
                         }).catchError((onError) {
                           debugPrint(onError.toString());
                         });
-                      }
                       Navigator.maybePop(context, true);
                     }),
                 SizedBox(

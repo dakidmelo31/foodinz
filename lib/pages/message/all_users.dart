@@ -104,8 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       var currentOrder = Order(
                         restaurantId: doc['restaurantId'],
                         status: doc["status"] ?? "pending",
-                        friendlyId:
-                            doc["friendlyId"] ?? Random().nextInt(65000),
+                        friendlyId: doc["friendlyId"] ?? 1000,
                         quantities: List<int>.from(doc['quantities']),
                         names: List<String>.from(doc['names']),
                         prices: List<double>.from(doc['prices']),
@@ -583,7 +582,7 @@ class _TextWidgetState extends State<TextWidget> {
             child: FloatingActionButton(
                 onPressed: () async {
                   Chat chat = Chat(
-                    opened: false, 
+                    opened: false,
                     senderName: user.name.toString(),
                     lastMessageTime: DateTime.now(),
                     lastmessage: _editingController.text,

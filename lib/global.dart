@@ -74,3 +74,15 @@ updateData(
   //   (value) => debugPrint("update info"),
   // );
 }
+
+Color getColor({required String status}) {
+  return status == "pending"
+      ? Colors.grey
+      : status == "processing"
+          ? Colors.blue
+          : status.toLowerCase() == "takeout"
+              ? Colors.lightGreen
+              : status.toLowerCase() == "completed"
+                  ? Colors.deepPurple
+                  : Colors.pink;
+}
