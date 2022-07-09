@@ -14,12 +14,13 @@ class Food {
   int likes;
   bool favorite = false;
 
-  final int comments;
+  int comments;
   final List<String> accessories, gallery, categories;
   List<String> compliments = [];
   Food(
       {favorite = false,
       required this.accessories,
+      required this.compliments,
       required this.available,
       required this.price,
       required this.categories,
@@ -95,14 +96,14 @@ class Food {
       name: data["name"],
       available: data["available"],
       image: data['image'],
-      averageRating: convertInt(data["averageRating"])
-          .toDouble(), //int.parse(data['averageRating'])
+      averageRating: 0, //int.parse(data['averageRating'])
       price: double.parse(data['price']),
       restaurantId: data['restaurantId'],
-      gallery: convertString(data['gallery']),
-      accessories: convertList(data['accessories']),
+      gallery: List<String>.from(data['gallery']),
+      accessories: List<String>.from(data['accessories']),
+      compliments: List<String>.from(data['compliments']),
       duration: data['duration'],
-      categories: convertList(data['categories']),
+      categories: List<String>.from(data['categories']),
     );
   }
 

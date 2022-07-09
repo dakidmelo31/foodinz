@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/pages/review_screen.dart';
 import 'package:foodinz/providers/reviews.dart';
 import 'package:foodinz/widgets/food_info_table.dart';
 import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +30,25 @@ class FoodDetails extends StatefulWidget {
 
 class _FoodDetailsState extends State<FoodDetails>
     with TickerProviderStateMixin {
+  final List<String> _categories = [
+    "Breakfast",
+    "Lunch",
+    "Dinner",
+    "Road side",
+    "Beef",
+    "Dessert",
+    "Groceries",
+    "Specials",
+    "Simple",
+    "Traditional",
+    "Home Delivery",
+    "Vegitarian",
+    "Casual",
+    "Classic"
+  ];
+
+  List<String> _selectedCompliments = [];
+
   int _counter = 1;
   double selectedStartTime = 0, selectedEndTime = 20;
   String? updateText;
@@ -38,6 +57,7 @@ class _FoodDetailsState extends State<FoodDetails>
   late AnimationController _animationController;
   late Animation<double> _animation;
   late String heroTag;
+  final listState = GlobalKey<AnimatedListState>();
   @override
   void initState() {
     heroTag = widget.heroTag;
@@ -215,7 +235,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                                                   PageTransitionType
                                                                       .scale,
                                                               duration:
-                                                                  Duration(
+                                                                  const Duration(
                                                                 milliseconds:
                                                                     1800,
                                                               ),
@@ -225,7 +245,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                                                   true,
                                                               opaque: false,
                                                               reverseDuration:
-                                                                  Duration(
+                                                                  const Duration(
                                                                 milliseconds:
                                                                     600,
                                                               ),
@@ -332,60 +352,163 @@ class _FoodDetailsState extends State<FoodDetails>
                                     child: SlideUpTween(
                                         begin: Offset(0, 55),
                                         child: Text("Available With Meal"))),
-                                OpacityTween(
-                                  duration: const Duration(milliseconds: 800),
-                                  child: SlideUpTween(
-                                    begin: const Offset(100, 0),
-                                    child: SizedBox(
-                                      height: 60,
-                                      width: size.width,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: meal.accessories.length,
-                                        itemBuilder: (_, index) {
-                                          final compliment =
-                                              meal.accessories[index];
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: InkWell(
-                                              onTap: () {
-                                                debugPrint("show info");
-                                                setState(() {
-                                                  meal.toggle(
-                                                      meal.accessories[index]);
-                                                });
-                                              },
-                                              child: Chip(
-                                                  backgroundColor:
-                                                      meal.complimentExists(
-                                                              compliment)
-                                                          ? Colors.orange
-                                                          : Colors.grey
-                                                              .withOpacity(.3),
-                                                  elevation: 10,
-                                                  label: Text(
-                                                    compliment,
-                                                    style: TextStyle(
-                                                      color:
-                                                          meal.complimentExists(
-                                                                  compliment)
-                                                              ? Colors.white
-                                                              : Colors.black,
+                                SizedBox(
+                                  width: size.width,
+                                  height: 70.0,
+                                  child: AnimatedList(
+                                    initialItemCount: meal.compliments.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (_, index, animation) {
+                                      String compliment =
+                                          meal.compliments[index];
+                                      return InkWell(
+                                        onTap: () {
+                                          if (_selectedCompliments
+                                              .contains(compliment)) {
+                                                
+                                            setState(() {
+                                              _selectedCompliments
+                                                  .remove(compliment);
+                                              listState.currentState
+                                                  ?.removeItem(index,
+                                                      (_, animation) {
+                                                return AnimatedOpacity(
+                                                  curve: Curves
+                                                      .fastLinearToSlowEaseIn,
+                                                  duration: const Duration(
+                                                      milliseconds: 600),
+                                                  opacity: _selectedCompliments
+                                                          .contains(compliment)
+                                                      ? 1.0
+                                                      : 0.3,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Chip(
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      label: Text(compliment),
+                                                      avatar: Icon(
+                                                        Icons.food_bank_rounded,
+                                                        color: _selectedCompliments
+                                                                .contains(
+                                                                    compliment)
+                                                            ? Colors.lightGreen
+                                                            : Colors.black,
+                                                      ),
+                                                      labelPadding:
+                                                          const EdgeInsets
+                                                                  .symmetric(
+                                                              vertical: 5.0,
+                                                              horizontal: 8.0),
+                                                      elevation: 12.0,
+                                                      shadowColor: Colors.black
+                                                          .withOpacity(.4),
                                                     ),
                                                   ),
-                                                  avatar: const Icon(
-                                                      Icons
-                                                          .restaurant_menu_rounded,
-                                                      color: Colors.white)),
+                                                );
+                                              },
+                                                      duration: const Duration(
+                                                          milliseconds: 300));
+                                            });
+                                          } else {
+                                            setState(() {
+                                              _selectedCompliments
+                                                  .add(compliment);
+                                              listState.currentState!
+                                                  .insertItem(index,
+                                                      duration: const Duration(
+                                                          milliseconds: 300));
+                                            });
+                                          }
+                                          HapticFeedback.heavyImpact();
+                                          debugPrint(_selectedCompliments.length
+                                              .toString());
+                                        },
+                                        child: AnimatedOpacity(
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          opacity: _selectedCompliments
+                                                  .contains(compliment)
+                                              ? 1.0
+                                              : 0.3,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Chip(
+                                              backgroundColor: Colors.white,
+                                              label: Text(compliment),
+                                              avatar: Icon(
+                                                Icons.food_bank_rounded,
+                                                color: _selectedCompliments
+                                                        .contains(compliment)
+                                                    ? Colors.lightGreen
+                                                    : Colors.black,
+                                              ),
+                                              labelPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 5.0,
+                                                      horizontal: 8.0),
+                                              elevation: 12.0,
+                                              shadowColor:
+                                                  Colors.black.withOpacity(.4),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text("Categories"),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: size.width,
+                                      height: 70.0,
+                                      child: AnimatedList(
+                                        initialItemCount:
+                                            meal.categories.length,
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder: (_, index, animation) {
+                                          String compliment =
+                                              meal.categories[index];
+                                          return AnimatedOpacity(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            opacity: meal.categories
+                                                    .contains(compliment)
+                                                ? 1.0
+                                                : 0.3,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Chip(
+                                                backgroundColor: Colors.white,
+                                                label: Text(compliment),
+                                                avatar: const Icon(
+                                                    Icons.food_bank_rounded),
+                                                labelPadding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5.0,
+                                                        horizontal: 8.0),
+                                                elevation: 12.0,
+                                                shadowColor: Colors.black
+                                                    .withOpacity(.4),
+                                              ),
                                             ),
                                           );
                                         },
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                const SizedBox(height: 10),
                                 OpacityTween(child: FoodInfoTable(meal: meal)),
                                 const SizedBox(height: 60),
                                 Flexible(
@@ -396,9 +519,11 @@ class _FoodDetailsState extends State<FoodDetails>
                                           context,
                                           PageRouteBuilder(
                                               transitionDuration:
-                                                  Duration(milliseconds: 500),
+                                                  const Duration(
+                                                      milliseconds: 500),
                                               reverseTransitionDuration:
-                                                  Duration(milliseconds: 300),
+                                                  const Duration(
+                                                      milliseconds: 300),
                                               transitionsBuilder: (_, animation,
                                                   anotherAnimation, child) {
                                                 animation = CurvedAnimation(

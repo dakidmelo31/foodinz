@@ -128,6 +128,7 @@ class _RestaurantOverlayState extends State<RestaurantOverlay> {
               padding:
                   const EdgeInsets.only(top: 15.0, left: 10.0, bottom: 10.0),
               child: RecentComments(
+                name: widget.restaurant.name,
                   restaurantId: widget.restaurant.restaurantId, isMeal: false),
             ),
             const SizedBox(height: 20)

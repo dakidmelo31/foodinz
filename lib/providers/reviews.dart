@@ -34,6 +34,7 @@ class ReviewProvider with ChangeNotifier {
       late final snap;
       _startAfter = _reviewSnapshot.isEmpty ? null : _reviewSnapshot.last;
       if (_startAfter == null) {
+        _reviewSnapshot.clear();
         if (auth.currentUser == null) {
           snap = await FirebaseFirestore.instance
               .collection("reviews")
@@ -50,7 +51,10 @@ class ReviewProvider with ChangeNotifier {
               .limit(documentLimit)
               .get();
         }
+        debugPrint("done loading reviews without users");
       } else {
+        _reviewSnapshot.clear();
+
         if (auth.currentUser == null) {
           snap = await FirebaseFirestore.instance
               .collection("reviews")
@@ -62,13 +66,13 @@ class ReviewProvider with ChangeNotifier {
         } else {
           snap = await FirebaseFirestore.instance
               .collection("reviews")
-              .where("userId", isEqualTo: auth.currentUser!.uid)
               .where("foodId", isEqualTo: foodId)
               .orderBy("created_at")
               .startAfterDocument(_startAfter)
               .limit(documentLimit)
               .get();
         }
+        debugPrint("done loading reviews with users");
       }
       debugPrint("loading reviews");
       _reviewSnapshot.addAll(snap.docs);

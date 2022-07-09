@@ -376,7 +376,7 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                           placeholder:
                                                               (_, __) =>
                                                                   Lottie.asset(
-                                                            "assets/loading.5.json",
+                                                            "assets/menu-loading.json",
                                                             width:
                                                                 double.infinity,
                                                             height:

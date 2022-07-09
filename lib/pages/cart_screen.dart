@@ -324,7 +324,7 @@ class _CartScreenState extends State<CartScreen> {
 
                               Chat newChat = Chat(
                                 opened: false,
-                                senderName: user!.name.toString(),
+                                senderName: user.name.toString(),
                                 userId: FirebaseAuth.instance.currentUser!.uid,
                                 lastMessageTime: DateTime.now(),
                                 lastmessage:
@@ -341,7 +341,7 @@ class _CartScreenState extends State<CartScreen> {
                               _cartData.checkout(
                                   isHomeDelivery: homeDelivery,
                                   context: context,
-                                  deliveryCost: deliveryCost);
+                                  deliveryCost: restaurant.deliveryCost);
                             }
 
                             debugPrint("Checkout cart");

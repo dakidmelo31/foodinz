@@ -11,6 +11,23 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 enum OrderStatus { pending, processing, ready, complete }
 
+final List<String> _categories = [
+  "Breakfast",
+  "Lunch",
+  "Dinner",
+  "Road side",
+  "Beef",
+  "Dessert",
+  "Groceries",
+  "Specials",
+  "Simple",
+  "Traditional",
+  "Home Delivery",
+  "Vegitarian",
+  "Casual",
+  "Classic"
+];
+
 Future<void> sendNotif(
     {required String title,
     required String description,

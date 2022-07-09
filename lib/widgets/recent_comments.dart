@@ -7,14 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../models/food_coment.dart';
+import '../models/review_models.dart';
 import '../themes/light_theme.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class RecentComments extends StatefulWidget {
-  RecentComments({Key? key, required this.restaurantId, required this.isMeal})
+  const RecentComments(
+      {Key? key,
+      required this.restaurantId,
+      required this.isMeal,
+      required this.name})
       : super(key: key);
-  final String restaurantId;
+  final String restaurantId, name;
   final bool isMeal;
 
   @override
@@ -33,13 +38,7 @@ class _RecentCommentsState extends State<RecentComments> {
   int limit = 10;
   @override
   Widget build(BuildContext context) {
-    int convertInt(dynamic value) {
-      if (value == null) return 0;
-      var myInt = value;
-      int newInt = myInt as int;
-
-      return newInt;
-    }
+    Size size = MediaQuery.of(context).size;
 
     debugPrint("is it a meal? ${widget.isMeal}");
     return SingleChildScrollView(
@@ -48,257 +47,179 @@ class _RecentCommentsState extends State<RecentComments> {
         horizontal: 5,
         vertical: 30,
       ),
-      child: StreamBuilder<QuerySnapshot>(
-          stream: firestore
-              .collection("reviews")
-              .where(widget.isMeal ? "foodId" : "restaurantId",
-                  isEqualTo: widget.restaurantId)
-              .orderBy("created_at", descending: true)
-              .limit(limit)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              debugPrint(" find the error here " + snapshot.error.toString());
-              return Material(
-                color: Colors.transparent,
-                child: Column(
-                  children: [
-                    const Text("No comments available"),
-                  ],
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  Icon(
+                    Icons.star_rounded,
+                    color: Theme.of(context).primaryColor,
+                    size: 77.0,
+                  ),
+                  Text("All Reviews")
+                ],
+              ),
+              SizedBox(
+                width: size.width * .65,
+                child: Text(
+                  widget.name,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w800, fontSize: 24.0),
                 ),
-              );
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Lottie.asset(
-                "assets/search-list.json",
-                width: 300,
-                height: 200,
-                fit: BoxFit.contain,
-                alignment: Alignment.topCenter,
-                reverse: true,
-                options: LottieOptions(enableMergePaths: true),
-              );
-            }
-            if (snapshot.data!.docs.length > limit) loadMore = true;
+              ),
+            ],
+          ),
+          StreamBuilder<QuerySnapshot>(
+              stream: firestore
+                  .collection("reviews")
+                  .where(widget.isMeal ? "foodId" : "restaurantId",
+                      isEqualTo: widget.restaurantId)
+                  .orderBy("created_at", descending: true)
+                  .limit(limit)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  debugPrint(
+                      " find the error here " + snapshot.error.toString());
+                  return Material(
+                    color: Colors.transparent,
+                    child: Column(
+                      children: const [
+                        Text("No comments available"),
+                      ],
+                    ),
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Lottie.asset(
+                    "assets/search-list.json",
+                    width: 300,
+                    height: 200,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topCenter,
+                    reverse: true,
+                    options: LottieOptions(enableMergePaths: true),
+                  );
+                }
+                if (snapshot.data!.docs.length > limit) loadMore = true;
 
-            int loadMoreBtn = limit - 1;
+                int loadMoreBtn = limit - 1;
 
-            List<Comment> allComments = [];
-            var counter = 0;
-            for (var data in snapshot.data!.docs) {
-              if (counter >= limit) break;
-              counter++;
-              String documentId = data.id;
-              final comment = Comment(
-                foodId: data['foodId'],
-                restaurantId: data['restaurantId'],
-                commentId: documentId,
-                stars: convertInt(data['stars']),
-                description: data['description'],
-                name: FirebaseAuth.instance.currentUser != null &&
-                        FirebaseAuth.instance.currentUser!.uid == data["userId"]
-                    ? "You"
-                    : data["name"],
-                userId: data["userId"],
-                image: data['image'],
-                created_at: data['created_at'],
-              );
-              allComments.add(comment);
-            }
+                List<ReviewModel> allComments = [];
+                var counter = 0;
+                allComments = snapshot.data!.docs.map((e) {
+                  final review = e.data() as Map<String, dynamic>;
+                  var current = ReviewModel.fromMap(review);
+                  current.reviewId = e.id;
+                  return current;
+                }).toList();
 
-            return Column(
-              children: [
-                if (snapshot.data!.docs.isNotEmpty)
-                  Column(
-                    children: allComments.map(
-                      (data) {
-                        String documentId = data.commentId;
-
-                        if (loadMoreBtn < 1) {
-                          return Column(
-                            children: [
-                              Card(
-                                color: FirebaseAuth.instance.currentUser !=
-                                            null &&
-                                        FirebaseAuth
-                                                .instance.currentUser!.uid ==
-                                            data.userId
-                                    ? const Color.fromARGB(255, 200, 255, 202)
-                                    : Colors.transparent,
-                                elevation:
-                                    FirebaseAuth.instance.currentUser != null &&
-                                            FirebaseAuth.instance.currentUser!
-                                                    .uid ==
-                                                data.userId
-                                        ? 10
-                                        : 0,
-                                shadowColor: Colors.black.withOpacity(.15),
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 8),
-                                child: Column(
-                                  children: [
-                                    Row(
+                return Column(
+                  children: [
+                    if (allComments.isNotEmpty)
+                      Column(
+                        children: allComments.map(
+                          (item) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 30.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
                                         children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ClipOval(
-                                                child: CachedNetworkImage(
-                                                  imageUrl: data.image,
-                                                  errorWidget:
-                                                      (_, index, stackTrace) {
-                                                    return Lottie.asset(
-                                                      "assets/no-connection2.json",
-                                                      fit: BoxFit.contain,
-                                                      alignment:
-                                                          Alignment.center,
-                                                      width: 34,
-                                                      height: 34,
-                                                    );
-                                                  },
-                                                  fit: BoxFit.cover,
-                                                  alignment: Alignment.center,
-                                                  width: 34,
-                                                  height: 34,
-                                                  maxHeightDiskCache: 34,
-                                                  maxWidthDiskCache: 34,
-                                                  memCacheHeight: 34,
-                                                  memCacheWidth: 34,
-                                                ),
-                                              ),
-                                              Text(
-                                                data.name,
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Column(
-                                            children: [
-                                              data.ratingBar(),
-                                              Text(
-                                                timeago.format(
-                                                    data.created_at.toDate(),
-                                                    allowFromNow: true,
-                                                    locale: 'en'),
-                                                style: const TextStyle(
-                                                    fontSize: 12),
-                                              )
-                                            ],
-                                          ),
-                                        ]),
-                                    Padding(
-                                      padding: const EdgeInsets.all(14.0),
-                                      child: Text(data.description),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(28.0),
-                                child: TextButton(
-                                    onPressed: () {
-                                      limit += 20;
-                                    },
-                                    child: const Text("Load More")),
-                              )
-                            ],
-                          );
-                        }
-                        loadMoreBtn--;
-                        return Card(
-                          color: FirebaseAuth.instance.currentUser != null &&
-                                  FirebaseAuth.instance.currentUser!.uid ==
-                                      data.userId
-                              ? const Color.fromARGB(255, 200, 255, 202)
-                              : Colors.transparent,
-                          elevation:
-                              FirebaseAuth.instance.currentUser != null &&
-                                      FirebaseAuth.instance.currentUser!.uid ==
-                                          data.userId
-                                  ? 10
-                                  : 0,
-                          shadowColor: Colors.black.withOpacity(.15),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 8),
-                          child: Column(
-                            children: [
-                              Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ClipOval(
-                                          child: CachedNetworkImage(
-                                            imageUrl: data.image,
-                                            errorWidget:
-                                                (_, index, stackTrace) {
-                                              return Lottie.asset(
-                                                "assets/no-connection2.json",
-                                                fit: BoxFit.contain,
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: ClipOval(
+                                              child: CachedNetworkImage(
+                                                imageUrl: item.avatar,
                                                 alignment: Alignment.center,
-                                                width: 34,
-                                                height: 34,
-                                              );
-                                            },
-                                            fit: BoxFit.cover,
-                                            alignment: Alignment.center,
-                                            width: 34,
-                                            height: 34,
-                                            maxHeightDiskCache: 34,
-                                            maxWidthDiskCache: 34,
-                                            memCacheHeight: 34,
-                                            memCacheWidth: 34,
+                                                fit: BoxFit.cover,
+                                                errorWidget: (_, __, ___) =>
+                                                    Lottie.asset(
+                                                        "assets/no-connection.json"),
+                                                placeholder: (
+                                                  _,
+                                                  __,
+                                                ) =>
+                                                    Lottie.asset(
+                                                        "assets/loading7.json"),
+                                                fadeInCurve: Curves
+                                                    .fastLinearToSlowEaseIn,
+                                                width: 45.0,
+                                                height: 45.0,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          data.name,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
+                                          Text(
+                                            item.username,
+                                            style: const TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.w400),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12.0),
+                                    child: Row(
                                       children: [
-                                        data.ratingBar(),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              for (var i = 0; i < 5; i++)
+                                                Icon(
+                                                  Icons.star_rounded,
+                                                  color: i <= item.rating
+                                                      ? Colors.green
+                                                      : Colors.grey
+                                                          .withOpacity(.3),
+                                                  size: 15.0,
+                                                ),
+                                            ],
+                                          ),
+                                        ),
                                         Text(
-                                          timeago.format(
-                                              data.created_at.toDate(),
-                                              allowFromNow: true,
-                                              locale: 'en'),
-                                          style: const TextStyle(fontSize: 12),
+                                          item.created_at.day.toString() +
+                                              "/" +
+                                              item.created_at.month.toString() +
+                                              "/" +
+                                              item.created_at.year.toString(),
+                                          style: const TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.w400),
                                         )
                                       ],
                                     ),
-                                  ]),
-                              Padding(
-                                padding: const EdgeInsets.all(14.0),
-                                child: Text(data.description),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          size.width - ((size.width / 30) * 2),
+                                      child: Text(item.description))
+                                ],
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                    ).toList(),
-                  ),
-              ],
-            );
-          }),
+                            );
+                          },
+                        ).toList(),
+                      ),
+                  ],
+                );
+              }),
+        ],
+      ),
     );
   }
 }

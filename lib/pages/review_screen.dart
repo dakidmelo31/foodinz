@@ -24,17 +24,25 @@ class ReviewScreen extends StatefulWidget {
 }
 
 class _ReviewScreenState extends State<ReviewScreen> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController =
+      ScrollController(initialScrollOffset: 0.0);
+
+  initiateReviews() {
+    widget.provider.fetchNextReviews(foodId: widget.foodId);
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(scrollListener);
-    widget.provider.fetchNextReviews(foodId: widget.foodId);
+    initiateReviews();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -57,8 +65,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
         color: Colors.white,
         child: SafeArea(
           child: CustomScrollView(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics()),
             dragStartBehavior: DragStartBehavior.down,
             controller: _scrollController,
             slivers: [
@@ -68,11 +76,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.close_rounded,
                       ))
                 ],
-                title: Text("All Reviews"),
+                title: const Text("All Reviews"),
                 automaticallyImplyLeading: false,
                 backgroundColor: Colors.white,
                 expandedHeight: 160.0,
@@ -100,7 +108,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                         child: Text(
                           widget.name,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontWeight: FontWeight.w800, fontSize: 24.0),
                         ),
                       ),
@@ -109,11 +117,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 ),
               ),
               SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  ReviewModel item = widget.provider.reviews[index];
+                delegate:
+                    SliverChildListDelegate(widget.provider.reviews.map((item) {
                   return Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 15.0, vertical: 30.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15.0, vertical: 30.0),
                     child: Column(
                       children: [
                         Row(
@@ -145,15 +153,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                 ),
                                 Text(
                                   item.username,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 15.0,
                                       fontWeight: FontWeight.w400),
                                 ),
                               ],
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.delete_rounded, size: 15),
                             ),
                           ],
                         ),
@@ -182,7 +186,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                     item.created_at.month.toString() +
                                     "/" +
                                     item.created_at.year.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 15.0,
                                     fontWeight: FontWeight.w400),
                               )
@@ -195,7 +199,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       ],
                     ),
                   );
-                }, childCount: widget.provider.reviews.length),
+                }).toList()),
               )
             ],
           ),

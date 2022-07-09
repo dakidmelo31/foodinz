@@ -124,7 +124,8 @@ class _MealGalleryState extends State<MealGallery> {
                       context: context,
                       builder: (_) {
                         return SingleChildScrollView(
-                          child: CommentList(foodId: meal.foodId),
+                          child:
+                              CommentList(name: meal.name, foodId: meal.foodId),
                         );
                       });
                 },

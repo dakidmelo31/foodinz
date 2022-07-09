@@ -57,7 +57,9 @@ class RestaurantInfoTable extends StatelessWidget {
                   builder: (_) {
                     return SingleChildScrollView(
                       child: RecentComments(
-                          isMeal: false, restaurantId: restaurant.restaurantId),
+                          name: "",
+                          isMeal: false,
+                          restaurantId: restaurant.restaurantId),
                     );
                   });
             },

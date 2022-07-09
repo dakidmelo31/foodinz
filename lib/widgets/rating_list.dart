@@ -9,8 +9,9 @@ import '../models/food_coment.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CommentList extends StatelessWidget {
-  const CommentList({Key? key, required this.foodId}) : super(key: key);
-  final String foodId;
+  const CommentList({Key? key, required this.foodId, required this.name})
+      : super(key: key);
+  final String foodId, name;
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -21,6 +22,7 @@ class CommentList extends StatelessWidget {
         height: size.height,
         child: Material(
           child: RecentComments(
+            name: name,
             restaurantId: foodId,
             isMeal: true,
           ),

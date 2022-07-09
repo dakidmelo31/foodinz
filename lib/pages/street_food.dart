@@ -13,20 +13,28 @@ import '../providers/cart.dart';
 import '../providers/data.dart';
 import '../themes/light_theme.dart';
 
-class StreetFood extends StatelessWidget {
+class StreetFood extends StatefulWidget {
   const StreetFood({Key? key}) : super(key: key);
 
+  @override
+  State<StreetFood> createState() => _StreetFoodState();
+}
+
+class _StreetFoodState extends State<StreetFood> {
   @override
   Widget build(BuildContext context) {
     final restaurantData = Provider.of<RestaurantData>(context, listen: false);
     final _cartData = Provider.of<CartData>(context, listen: true);
-    List<Food> mealList = [];
-    final _mealList = Provider.of<MealsData>(context, listen: true).meals;
-    _mealList.map((element) {
-      if (element.categories.contains("shawarma")) {
-        mealList.add(element);
+    List<Food> _mealList = [];
+    final _mealsData = Provider.of<MealsData>(context, listen: true).meals;
+
+    _mealsData.map((element) {
+      if (element.categories.contains("Breakfast")) {
+        _mealList.add(element);
+        debugPrint("Data now going " + _mealList.length.toString());
       }
     });
+    debugPrint("running throught here " + _mealList.length.toString());
 
     // debugPrint(shawarmaMeals.length.toString());
     final size = MediaQuery.of(context).size;
@@ -45,16 +53,16 @@ class StreetFood extends StatelessWidget {
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
                 scrollDirection: Axis.horizontal,
-                itemCount: mealList.length,
+                itemCount: _mealList.length,
                 itemBuilder: (_, index) {
-                  final Food food = mealList[index];
+                  final Food food = _mealList[index];
 
                   final isAlreadyInCart =
                       _cartData.isAlreadyInCart(foodId: food.foodId);
 
                   final restaurant = restaurantData.selectRestaurant(
                       restaurantId: food.restaurantId);
-                  int rating = food.averageRating.toInt();
+                  int rating = food.comments;
                   List<Widget> ratings = [];
                   for (int i = 0; i < 5; i++) {
                     if (rating <= 1) {

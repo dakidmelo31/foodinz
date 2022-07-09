@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodinz/providers/auth.dart';
+import 'package:foodinz/providers/meals.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -142,6 +143,23 @@ class _ReviewFormState extends State<ReviewForm> {
                       }).catchError((onError) {
                         debugPrint(onError.toString());
                       });
+
+                      FirebaseFirestore.instance
+                          .collection("meals")
+                          .doc(meal.foodId)
+                          .get()
+                          .then((value) {
+                        var data = value["comments"] as int;
+                        data += 1;
+                        Provider.of<MealsData>(context, listen: false)
+                            .getMeal(meal.foodId)
+                            .comments = data;
+                        FirebaseFirestore.instance
+                            .collection("meals")
+                            .doc(meal.foodId)
+                            .update({"comments": data});
+                      });
+
                       Navigator.pop(context, true);
                     }),
                 const SizedBox(
