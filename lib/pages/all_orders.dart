@@ -71,7 +71,6 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
     final userData = Provider.of<MyData>(context);
     final _restaurantsData = Provider.of<RestaurantData>(context);
 
-    final meals = mealsData.meals;
     final size = MediaQuery.of(context).size;
 
     List<String> list = List.generate(20, (index) => faker.lorem.sentence());

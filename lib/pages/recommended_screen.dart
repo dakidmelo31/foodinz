@@ -6,8 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/models/user.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/pages/street_food.dart';
@@ -135,10 +133,6 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
     final mealsData = Provider.of<MealsData>(context);
 
     final _restaurantsData = Provider.of<RestaurantData>(context);
-    final cafeMeals = mealsData.cafeMeals;
-    final streetMeals = mealsData.streetMeals;
-    final homeDelivery = mealsData.homeDelivery;
-    final traditionalMeals = mealsData.traditionalMeals;
     final _categoryData = Provider.of<CategoryData>(context);
 
     final meals = mealsData.meals;
@@ -172,8 +166,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                           child: InkWell(
                             onTap: () {
                               debugPrint("move");
-                              Navigator.push(
-                                  context, FadeSearch(page: SearchScreen()));
+                              Navigator.push(context,
+                                  FadeSearch(page: const SearchScreen()));
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
@@ -597,8 +591,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                           middleColor: Colors.orange,
                           transitionType: ContainerTransitionType.fadeThrough,
                           tappable: true,
-                          openBuilder: (_, closedContainer) => ViewCategory(
-                              mealCategory: cafeMeals, title: " Cafe Meals"),
+                          openBuilder: (_, closedContainer) =>
+                              const ViewCategory(title: " Cafe"),
                         ),
                         const StreetFood(),
                         const SizedBox(
@@ -626,8 +620,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                           middleColor: Colors.orange,
                           transitionType: ContainerTransitionType.fadeThrough,
                           tappable: true,
-                          openBuilder: (_, closedContainer) => ViewCategory(
-                              mealCategory: cafeMeals, title: "Popular"),
+                          openBuilder: (_, closedContainer) =>
+                              ViewCategory(title: "Popular"),
                         ),
 
                         SizedBox(

@@ -3,22 +3,29 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/meal_details.dart';
+import 'package:foodinz/providers/meals.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 import '../models/food.dart';
 import '../themes/light_theme.dart';
 
 class ViewCategory extends StatelessWidget {
-  const ViewCategory(
-      {Key? key, required this.title, required this.mealCategory})
-      : super(key: key);
+  const ViewCategory({Key? key, required this.title}) : super(key: key);
   final String title;
-  final List<Food> mealCategory;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    List<Food> mealList = [];
+    final _mealList = Provider.of<MealsData>(context, listen: true).meals;
+    _mealList.map((element) {
+      if (element.categories.contains(title)) {
+        mealList.add(element);
+      }
+    });
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -31,16 +38,16 @@ class ViewCategory extends StatelessWidget {
           height: size.height,
           width: size.width,
           child: GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 2 / 3,
               mainAxisSpacing: 1,
               crossAxisSpacing: 3,
             ),
             physics: const BouncingScrollPhysics(),
-            itemCount: mealCategory.length,
+            itemCount: mealList.length,
             itemBuilder: (_, index) {
-              Food meal = mealCategory[index];
+              Food meal = mealList[index];
               final String myTag = meal.foodId +
                   (Random().nextDouble() * 999999999999).toString();
 

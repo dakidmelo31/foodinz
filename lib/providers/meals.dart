@@ -9,6 +9,7 @@ import '../models/food.dart';
 import 'message_database.dart';
 
 class MealsData with ChangeNotifier {
+  List<Food> meals = [];
   static int convertInt(dynamic value) {
     if (value == null) return 0;
     var myInt = value;
@@ -52,13 +53,6 @@ class MealsData with ChangeNotifier {
   }
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  List<Food> meals = [],
-      popularMeals = [],
-      streetMeals = [],
-      cafeMeals = [],
-      traditionalMeals = [],
-      shawarmaMeals = [],
-      homeDelivery = [];
   List<Food> restaurantMenu = [];
   List<Food> searchList = [];
   List<Food> search({required String keyword}) {
@@ -162,49 +156,6 @@ class MealsData with ChangeNotifier {
               fd,
             );
           }
-
-          for (Food food in meals) {
-            for (String cat in food.categories) {
-              switch (cat.toLowerCase()) {
-                case "cafe":
-                case "cafe food":
-                  cafeMeals
-                      .removeWhere((element) => element.foodId == food.foodId);
-
-                  cafeMeals.add(food);
-                  break;
-
-                case "special dish":
-                case "specials":
-                  traditionalMeals
-                      .removeWhere((element) => element.foodId == food.foodId);
-                  traditionalMeals.add(food);
-                  break;
-
-                case "classic":
-                case "classic food":
-                  cafeMeals
-                      .removeWhere((element) => element.foodId == food.foodId);
-                  cafeMeals.add(food);
-                  break;
-
-                case "street":
-                case "street food":
-                  streetMeals
-                      .removeWhere((element) => element.foodId == food.foodId);
-
-                  streetMeals.add(food);
-                  break;
-                case "shawarma":
-                case "shawarma special":
-                  shawarmaMeals
-                      .removeWhere((element) => element.foodId == food.foodId);
-
-                  shawarmaMeals.add(food);
-                  break;
-              }
-            }
-          }
         })
         .then((value) {})
         .whenComplete(() {
@@ -266,7 +217,6 @@ class MealsData with ChangeNotifier {
       required String foodId,
       required dynamic value,
       required String name}) async {
-    WriteBatch batch = FirebaseFirestore.instance.batch();
     final _prefs = await SharedPreferences.getInstance();
     if (_prefs.containsKey(foodId)) {
       debugPrint("already liked");

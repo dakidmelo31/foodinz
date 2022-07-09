@@ -1,9 +1,8 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 const Duration transitionDuration = Duration(milliseconds: 400);
@@ -73,6 +72,20 @@ updateData(
   //     .set({field: data}, SetOptions(merge: true)).then(
   //   (value) => debugPrint("update info"),
   // );
+}
+
+updateAllData(
+    {required String collection,
+    required String doc,
+    required dynamic data,
+    required String field}) async {
+  // await FirebaseFirestore.instance.collection("reviews").doc(doc).delete();
+  FirebaseFirestore.instance
+      .collection(collection)
+      .doc(doc)
+      .set({field: data}, SetOptions(merge: true)).then(
+    (value) => debugPrint("update info"),
+  );
 }
 
 Color getColor({required String status}) {

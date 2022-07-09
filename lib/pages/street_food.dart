@@ -18,13 +18,17 @@ class StreetFood extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shawarmaMeals =
-        Provider.of<MealsData>(context, listen: true).shawarmaMeals;
     final restaurantData = Provider.of<RestaurantData>(context, listen: false);
     final _cartData = Provider.of<CartData>(context, listen: true);
+    List<Food> mealList = [];
+    final _mealList = Provider.of<MealsData>(context, listen: true).meals;
+    _mealList.map((element) {
+      if (element.categories.contains("shawarma")) {
+        mealList.add(element);
+      }
+    });
 
     // debugPrint(shawarmaMeals.length.toString());
-    String imageUrl = "";
     final size = MediaQuery.of(context).size;
     return Container(
       color: Colors.orange.withOpacity(.13),
@@ -41,9 +45,9 @@ class StreetFood extends StatelessWidget {
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
                 scrollDirection: Axis.horizontal,
-                itemCount: shawarmaMeals.length,
+                itemCount: mealList.length,
                 itemBuilder: (_, index) {
-                  final Food food = shawarmaMeals[index];
+                  final Food food = mealList[index];
 
                   final isAlreadyInCart =
                       _cartData.isAlreadyInCart(foodId: food.foodId);

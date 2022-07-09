@@ -60,7 +60,7 @@ class _MealsBlockState extends State<MealsBlock> {
           transitionType: ContainerTransitionType.fadeThrough,
           tappable: true,
           openBuilder: (_, closedContainer) =>
-              ViewCategory(mealCategory: filteredList, title: widget.title),
+              ViewCategory(title: widget.title),
         ),
         SizedBox(
           height: size.height * .42,
