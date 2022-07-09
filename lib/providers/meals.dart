@@ -132,23 +132,21 @@ class MealsData with ChangeNotifier {
             //     "going through $foodId now and items of meals array are ${meals.length}");
 
             Food fd = Food(
-              favorite: false,
-              foodId: foodId,
-              likes: convertInt(data['likes']),
-              description: data['description'],
-              comments: convertInt(data['comments']),
-              name: data["name"],
-              available: data["available"],
-              image: data['image'],
-              averageRating: convertInt(data["averageRating"])
-                  .toDouble(), //int.parse(data['averageRating'])
-              price: convertDouble(data['price']) + 0.0,
-              restaurantId: data['restaurantId'],
-              gallery: convertString(data['gallery']),
-              accessories: convertList(data['accessories']),
-              duration: data['duration'],
-              categories: convertList(data['categories']),
-            );
+                favorite: false,
+                foodId: foodId,
+                likes: convertInt(data['likes']),
+                description: data['description'],
+                comments: convertInt(data['comments']),
+                name: data["name"],
+                available: data["available"],
+                image: data['image'],
+                averageRating: convertInt(data["averageRating"]).toDouble(),
+                price: convertDouble(data['price']) + 0.0,
+                restaurantId: data['restaurantId'],
+                gallery: List<String>.from(data['gallery']),
+                accessories: List<String>.from(data['accessories']),
+                duration: data['duration'],
+                categories: List<String>.from(data['categories']));
 
             fd.favorite =
                 await DBManager.instance.checkFavorite(foodId: foodId);
@@ -217,6 +215,7 @@ class MealsData with ChangeNotifier {
       required String foodId,
       required dynamic value,
       required String name}) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
     final _prefs = await SharedPreferences.getInstance();
     if (_prefs.containsKey(foodId)) {
       debugPrint("already liked");

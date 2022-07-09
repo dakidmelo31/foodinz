@@ -129,6 +129,7 @@ class _MySettingsState extends State<MySettings> {
                                                 child: ClipOval(
                                                   child: InkWell(
                                                     onTap: () {
+                                                      
                                                       showCupertinoDialog(
                                                           barrierDismissible:
                                                               true,

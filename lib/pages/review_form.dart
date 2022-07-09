@@ -37,11 +37,11 @@ class _ReviewFormState extends State<ReviewForm> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                Text("Add a review", style: Primary.bigHeading),
-                SizedBox(
+                const Text("Add a review", style: Primary.bigHeading),
+                const SizedBox(
                   height: 20,
                 ),
                 Lottie.network(
@@ -117,7 +117,7 @@ class _ReviewFormState extends State<ReviewForm> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 const Spacer(flex: 1),
@@ -125,27 +125,26 @@ class _ReviewFormState extends State<ReviewForm> {
                     child: const Text("Add review"),
                     onPressed: () {
                       if (review == 0) debugPrint("add review");
-                      final faker = fk.Faker();
-                        FirebaseFirestore.instance.collection("reviews").add({
-                          "restaurantId": meal.restaurantId,
-                          "foodId": meal.foodId,
-                          "name": meal.name,
-                          "image": meal.image,
-                          "description": _reviewController.text,
-                          "userId": FirebaseAuth.instance.currentUser!.uid,
-                          "username": _userData.user!.name,
-                          "avatar": _userData.user!.image,
-                          "stars": review,
-                          "created_at": FieldValue.serverTimestamp(),
-                        }).then((value) {
-                          debugPrint("done adding review");
-                          _reviewController.text = "";
-                        }).catchError((onError) {
-                          debugPrint(onError.toString());
-                        });
-                      Navigator.maybePop(context, true);
+                      FirebaseFirestore.instance.collection("reviews").add({
+                        "restaurantId": meal.restaurantId,
+                        "foodId": meal.foodId,
+                        "name": meal.name,
+                        "image": meal.image,
+                        "description": _reviewController.text,
+                        "userId": FirebaseAuth.instance.currentUser!.uid,
+                        "username": _userData.user!.name,
+                        "avatar": _userData.user!.image,
+                        "stars": review,
+                        "created_at": FieldValue.serverTimestamp(),
+                      }).then((value) {
+                        debugPrint("done adding review");
+                        _reviewController.text = "";
+                      }).catchError((onError) {
+                        debugPrint(onError.toString());
+                      });
+                      Navigator.pop(context, true);
                     }),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
               ]),

@@ -12,27 +12,44 @@ FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class MyData with ChangeNotifier {
-  late UserModel user;
+  UserModel user = UserModel(
+      name: "name",
+      image: "image",
+      userId: 'userId',
+      phone: 'phone',
+      lat: 0,
+      long: 0);
   MyData() {
     loadUser();
     isLocationSet();
   }
+
+  bool loadingUser = true;
   loadUser() async {
+    loadingUser = true;
     var userTokenId = await getToken();
+    debugPrint("show me this");
     if (userTokenId == null) {
       debugPrint("no token found");
     } else {
       debugPrint("user token is this: $userTokenId");
     }
-    await _firestore
-        .collection("users")
-        .doc(auth.currentUser!.uid)
-        .get()
-        .then((value) {
-      user = UserModel.fromMap(value.data()!);
-      debugPrint("User Image URL IS: " + user.image.toString());
-      notifyListeners();
-    });
+
+    if (user.name == "name") {
+      await _firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .get()
+          .then((value) {
+        user = UserModel.fromMap(value.data()!);
+        debugPrint("User Image URL IS: " + user.image.toString());
+        user.userId = value.id;
+      });
+    } else {
+      debugPrint("user already exists");
+    }
+    loadingUser = false;
+    notifyListeners();
   }
 
   isLocationSet() async {

@@ -286,7 +286,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           var map =
                               chatMessages[chatMessages.length - 1 - index];
                           Chat msg = Chat(
-                            senderName: user.name.toString(),
+                            senderName: user!.name.toString(),
                             opened: map['opened'] ?? true,
                             messageId: map.id,
                             restaurantId: map['restaurantId'],
@@ -583,7 +583,7 @@ class _TextWidgetState extends State<TextWidget> {
                 onPressed: () async {
                   Chat chat = Chat(
                     opened: false,
-                    senderName: user.name.toString(),
+                    senderName: user!.name.toString(),
                     lastMessageTime: DateTime.now(),
                     lastmessage: _editingController.text,
                     restaurantId: restaurant.restaurantId,

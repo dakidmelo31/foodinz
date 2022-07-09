@@ -34,11 +34,30 @@ class _StartPageState extends State<StartPage> {
             Navigator.pushReplacement(
                 context,
                 PageRouteBuilder(
-                  transitionDuration: const Duration(milliseconds: 850),
+                  transitionDuration: const Duration(milliseconds: 300),
                   pageBuilder: (context, animation, secondaryAnimation) {
-                    return FadeTransition(
-                      opacity: animation,
+                    animation = CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.fastLinearToSlowEaseIn);
+
+                    return SizeTransition(
+                      sizeFactor: animation,
+                      axis: Axis.vertical,
+                      axisAlignment: 0.0,
                       child: const Home(),
+                    );
+                  },
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    animation = CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.fastLinearToSlowEaseIn);
+
+                    return SizeTransition(
+                      sizeFactor: animation,
+                      axis: Axis.vertical,
+                      axisAlignment: 0.0,
+                      child: child,
                     );
                   },
                 ));

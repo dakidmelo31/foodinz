@@ -168,7 +168,7 @@ class RestaurantDetails extends StatelessWidget {
                           if (currentUser != null) {
                             Chat chat = Chat(
                               opened: false,
-                              senderName: user.name.toString(),
+                              senderName: user!.name.toString(),
                               lastMessageTime: DateTime.now(),
                               lastmessage: "",
                               restaurantId: restaurant.restaurantId,
