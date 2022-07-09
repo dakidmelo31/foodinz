@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodinz/models/cloud_notification.dart';
 import 'package:foodinz/providers/api_helper.dart';
+import 'package:foodinz/providers/reviews.dart';
 import 'package:provider/provider.dart';
 import 'package:foodinz/firebase_options.dart';
 import 'package:foodinz/pages/home.dart';
@@ -129,6 +130,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => BookmarkData()),
         ChangeNotifierProvider(create: (_) => BookmarkData()),
         ChangeNotifierProvider(create: (_) => MyData()),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
       ],
       child: MaterialApp(
           // showPerformanceOverlay: true,

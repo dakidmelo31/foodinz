@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:foodinz/pages/review_screen.dart';
+import 'package:foodinz/providers/reviews.dart';
 import 'package:foodinz/widgets/food_info_table.dart';
 import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
@@ -14,7 +16,6 @@ import '../providers/bookmarks.dart';
 import '../providers/cart.dart';
 import '../providers/meals.dart';
 import '../widgets/meal_gallery_slideshow.dart';
-import '../widgets/rating_list.dart';
 import 'review_form.dart';
 
 class FoodDetails extends StatefulWidget {
@@ -45,7 +46,6 @@ class _FoodDetailsState extends State<FoodDetails>
     _animation =
         CurvedAnimation(parent: _animationController, curve: Curves.decelerate);
     _animationController.forward();
-    // TODO: implement initState
     super.initState();
   }
 
@@ -63,6 +63,8 @@ class _FoodDetailsState extends State<FoodDetails>
     final isAlreadyInCart = _cart.isAvailable(meal.foodId);
     final currentBookmarkState =
         _bookmarksData.isBookmarked(foodId: meal.foodId);
+
+    final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
 
     if (updateCount) {
       updateCount = false;
@@ -390,22 +392,48 @@ class _FoodDetailsState extends State<FoodDetails>
                                   flex: 1,
                                   child: InkWell(
                                     onTap: () {
-                                      showCupertinoModalBottomSheet(
-                                          duration:
-                                              const Duration(milliseconds: 600),
-                                          animationCurve: Curves.bounceIn,
-                                          bounce: true,
-                                          enableDrag: true,
-                                          expand: true,
-                                          isDismissible: true,
-                                          topRadius: const Radius.circular(40),
-                                          context: context,
-                                          builder: (_) {
-                                            return SingleChildScrollView(
-                                              child: CommentList(
-                                                  foodId: meal.foodId),
-                                            );
-                                          });
+                                      Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                              transitionDuration:
+                                                  Duration(milliseconds: 500),
+                                              reverseTransitionDuration:
+                                                  Duration(milliseconds: 300),
+                                              transitionsBuilder: (_, animation,
+                                                  anotherAnimation, child) {
+                                                animation = CurvedAnimation(
+                                                    parent: animation,
+                                                    curve: Curves
+                                                        .fastLinearToSlowEaseIn);
+                                                return ScaleTransition(
+                                                  scale: animation,
+                                                  alignment:
+                                                      Alignment.bottomCenter,
+                                                  filterQuality:
+                                                      FilterQuality.high,
+                                                  child: child,
+                                                );
+                                              },
+                                              pageBuilder: (_, animation,
+                                                  anotherAnimation) {
+                                                animation = CurvedAnimation(
+                                                    parent: animation,
+                                                    curve: Curves
+                                                        .fastLinearToSlowEaseIn);
+                                                return ScaleTransition(
+                                                  scale: animation,
+                                                  alignment:
+                                                      Alignment.bottomCenter,
+                                                  filterQuality:
+                                                      FilterQuality.high,
+                                                  child: ReviewScreen(
+                                                      name: meal.name,
+                                                      foodId: meal.foodId,
+                                                      totalReviews:
+                                                          meal.comments,
+                                                      provider: reviewProvider),
+                                                );
+                                              }));
                                     },
                                     child: Center(
                                         child: Text(
