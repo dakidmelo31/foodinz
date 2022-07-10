@@ -5,6 +5,7 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/global.dart';
 import 'package:foodinz/models/user.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/pages/street_food.dart';
@@ -118,7 +119,7 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
     final size = MediaQuery.of(context).size;
     return AnimatedSwitcher(
       duration: const Duration(
-        milliseconds: 2200,
+        milliseconds: 2600,
       ),
       switchInCurve: Curves.fastOutSlowIn,
       switchOutCurve: Curves.fastOutSlowIn,
@@ -208,24 +209,9 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                           user?.image ?? "",
                                                       width: 40,
                                                       height: 40,
-                                                      placeholder: (_, __) =>
-                                                          const Shimmer(
-                                                              child: SizedBox(
-                                                                width: 40,
-                                                                height: 40,
-                                                              ),
-                                                              gradient:
-                                                                  LinearGradient(
-                                                                      colors: [
-                                                                    Colors
-                                                                        .white,
-                                                                    Color
-                                                                        .fromARGB(
-                                                                            255,
-                                                                            241,
-                                                                            241,
-                                                                            241)
-                                                                  ])),
+                                                      placeholder: (__, ___) =>
+                                                          Lottie.asset(
+                                                              "assets/waiting-pigeon.json"),
                                                       fit: BoxFit.cover,
                                                       alignment:
                                                           Alignment.center,
@@ -606,28 +592,17 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                 ),
 
                                 SizedBox(
-                                    width: size.width,
-                                    height: size.height * .75,
-                                    child: RestaurantsScreen(
-                                        lat: lat, long: long)),
-
-                                const MealsBlock(
-                                    filter: "traditional",
-                                    title: "Street Meals"),
-
-                                const MealsBlock(filter: "cafe", title: "Cafe"),
-
-                                const MealsBlock(
-                                    filter: "Traditional",
-                                    title: "Traditional"),
-
-                                const MealsBlock(
-                                    filter: "Desserts", title: "Desserts"),
-
+                                  width: size.width,
+                                  height: size.height * .75,
+                                  child:
+                                      RestaurantsScreen(lat: lat, long: long),
+                                ),
+                                Column(
+                                    children: globalCategories
+                                        .map((e) =>
+                                            MealsBlock(filter: e, title: e))
+                                        .toList()),
                                 const ShowcaseSlideshow(),
-
-                                const MealsBlock(
-                                    filter: "grocery", title: "Groceries"),
 
                                 SizedBox(
                                   width: size.width,

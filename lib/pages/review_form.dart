@@ -45,8 +45,7 @@ class _ReviewFormState extends State<ReviewForm> {
                 const SizedBox(
                   height: 20,
                 ),
-                Lottie.network(
-                    "https://assets5.lottiefiles.com/packages/lf20_ao823ilv.json",
+                Lottie.asset("assets/review.json",
                     width: 220,
                     height: 220,
                     fit: BoxFit.contain,
@@ -152,8 +151,8 @@ class _ReviewFormState extends State<ReviewForm> {
                         var data = value["comments"] as int;
                         data += 1;
                         Provider.of<MealsData>(context, listen: false)
-                            .getMeal(meal.foodId)
-                            .comments = data;
+                            .updateMeal(foodId: meal.foodId, newValue: data);
+
                         FirebaseFirestore.instance
                             .collection("meals")
                             .doc(meal.foodId)

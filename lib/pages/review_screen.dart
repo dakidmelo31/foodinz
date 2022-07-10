@@ -37,6 +37,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
     super.initState();
     _scrollController.addListener(scrollListener);
     initiateReviews();
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        debugPrint("should show reviews");
+      });
+    });
   }
 
   @override

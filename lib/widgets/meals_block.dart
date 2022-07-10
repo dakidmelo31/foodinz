@@ -63,7 +63,7 @@ class _MealsBlockState extends State<MealsBlock> {
               ViewCategory(title: widget.title),
         ),
         SizedBox(
-          height: size.height * .42,
+          height: filteredList.length == 1 ? size.width : size.width * .8,
           width: size.width,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -78,269 +78,323 @@ class _MealsBlockState extends State<MealsBlock> {
 
               return InkWell(
                 onTap: () {
-                  const transitionDuration = Duration(milliseconds: 700);
                   Navigator.push(
                       context,
                       PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 700),
-                          transitionsBuilder: (_, Animation<double> animation1,
-                              animation2, child) {
-                            return ScaleTransition(
-                              scale: animation1,
-                              filterQuality: FilterQuality.high,
-                              alignment: Alignment.center,
+                          transitionDuration:
+                              const Duration(milliseconds: 1200),
+                          transitionsBuilder:
+                              (_, animation1, animation2, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                      begin: const Offset(-1, 0),
+                                      end: const Offset(0, 0))
+                                  .animate(CurvedAnimation(
+                                      parent: animation1,
+                                      curve: Curves.elasticInOut)),
                               child: child,
                             );
                           },
                           pageBuilder: (_, animation, animation2) {
                             return FadeTransition(
-                              opacity: animation,
+                              opacity: CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.elasticInOut,
+                                  reverseCurve: Curves.decelerate),
                               child: FoodDetails(meal: meal, heroTag: myTag),
                             );
                           }));
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Column(children: [
-                    const SizedBox.shrink(),
-                    Expanded(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        fit: StackFit.passthrough,
-                        children: [
-                          AnimatedOpacity(
-                            curve: Curves.easeInOut,
-                            duration: const Duration(milliseconds: 450),
-                            opacity: isAlreadyInCart ? .2 : 1.0,
-                            child: Card(
-                              elevation: 5,
-                              shadowColor: Colors.grey.withOpacity(.4),
-                              child: Hero(
-                                tag: myTag,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: CachedNetworkImage(
-                                    imageUrl: meal.image,
-                                    errorWidget: (_, style, stackTrace) {
-                                      return Lottie.asset(
-                                          "assets/no-connection2.json");
-                                    },
-                                    fit: BoxFit.cover,
-                                    alignment: Alignment.center,
-                                    width: size.width * .40,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            alignment: Alignment.center,
+                            fit: StackFit.passthrough,
+                            children: [
+                              AnimatedOpacity(
+                                curve: Curves.easeInOut,
+                                duration: const Duration(milliseconds: 450),
+                                opacity: isAlreadyInCart ? .2 : 1.0,
+                                child: Hero(
+                                  tag: myTag,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    child: CachedNetworkImage(
+                                      imageUrl: meal.image,
+                                      errorWidget: (_, style, stackTrace) {
+                                        return Lottie.asset(
+                                            "assets/no-connection2.json");
+                                      },
+                                      filterQuality: FilterQuality.high,
+                                      placeholder: (__, ___) =>
+                                          Lottie.asset("assets/loading5.json"),
+                                      fit: BoxFit.cover,
+                                      alignment: Alignment.center,
+                                      width: filteredList.length == 1
+                                          ? size.width - 20
+                                          : size.width * .6,
+                                      height: filteredList.length == 1
+                                          ? size.width
+                                          : 180.0,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                          if (isAlreadyInCart)
-                            Align(
-                              alignment: Alignment.center,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    "Already in Cart",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.deepOrange,
-                                    ),
-                                  ),
-                                  TextButton.icon(
-                                    icon:
-                                        const FaIcon(FontAwesomeIcons.trashCan),
-                                    label: const Text("Drop",
-                                        style: Primary.bigHeading),
-                                    onPressed: () {
-                                      _cartData.removeFromCart(meal.foodId);
-                                      setState(() {
-                                        ScaffoldMessenger.of(context)
-                                            .hideCurrentSnackBar();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                duration: const Duration(
-                                                  milliseconds: 1550,
-                                                ),
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                dismissDirection:
-                                                    DismissDirection.down,
-                                                backgroundColor: Colors.white,
-                                                elevation: 20,
-                                                width: size.width - 70,
-                                                content: Row(
-                                                  children: [
-                                                    Flexible(
-                                                      flex: 7,
-                                                      child: Text(
-                                                        meal.name,
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis),
-                                                      ),
+                              if (isAlreadyInCart)
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        "Already in Cart",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.deepOrange,
+                                        ),
+                                      ),
+                                      TextButton.icon(
+                                        icon: const FaIcon(
+                                            FontAwesomeIcons.trashCan),
+                                        label: const Text("Drop",
+                                            style: Primary.bigHeading),
+                                        onPressed: () {
+                                          _cartData.removeFromCart(meal.foodId);
+                                          setState(() {
+                                            ScaffoldMessenger.of(context)
+                                                .hideCurrentSnackBar();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                    duration: const Duration(
+                                                      milliseconds: 1550,
                                                     ),
-                                                    const Spacer(),
-                                                    const Flexible(
-                                                      flex: 1,
-                                                      child: Text(
-                                                        " Dropped ",
-                                                        style: TextStyle(
-                                                          color: Colors.black,
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    dismissDirection:
+                                                        DismissDirection.down,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    elevation: 20,
+                                                    width: size.width - 10.0,
+                                                    content: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        Flexible(
+                                                          flex: 8,
+                                                          child: Text(
+                                                            meal.name,
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )));
-                                      });
-                                    },
-                                  )
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: size.width * .40,
-                      child: Column(
-                        children: [
-                          Text(
-                            meal.name,
-                            style: Primary.cardText,
-                          ),
-                          if (meal.likes < 10)
-                            const Icon(Icons.favorite,
-                                color: Colors.transparent, size: 14),
-                          if (meal.likes > 10)
-                            Row(
-                              children: [
-                                const Icon(Icons.favorite,
-                                    color: Colors.pink, size: 14),
-                                Text(
-                                  meal.likes > 1001
-                                      ? (meal.likes / 1000)
-                                              .toStringAsFixed(2)
-                                              .toString() +
-                                          "K"
-                                      : meal.likes > 1001
-                                          ? (meal.likes / 1000000).toString() +
-                                              "M"
-                                          : meal.likes.toString(),
-                                  style: Primary.cardText,
-                                ),
-                              ],
-                            ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  NumberFormat().format(
-                                        meal.price.toInt(),
-                                      ) +
-                                      " CFA",
-                                  style: Primary.orangeParagraph,
-                                ),
-                                Material(
-                                  elevation: 10,
-                                  color: Colors.white,
-                                  child: InkWell(
-                                    onTap: () {
-                                      if (isAlreadyInCart) {
-                                        int quantity = _cartData
-                                            .isAvailable(meal.foodId)!
-                                            .quantity;
-                                        quantity++;
-                                        _cartData.removeFromCart(meal.foodId);
-
-                                        _cartData.addToCart(Cart(
-                                          name: meal.name,
-                                          foodId: meal.foodId,
-                                          image: meal.image,
-                                          price: meal.price,
-                                          restaurantId: meal.restaurantId,
-                                          compliments: meal.compliments,
-                                          quantity: quantity,
-                                        ));
-                                      } else {
-                                        _cartData.addToCart(Cart(
-                                          name: meal.name,
-                                          foodId: meal.foodId,
-                                          image: meal.image,
-                                          price: meal.price,
-                                          restaurantId: meal.restaurantId,
-                                          compliments: meal.compliments,
-                                          quantity: 1,
-                                        ));
-                                      }
-
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              duration: const Duration(
-                                                milliseconds: 1550,
-                                              ),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              dismissDirection:
-                                                  DismissDirection.down,
-                                              backgroundColor: Colors.white,
-                                              elevation: 20,
-                                              width: size.width - 70,
-                                              content: Row(
-                                                children: [
-                                                  const Text(
-                                                    "Cart",
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                  const Spacer(),
-                                                  Text(
-                                                    _cartData.myCart.length == 1
-                                                        ? _cartData
-                                                                .myCart.length
-                                                                .toString() +
-                                                            " item"
-                                                        : _cartData
-                                                                .myCart.length
-                                                                .toString() +
-                                                            " items",
-                                                    style: const TextStyle(
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                  const Spacer(),
-                                                  Text(
-                                                    "${_cartData.total.toInt()} CFA",
-                                                    style: const TextStyle(
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )));
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: isAlreadyInCart
-                                          ? const Icon(Icons.plus_one_rounded)
-                                          : const Icon(Icons.add,
-                                              size: 30, color: Colors.black),
-                                    ),
+                                                        const Spacer(),
+                                                        const Flexible(
+                                                          flex: 2,
+                                                          child: Text(
+                                                            " Dropped",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )));
+                                          });
+                                        },
+                                      )
+                                    ],
                                   ),
                                 ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: SizedBox(
+                            width: filteredList.length == 1
+                                ? size.width
+                                : size.width * .60,
+                            child: Column(
+                              children: [
+                                Text(
+                                  meal.name,
+                                  style: TextStyle(
+                                      fontSize: filteredList.length == 1
+                                          ? 16.0
+                                          : 15.0),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (meal.likes < 10)
+                                  const Icon(Icons.favorite,
+                                      color: Colors.transparent, size: 14),
+                                if (meal.likes > 10)
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.favorite,
+                                          color: Colors.pink, size: 14),
+                                      Text(
+                                        meal.likes > 1001
+                                            ? (meal.likes / 1000)
+                                                    .toStringAsFixed(2)
+                                                    .toString() +
+                                                "K"
+                                            : meal.likes > 1001
+                                                ? (meal.likes / 1000000)
+                                                        .toString() +
+                                                    "M"
+                                                : meal.likes.toString(),
+                                        style: Primary.cardText,
+                                      ),
+                                    ],
+                                  ),
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Padding(
+                                    padding: filteredList.length > 1
+                                        ? EdgeInsets.zero
+                                        : const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          NumberFormat().format(
+                                                meal.price.toInt(),
+                                              ) +
+                                              " CFA",
+                                          style: TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.orange),
+                                        ),
+                                        Material(
+                                          elevation: 10,
+                                          color: Colors.white,
+                                          child: InkWell(
+                                            onTap: () {
+                                              if (isAlreadyInCart) {
+                                                int quantity = _cartData
+                                                    .isAvailable(meal.foodId)!
+                                                    .quantity;
+                                                quantity++;
+                                                _cartData.removeFromCart(
+                                                    meal.foodId);
+
+                                                _cartData.addToCart(Cart(
+                                                  name: meal.name,
+                                                  foodId: meal.foodId,
+                                                  image: meal.image,
+                                                  price: meal.price,
+                                                  restaurantId:
+                                                      meal.restaurantId,
+                                                  compliments: meal.compliments,
+                                                  quantity: quantity,
+                                                ));
+                                              } else {
+                                                _cartData.addToCart(Cart(
+                                                  name: meal.name,
+                                                  foodId: meal.foodId,
+                                                  image: meal.image,
+                                                  price: meal.price,
+                                                  restaurantId:
+                                                      meal.restaurantId,
+                                                  compliments: meal.compliments,
+                                                  quantity: 1,
+                                                ));
+                                              }
+
+                                              ScaffoldMessenger.of(context)
+                                                  .hideCurrentSnackBar();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      duration: const Duration(
+                                                        milliseconds: 1550,
+                                                      ),
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                      dismissDirection:
+                                                          DismissDirection.down,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      elevation: 20,
+                                                      width: size.width - 70,
+                                                      content: Row(
+                                                        children: [
+                                                          const Text(
+                                                            "Cart",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          ),
+                                                          const Spacer(),
+                                                          Text(
+                                                            _cartData.myCart
+                                                                        .length ==
+                                                                    1
+                                                                ? _cartData
+                                                                        .myCart
+                                                                        .length
+                                                                        .toString() +
+                                                                    " item"
+                                                                : _cartData
+                                                                        .myCart
+                                                                        .length
+                                                                        .toString() +
+                                                                    " items",
+                                                            style:
+                                                                const TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                          const Spacer(),
+                                                          Text(
+                                                            "${_cartData.total.toInt()} CFA",
+                                                            style:
+                                                                const TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )));
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: isAlreadyInCart
+                                                  ? const Icon(
+                                                      Icons.plus_one_rounded)
+                                                  : const Icon(Icons.add,
+                                                      size: 30,
+                                                      color: Colors.black),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10)
-                  ]),
+                          ),
+                        ),
+                        const SizedBox(height: 10)
+                      ]),
                 ),
               );
             },

@@ -2,14 +2,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:foodinz/providers/global_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqlite_api.dart';
 
-import '../models/favorite.dart';
 import '../models/food.dart';
 import 'message_database.dart';
 
 class MealsData with ChangeNotifier {
-  List<Food> meals = [];
+  List<Food> meals = [], filteredMeals = [], breakfasts = [];
+
+  void runFilter(String filter) {
+    filteredMeals.clear();
+    meals.map((e) {
+      if (e.categories.contains(filter)) {
+        breakfasts.add(e);
+      }
+    });
+    notifyListeners();
+  }
+
+  updateMeal({required String foodId, required int newValue}) {
+    getMeal(foodId).comments = newValue;
+    notifyListeners();
+  }
+
   static int convertInt(dynamic value) {
     if (value == null) return 0;
     var myInt = value;
@@ -126,40 +140,44 @@ class MealsData with ChangeNotifier {
         .collection("meals")
         .get()
         .then((QuerySnapshot querySnapshot) async {
-          for (var data in querySnapshot.docs) {
-            String foodId = data.id;
-            // debugPrint(
-            //     "going through $foodId now and items of meals array are ${meals.length}");
+      for (var data in querySnapshot.docs) {
+        String foodId = data.id;
+        // debugPrint(
+        //     "going through $foodId now and items of meals array are ${meals.length}");
 
-            Food fd = Food(
-                favorite: false,
-                foodId: foodId,
-                likes: data['likes'] as int,
-                description: data['description'],
-                comments: data['comments'] as int,
-                name: data["name"],
-                available: data["available"],
-                image: data['image'],
-                averageRating: 0,
-                price: (data['price']) as double,
-                restaurantId: data['restaurantId'],
-                gallery: List<String>.from(data['gallery']),
-                compliments: List<String>.from(data['compliments']),
-                accessories: List<String>.from(data['accessories']),
-                duration: data['duration'],
-                categories: List<String>.from(data['categories']));
+        Food fd = Food(
+            favorite: false,
+            foodId: foodId,
+            likes: data['likes'] as int,
+            description: data['description'],
+            comments: data['comments'] as int,
+            name: data["name"],
+            available: data["available"],
+            image: data['image'],
+            averageRating: 0,
+            price: (data['price']) as double,
+            restaurantId: data['restaurantId'],
+            gallery: List<String>.from(data['gallery']),
+            compliments: List<String>.from(data['accessories']),
+            accessories: List<String>.from(data['accessories']),
+            duration: data['duration'],
+            categories: List<String>.from(data['categories']));
 
-            fd.favorite =
-                await DBManager.instance.checkFavorite(foodId: foodId);
-            meals.add(
-              fd,
-            );
-          }
-        })
-        .then((value) {})
-        .whenComplete(() {
-          notifyListeners();
-        });
+        fd.favorite = await DBManager.instance.checkFavorite(foodId: foodId);
+        meals.add(
+          fd,
+        );
+      }
+    }).then((value) {
+      for (Food d in meals) {
+        if (d.categories.contains("Breakfast")) {
+          breakfasts.add(d);
+        }
+      }
+      debugPrint("loaded breakfast");
+    }).whenComplete(() {
+      notifyListeners();
+    });
   }
 
   MealsData() {

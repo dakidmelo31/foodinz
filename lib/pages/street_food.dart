@@ -25,18 +25,10 @@ class _StreetFoodState extends State<StreetFood> {
   Widget build(BuildContext context) {
     final restaurantData = Provider.of<RestaurantData>(context, listen: false);
     final _cartData = Provider.of<CartData>(context, listen: true);
-    List<Food> _mealList = [];
-    final _mealsData = Provider.of<MealsData>(context, listen: true).meals;
+    final _mealsData = Provider.of<MealsData>(context, listen: true);
+    final _mealList = _mealsData.breakfasts;
+    debugPrint(_mealList.length.toString());
 
-    _mealsData.map((element) {
-      if (element.categories.contains("Breakfast")) {
-        _mealList.add(element);
-        debugPrint("Data now going " + _mealList.length.toString());
-      }
-    });
-    debugPrint("running throught here " + _mealList.length.toString());
-
-    // debugPrint(shawarmaMeals.length.toString());
     final size = MediaQuery.of(context).size;
     return Container(
       color: Colors.orange.withOpacity(.13),
@@ -63,30 +55,14 @@ class _StreetFoodState extends State<StreetFood> {
                   final restaurant = restaurantData.selectRestaurant(
                       restaurantId: food.restaurantId);
                   int rating = food.comments;
-                  List<Widget> ratings = [];
-                  for (int i = 0; i < 5; i++) {
-                    if (rating <= 1) {
-                      break;
-                    }
 
-                    if (i < rating) {
-                      ratings.add(
-                        const Icon(Icons.star_rounded, color: Colors.amber),
-                      );
-                    } else {
-                      ratings.add(
-                        Icon(Icons.star_rounded,
-                            color: Colors.grey.withOpacity(.3)),
-                      );
-                    }
-                  }
                   final String myTag = food.foodId +
                       (Random().nextDouble() * -999999999999).toString();
 
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
                     height: double.infinity,
-                    width: size.width / 2.4,
+                    width: size.width * .5,
                     child: Column(
                       children: [
                         const Spacer(),
@@ -99,20 +75,37 @@ class _StreetFoodState extends State<StreetFood> {
                               Navigator.push(
                                   context,
                                   PageRouteBuilder(
-                                    transitionDuration: transitionDuration,
+                                    transitionDuration:
+                                        const Duration(milliseconds: 1600),
                                     reverseTransitionDuration:
-                                        transitionDuration,
+                                        const Duration(milliseconds: 200),
                                     barrierDismissible: true,
+                                    transitionsBuilder: (_, animation,
+                                        anotherAnimation, child) {
+                                      return SizeTransition(
+                                        sizeFactor: CurvedAnimation(
+                                            curve: Curves.fastOutSlowIn,
+                                            parent: animation,
+                                            reverseCurve: Curves.decelerate),
+                                        axis: Axis.vertical,
+                                        axisAlignment: 0.0,
+                                        child: child,
+                                      );
+                                    },
                                     pageBuilder: (context, animation,
                                         secondaryAnimation) {
-                                      return ScaleTransition(
-                                        scale: animation,
+                                      return SizeTransition(
+                                        sizeFactor: CurvedAnimation(
+                                            curve:
+                                                Curves.fastLinearToSlowEaseIn,
+                                            parent: animation,
+                                            reverseCurve: Curves.decelerate),
+                                        axis: Axis.vertical,
+                                        axisAlignment: 0.0,
                                         child: FoodDetails(
                                           meal: food,
                                           heroTag: myTag,
                                         ),
-                                        alignment: Alignment.bottomCenter,
-                                        filterQuality: FilterQuality.high,
                                       );
                                     },
                                   ));
@@ -125,32 +118,24 @@ class _StreetFoodState extends State<StreetFood> {
                                   imageUrl: food.image,
                                   alignment: Alignment.center,
                                   fit: BoxFit.cover,
+                                  placeholder: (_, stackTrace) => Lottie.asset(
+                                    "assets/loading5.json",
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                  ),
                                   filterQuality: FilterQuality.high,
                                   errorWidget: (_, string, stackTrace) {
                                     return Lottie.asset(
                                         "assets/no-connection2.json");
                                   },
-                                  width: 100,
-                                  height: 100,
+                                  width: 130,
+                                  height: 130,
                                 ),
                               ),
                             ),
                           ),
                         ),
                         const Spacer(),
-                        Text(
-                          food.categories.join(", "),
-                          style: Primary.paragraph,
-                        ),
-                        const Spacer(),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: ratings),
-                        const Spacer(),
-                        Row(
-                          children: ratings,
-                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Row(
@@ -175,6 +160,8 @@ class _StreetFoodState extends State<StreetFood> {
                         Text(
                           food.name,
                           style: Primary.shawarmaHeading,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const Spacer(),
                       ],

@@ -11,7 +11,7 @@ FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 enum OrderStatus { pending, processing, ready, complete }
 
-final List<String> _categories = [
+final List<String> globalCategories = [
   "Breakfast",
   "Lunch",
   "Dinner",
@@ -23,7 +23,7 @@ final List<String> _categories = [
   "Simple",
   "Traditional",
   "Home Delivery",
-  "Vegitarian",
+  "Vegetarian",
   "Casual",
   "Classic"
 ];

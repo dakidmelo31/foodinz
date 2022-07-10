@@ -15,8 +15,7 @@ class Food {
   bool favorite = false;
 
   int comments;
-  final List<String> accessories, gallery, categories;
-  List<String> compliments = [];
+  final List<String> accessories, compliments, gallery, categories;
   Food(
       {favorite = false,
       required this.accessories,
@@ -89,10 +88,11 @@ class Food {
     bool isFavorite = favorites.checkFavorite(foodId: documentId);
     return Food(
       favorite: isFavorite,
+
       foodId: documentId,
-      likes: convertInt(data['likes']),
+      likes: data['likes'] as int,
       description: data['description'],
-      comments: convertInt(data['comments']),
+      comments: data['comments'] as int,
       name: data["name"],
       available: data["available"],
       image: data['image'],
@@ -100,8 +100,8 @@ class Food {
       price: double.parse(data['price']),
       restaurantId: data['restaurantId'],
       gallery: List<String>.from(data['gallery']),
+      compliments: List<String>.from(data['accessories']),
       accessories: List<String>.from(data['accessories']),
-      compliments: List<String>.from(data['compliments']),
       duration: data['duration'],
       categories: List<String>.from(data['categories']),
     );

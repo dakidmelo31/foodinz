@@ -61,8 +61,23 @@ class _MealGalleryState extends State<MealGallery> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => Scaffold(
+                    PageRouteBuilder(
+                      opaque: false,
+                      barrierColor: Colors.transparent,
+                      transitionDuration: const Duration(milliseconds: 700),
+                      transitionsBuilder:
+                          (_, animation, anotherAnimation, child) {
+                        return FadeTransition(
+                          opacity: CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.fastOutSlowIn,
+                            reverseCurve: Curves.fastLinearToSlowEaseIn,
+                          ),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          Scaffold(
                         backgroundColor: Colors.black,
                         appBar: AppBar(
                             title: Text(
@@ -72,16 +87,19 @@ class _MealGalleryState extends State<MealGallery> {
                         body: Center(
                           child: Hero(
                             tag: meal.image,
-                            child: CachedNetworkImage(
-                                fit: BoxFit.contain,
-                                imageUrl: meal.image,
-                                width: double.infinity,
-                                height: double.infinity,
-                                errorWidget: (_, text, __) {
-                                  return Lottie.asset(
-                                    "assets/no-connection2.json",
-                                  );
-                                }),
+                            child: Card(
+                              elevation: 0,
+                              child: CachedNetworkImage(
+                                  fit: BoxFit.contain,
+                                  imageUrl: meal.image,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  errorWidget: (_, text, __) {
+                                    return Lottie.asset(
+                                      "assets/no-connection2.json",
+                                    );
+                                  }),
+                            ),
                           ),
                         ),
                       ),
@@ -161,13 +179,26 @@ class _MealGalleryState extends State<MealGallery> {
                       Navigator.push(
                           context,
                           PageRouteBuilder(
+                              opaque: false,
+                              barrierColor: Colors.transparent,
                               transitionDuration:
                                   const Duration(milliseconds: 700),
+                              transitionsBuilder:
+                                  (_, animation, anotherAnimation, child) {
+                                return FadeTransition(
+                                  opacity: CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.fastOutSlowIn,
+                                    reverseCurve: Curves.fastLinearToSlowEaseIn,
+                                  ),
+                                  child: child,
+                                );
+                              },
                               reverseTransitionDuration:
                                   const Duration(milliseconds: 540),
                               pageBuilder: (_, animation, animation2) {
                                 return Scaffold(
-                                  backgroundColor: Colors.black,
+                                  backgroundColor: Colors.black.withOpacity(.6),
                                   appBar: AppBar(
                                       leading: IconButton(
                                         icon: const Icon(
