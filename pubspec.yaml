@@ -44,6 +44,7 @@ dependencies:
   uuid: 
   ticket_material:
   concentric_transition:
+  like_button: 
   firebase_auth:
   stylish_bottom_bar:
   carousel_slider:

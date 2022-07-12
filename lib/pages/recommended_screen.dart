@@ -579,12 +579,12 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                   child:
                                       RestaurantsScreen(lat: lat, long: long),
                                 ),
+
                                 Column(
                                     children: globalCategories
                                         .map((e) =>
                                             MealsBlock(filter: e, title: e))
-                                        .toList()
-                                        ),
+                                        .toList()),
                                 const ShowcaseSlideshow(),
 
                                 SizedBox(

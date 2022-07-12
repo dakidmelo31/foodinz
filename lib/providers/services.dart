@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../global.dart';
 import '../models/service.dart';
+import 'global_data.dart';
 
 class ServicesData with ChangeNotifier {
   List<ServiceModel> services = [];
@@ -9,13 +10,17 @@ class ServicesData with ChangeNotifier {
   ServicesData() {
     loadServices();
   }
+  bool loadingServices = false;
   Future<void> loadServices() async {
+    loadingServices = true;
+
     firestore
         .collection("services")
         .orderBy("created_time", descending: true)
         .snapshots()
         .listen((event) {
       services.clear();
+      loadingServices = true;
       for (var serviceData in event.docs) {
         String documentID = serviceData.id;
 
@@ -36,6 +41,38 @@ class ServicesData with ChangeNotifier {
         services.add(service);
       }
     });
+    notifyListeners();
+  }
+
+  void toggleFavorite(String id) async {
+    ServiceModel meal =
+        services.firstWhere((element) => element.serviceId == id);
+    final dbManager = await DBManager.instance;
+
+    dbManager.addFavoriteService(foodId: id);
+    services.firstWhere((element) => element.serviceId == id).favorite =
+        !meal.favorite;
+
+    notifyListeners();
+  }
+
+  void toggleMeal({required String id}) {
+    ServiceModel meal =
+        services.firstWhere((element) => element.serviceId == id);
+    final dbManager = DBManager.instance;
+
+    dbManager.addFavoriteService(foodId: id);
+    if (meal.favorite) {
+      //reduce likes
+      services.firstWhere((element) => element.serviceId == id).likes =
+          meal.likes - 1;
+    } else {
+      //add like
+      services.firstWhere((element) => element.serviceId == id).likes =
+          meal.likes + 1;
+    }
+    services.firstWhere((element) => element.serviceId == id).favorite =
+        !meal.favorite;
     notifyListeners();
   }
 }

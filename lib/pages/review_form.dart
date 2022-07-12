@@ -132,8 +132,8 @@ class _ReviewFormState extends State<ReviewForm> {
                         "image": meal.image,
                         "description": _reviewController.text,
                         "userId": FirebaseAuth.instance.currentUser!.uid,
-                        "username": _userData.user!.name,
-                        "avatar": _userData.user!.image,
+                        "username": _userData.user.name,
+                        "avatar": _userData.user.image,
                         "stars": review,
                         "created_at": FieldValue.serverTimestamp(),
                       }).then((value) {

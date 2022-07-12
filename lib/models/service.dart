@@ -1,7 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import '../providers/message_database.dart';
 
 class ServiceModel {
   final String cost;
@@ -16,7 +20,9 @@ class ServiceModel {
   int likes;
   int comments;
   bool negociable;
+  bool favorite;
   ServiceModel({
+    this.favorite = false,
     required this.cost,
     required this.coverage,
     required this.serviceId,
@@ -78,8 +84,15 @@ class ServiceModel {
     };
   }
 
-  factory ServiceModel.fromMap(Map<String, dynamic> map) {
+  factory ServiceModel.fromMap(AsyncSnapshot<DocumentSnapshot> info) {
+    var favorites = DatabaseHelper.instance;
+    Map<String, dynamic> map = info.data!.data()! as Map<String, dynamic>;
+    String documentId = info.data!.id;
+
+    bool isFavorite = favorites.checkFavorite(foodId: documentId);
+
     return ServiceModel(
+      favorite: isFavorite,
       cost: map['cost'] as String,
       coverage: map['coverage'] as String,
       serviceId: map['serviceId'] as String,
@@ -98,9 +111,6 @@ class ServiceModel {
   }
 
   String toJson() => json.encode(toMap());
-
-  factory ServiceModel.fromJson(String source) =>
-      ServiceModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {

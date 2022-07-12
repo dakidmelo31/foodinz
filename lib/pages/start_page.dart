@@ -9,6 +9,7 @@ import 'package:foodinz/local_notif.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:foodinz/providers/services.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import 'home.dart';
@@ -126,6 +127,8 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     final restaurantData = Provider.of<RestaurantData>(context, listen: true);
+    final servicesData = Provider.of<ServicesData>(context, listen: true);
+    debugPrint(servicesData.services.length.toString());
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         body: Container(

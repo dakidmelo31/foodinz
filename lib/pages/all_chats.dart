@@ -619,7 +619,7 @@ class _TextWidgetState extends State<TextWidget> {
             padding: const EdgeInsets.only(right: 8.0),
             child: FloatingActionButton(
                 onPressed: () async {
-                  debugPrint("User Information is: " + user!.image.toString());
+                  debugPrint("User Information is: " + user.image.toString());
                   Chat chat = Chat(
                     lastMessageTime: DateTime.now(),
                     senderName: user.name.toString(),
