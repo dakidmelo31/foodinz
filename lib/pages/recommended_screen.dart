@@ -507,24 +507,6 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                     ),
                                                   ),
                                                 ),
-                                                ValueListenableBuilder<bool>(
-                                                  valueListenable:
-                                                      _showCardDetails,
-                                                  builder: (_, value, child) {
-                                                    return Visibility(
-                                                      child: child!,
-                                                      visible: value,
-                                                    );
-                                                  },
-                                                  child: Text(
-                                                    meal.categories.join(","),
-                                                    style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.w300,
-                                                    ),
-                                                  ),
-                                                ),
                                               ],
                                             ),
                                           ),
@@ -601,7 +583,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                     children: globalCategories
                                         .map((e) =>
                                             MealsBlock(filter: e, title: e))
-                                        .toList()),
+                                        .toList()
+                                        ),
                                 const ShowcaseSlideshow(),
 
                                 SizedBox(

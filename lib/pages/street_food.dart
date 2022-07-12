@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/models/service.dart';
 import 'package:foodinz/pages/meal_details.dart';
-import 'package:foodinz/pages/street_food_details.dart';
+import 'package:foodinz/pages/service_details.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:foodinz/providers/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -165,6 +167,171 @@ class _StreetFoodState extends State<StreetFood> {
                         ),
                         const Spacer(),
                       ],
+                    ),
+                  );
+                },
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class ServicesList extends StatefulWidget {
+  const ServicesList({Key? key}) : super(key: key);
+
+  @override
+  State<ServicesList> createState() => _ServicesListState();
+}
+
+class _ServicesListState extends State<ServicesList> {
+  @override
+  Widget build(BuildContext context) {
+    final restaurantData = Provider.of<RestaurantData>(context, listen: false);
+    final _servicesData = Provider.of<ServicesData>(context, listen: true);
+    final _servicesList = _servicesData.services;
+    debugPrint(_servicesList.length.toString());
+
+    final size = MediaQuery.of(context).size;
+    return Container(
+      color: Color.fromARGB(255, 255, 0, 98),
+      child: Column(
+        children: [
+          const SizedBox(height: 50),
+          SizedBox(
+              width: size.width,
+              height: size.height > 650 ? size.height * .35 : size.height * .45,
+              child: ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                scrollDirection: Axis.horizontal,
+                itemCount: _servicesList.length,
+                itemBuilder: (_, index) {
+                  final ServiceModel service = _servicesList[index];
+
+                  final restaurant = restaurantData.selectRestaurant(
+                      restaurantId: service.restaurantId);
+                  int rating = service.comments;
+
+                  final String myTag = service.serviceId +
+                      (Random().nextDouble() * -999999999999).toString();
+
+                  return Card(
+                    elevation: 15.0,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      height: double.infinity,
+                      width: size.width * .5,
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          const Spacer(),
+                          Hero(
+                            transitionOnUserGestures: true,
+                            tag: myTag,
+                            child: ClipOval(
+                              child: GestureDetector(
+                                onTap: () {
+                                  debugPrint("open new page");
+                                  const Duration transitionDuration =
+                                      Duration(milliseconds: 800);
+                                  Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                        transitionDuration:
+                                            const Duration(milliseconds: 1600),
+                                        reverseTransitionDuration:
+                                            const Duration(milliseconds: 200),
+                                        barrierDismissible: true,
+                                        transitionsBuilder: (_, animation,
+                                            anotherAnimation, child) {
+                                          return SizeTransition(
+                                            sizeFactor: CurvedAnimation(
+                                                curve: Curves.fastOutSlowIn,
+                                                parent: animation,
+                                                reverseCurve:
+                                                    Curves.decelerate),
+                                            axis: Axis.vertical,
+                                            axisAlignment: 0.0,
+                                            child: child,
+                                          );
+                                        },
+                                        pageBuilder: (context, animation,
+                                            secondaryAnimation) {
+                                          return SizeTransition(
+                                            sizeFactor: CurvedAnimation(
+                                                curve: Curves
+                                                    .fastLinearToSlowEaseIn,
+                                                parent: animation,
+                                                reverseCurve:
+                                                    Curves.decelerate),
+                                            axis: Axis.vertical,
+                                            axisAlignment: 0.0,
+                                            child: ServiceDetails(
+                                                service: service, tag: myTag),
+                                          );
+                                        },
+                                      ));
+                                },
+                                child: Opacity(
+                                  opacity: 1.0,
+                                  child: CachedNetworkImage(
+                                    imageUrl: service.image,
+                                    alignment: Alignment.center,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, stackTrace) =>
+                                        Lottie.asset(
+                                      "assets/loading5.json",
+                                      fit: BoxFit.cover,
+                                      alignment: Alignment.center,
+                                    ),
+                                    filterQuality: FilterQuality.high,
+                                    errorWidget: (_, string, stackTrace) {
+                                      return Lottie.asset(
+                                          "assets/no-connection2.json");
+                                    },
+                                    width: 130,
+                                    height: 130,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  restaurant.address,
+                                  style: Primary.paragraph,
+                                ),
+                                IconButton(
+                                    icon: const Icon(
+                                      Icons.location_pin,
+                                      color: Colors.pink,
+                                    ),
+                                    onPressed: () {
+                                      debugPrint("Open map");
+                                    }),
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            service.name,
+                            style: Primary.shawarmaHeading,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Spacer(),
+                        ],
+                      ),
                     ),
                   );
                 },
