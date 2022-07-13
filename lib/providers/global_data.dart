@@ -49,6 +49,14 @@ CREATE TABLE IF NOT EXISTS chats (
     });
 
     await db.execute('''
+    CREATE TABLE IF NOT EXISTS  services(
+      serviceId TEXT PRIMARY KEY
+    )
+''').then((value) {
+      debugPrint("done creating services  table successfully");
+    });
+
+    await db.execute('''
     CREATE TABLE IF NOT EXISTS chat_messages (
       msgId INTEGER PRIMARY KEY AUTOINCREMENT,
       restaurantId TEXT NOT NULL,
@@ -114,6 +122,7 @@ CREATE TABLE IF NOT EXISTS chats (
     Database _db = await instance.database;
     var values =
         await _db.query("favorites", where: "foodId=?", whereArgs: [foodId]);
+    debugPrint(values.toString());
     if (values.isEmpty) {
       await _db
           .rawInsert('INSERT INTO favorites(foodId) VALUES("$foodId")')
@@ -153,14 +162,14 @@ CREATE TABLE IF NOT EXISTS chats (
             });
       });
 
-      await _db.delete("favorites", where: "foodId=?", whereArgs: [foodId]);
+      await _db.delete("services", where: "serviceId=?", whereArgs: [foodId]);
     }
   }
 
   checkFavorite({required String foodId}) async {
     Database _db = await instance.database;
     var values =
-        await _db.query("favorites", where: "foodId=?", whereArgs: [foodId]);
+        await _db.query("services", where: "serviceId=?", whereArgs: [foodId]);
 
     return values.isNotEmpty;
   }

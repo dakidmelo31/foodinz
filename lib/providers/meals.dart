@@ -167,6 +167,7 @@ class MealsData with ChangeNotifier {
         meals.add(
           fd,
         );
+        meals.shuffle();
       }
     }).then((value) {
       for (Food d in meals) {

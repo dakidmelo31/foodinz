@@ -89,7 +89,7 @@ class ServiceModel {
     Map<String, dynamic> map = info.data!.data()! as Map<String, dynamic>;
     String documentId = info.data!.id;
 
-    bool isFavorite = favorites.checkFavorite(foodId: documentId);
+    bool isFavorite = favorites.checkFavoriteServices(foodId: documentId);
 
     return ServiceModel(
       favorite: isFavorite,

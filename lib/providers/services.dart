@@ -45,10 +45,25 @@ class ServicesData with ChangeNotifier {
   }
 
   void toggleFavorite(String id) async {
-    ServiceModel meal =
-        services.firstWhere((element) => element.serviceId == id);
+    ServiceModel meal = services.firstWhere(
+        (element) => element.serviceId == id,
+        orElse: () => ServiceModel(
+            cost: "",
+            coverage: "",
+            serviceId: "",
+            duration: "",
+            description: "",
+            image: "",
+            name: "",
+            restaurantId: "",
+            gallery: [],
+            likes: 0,
+            comments: 0,
+            negociable: false));
     final dbManager = await DBManager.instance;
-
+    if (meal.serviceId.isEmpty) {
+      return;
+    }
     dbManager.addFavoriteService(foodId: id);
     services.firstWhere((element) => element.serviceId == id).favorite =
         !meal.favorite;

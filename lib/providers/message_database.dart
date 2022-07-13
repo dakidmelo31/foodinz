@@ -228,8 +228,10 @@ class DatabaseHelper with ChangeNotifier {
     if (!checkKeyword(foodId: keyword))
       return _db
           .insert("recentSearches", {"id": null, "keyword": keyword})
-          .then((value) => debugPrint("done inserting search term $value"))
-          .catchError((onError) {
+          .then(
+              (value) async => debugPrint("done inserting search term $value"))
+          .catchError((onError) async {
+            assert(onError != null);
             debugPrint("error while inserting: $onError");
           });
   }
@@ -257,7 +259,29 @@ class DatabaseHelper with ChangeNotifier {
     return messageList;
   }
 
+  getFavoriteServices() async {
+    List<String> messageList = [];
+    Database _db = await instance.database;
+    var messages = await _db.query("Services", orderBy: "foodId")
+        as List<Map<String, String>>;
+    messages.map((e) {
+      messageList.add(e["serviceId"]!);
+    });
+    return messageList;
+  }
+
   checkFavorite({required String foodId}) async {
+    List<Favorite> favorites = await DatabaseHelper.instance.getFavorites();
+    bool isFavorite = false;
+    for (Favorite state in favorites) {
+      if (state.foodId == foodId) {
+        isFavorite = true;
+      }
+    }
+    return isFavorite;
+  }
+
+  checkFavoriteServices({required String foodId}) async {
     List<Favorite> favorites = await DatabaseHelper.instance.getFavorites();
     bool isFavorite = false;
     for (Favorite state in favorites) {

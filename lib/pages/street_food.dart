@@ -203,37 +203,19 @@ class _ServicesListState extends State<ServicesList> {
 
     final size = MediaQuery.of(context).size;
     return Container(
-      color: const Color.fromARGB(255, 255, 0, 98),
+      color: Color.fromARGB(255, 245, 245, 245),
       child: Column(
         children: [
           const SizedBox(height: 50),
           Column(
             children: [
               const SizedBox(height: 10), // Cafe meals
-              OpenContainer(
-                closedElevation: 0,
-                openElevation: 0,
-                openColor: const Color.fromARGB(255, 255, 0, 98),
-                closedColor: const Color.fromARGB(255, 255, 0, 98),
-                closedBuilder: (_, openContainer) => InkWell(
-                  onTap: openContainer,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text("Popular Street Foods", style: Primary.heading),
-                        Icon(Icons.arrow_forward_rounded),
-                      ],
-                    ),
-                  ),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text("Popular Street Foods", style: Primary.heading),
                 ),
-                transitionDuration: const Duration(milliseconds: 700),
-                middleColor: Colors.orange,
-                transitionType: ContainerTransitionType.fadeThrough,
-                tappable: true,
-                openBuilder: (_, closedContainer) =>
-                    const ViewCategory(title: " Cafe"),
               ),
 
               SizedBox(
@@ -259,96 +241,99 @@ class _ServicesListState extends State<ServicesList> {
                           (Random().nextDouble() * -999999999999).toString();
 
                       return Card(
+                        color: Color.fromARGB(255, 245, 245, 245),
                         elevation: 15.0,
                         child: Container(
                           margin: const EdgeInsets.only(right: 10),
                           height: double.infinity,
                           width: size.width * .6,
-                          color: Colors.white,
+                          color: Colors.transparent,
                           child: Column(
                             children: [
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Hero(
-                                    transitionOnUserGestures: true,
-                                    tag: myTag,
-                                    child: Align(
-                                      alignment: Alignment.topLeft,
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                            bottomRight: Radius.circular(70.0)),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            debugPrint("open new page");
-                                            const Duration transitionDuration =
-                                                Duration(milliseconds: 800);
-                                            Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration:
-                                                      const Duration(
-                                                          milliseconds: 1600),
-                                                  reverseTransitionDuration:
-                                                      const Duration(
-                                                          milliseconds: 200),
-                                                  barrierDismissible: true,
-                                                  transitionsBuilder: (_,
-                                                      animation,
-                                                      anotherAnimation,
-                                                      child) {
-                                                    return SizeTransition(
-                                                      sizeFactor: CurvedAnimation(
-                                                          curve: Curves
-                                                              .fastOutSlowIn,
-                                                          parent: animation,
-                                                          reverseCurve: Curves
-                                                              .decelerate),
-                                                      axis: Axis.vertical,
-                                                      axisAlignment: 0.0,
-                                                      child: child,
-                                                    );
-                                                  },
-                                                  pageBuilder: (context,
-                                                      animation,
-                                                      secondaryAnimation) {
-                                                    return SizeTransition(
-                                                      sizeFactor: CurvedAnimation(
-                                                          curve: Curves
-                                                              .fastLinearToSlowEaseIn,
-                                                          parent: animation,
-                                                          reverseCurve: Curves
-                                                              .decelerate),
-                                                      axis: Axis.vertical,
-                                                      axisAlignment: 0.0,
-                                                      child: ServiceDetails(
-                                                          service: service,
-                                                          tag: myTag),
-                                                    );
-                                                  },
-                                                ));
-                                          },
-                                          child: Opacity(
-                                            opacity: 1.0,
-                                            child: CachedNetworkImage(
-                                              imageUrl: service.image,
-                                              alignment: Alignment.center,
-                                              fit: BoxFit.cover,
-                                              placeholder: (_, stackTrace) =>
-                                                  Lottie.asset(
-                                                "assets/loading5.json",
-                                                fit: BoxFit.cover,
+                                  Expanded(
+                                    child: Hero(
+                                      transitionOnUserGestures: true,
+                                      tag: myTag,
+                                      child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                              bottomRight:
+                                                  Radius.circular(70.0)),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              debugPrint("open new page");
+                                              Navigator.push(
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    transitionDuration:
+                                                        const Duration(
+                                                            milliseconds: 1200),
+                                                    reverseTransitionDuration:
+                                                        const Duration(
+                                                            milliseconds: 800),
+                                                    barrierDismissible: true,
+                                                    transitionsBuilder: (_,
+                                                        animation,
+                                                        anotherAnimation,
+                                                        child) {
+                                                      return SizeTransition(
+                                                        sizeFactor: CurvedAnimation(
+                                                            curve: Curves
+                                                                .fastOutSlowIn,
+                                                            parent: animation,
+                                                            reverseCurve: Curves
+                                                                .decelerate),
+                                                        axis: Axis.vertical,
+                                                        axisAlignment: 0.0,
+                                                        child: child,
+                                                      );
+                                                    },
+                                                    pageBuilder: (context,
+                                                        animation,
+                                                        secondaryAnimation) {
+                                                      return SizeTransition(
+                                                        sizeFactor: CurvedAnimation(
+                                                            curve: Curves
+                                                                .fastLinearToSlowEaseIn,
+                                                            parent: animation,
+                                                            reverseCurve: Curves
+                                                                .decelerate),
+                                                        axis: Axis.vertical,
+                                                        axisAlignment: 0.0,
+                                                        child: ServiceDetails(
+                                                            service: service,
+                                                            tag: myTag),
+                                                      );
+                                                    },
+                                                  ));
+                                            },
+                                            child: Opacity(
+                                              opacity: 1.0,
+                                              child: CachedNetworkImage(
+                                                imageUrl: service.image,
                                                 alignment: Alignment.center,
+                                                fit: BoxFit.cover,
+                                                placeholder: (_, stackTrace) =>
+                                                    Lottie.asset(
+                                                  "assets/loading5.json",
+                                                  fit: BoxFit.cover,
+                                                  alignment: Alignment.center,
+                                                ),
+                                                filterQuality:
+                                                    FilterQuality.high,
+                                                errorWidget:
+                                                    (_, string, stackTrace) {
+                                                  return Lottie.asset(
+                                                      "assets/no-connection2.json");
+                                                },
+                                                width: size.width * .4,
+                                                height: 160,
                                               ),
-                                              filterQuality: FilterQuality.high,
-                                              errorWidget:
-                                                  (_, string, stackTrace) {
-                                                return Lottie.asset(
-                                                    "assets/no-connection2.json");
-                                              },
-                                              width: size.width * .4,
-                                              height: 160,
                                             ),
                                           ),
                                         ),
@@ -357,35 +342,16 @@ class _ServicesListState extends State<ServicesList> {
                                   ),
                                   Column(
                                     children: [
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.star_rounded,
-                                            color: Colors.amber,
-                                            size: 30.0,
-                                          ),
-                                          Text(service.comments.toString())
-                                        ],
+                                      const Icon(
+                                        Icons.star_rounded,
+                                        color: Colors.amber,
+                                        size: 40.0,
                                       ),
-                                      SizedBox(
-                                        height: 15.0,
-                                      ),
-                                      LikeButton(
-                                        animationDuration:
-                                            const Duration(milliseconds: 600),
-                                        bubblesColor: const BubblesColor(
-                                            dotPrimaryColor: Colors.pink,
-                                            dotSecondaryColor: Colors.orange),
-                                        isLiked: false,
-                                        likeCount: service.likes,
-                                        circleSize: 40.0,
-                                        likeCountAnimationType:
-                                            LikeCountAnimationType.part,
-                                        countBuilder: (_, liked, data) {
-                                          debugPrint(data);
-                                        },
-                                      ),
+                                      Text(service.comments.toString())
                                     ],
+                                  ),
+                                  const SizedBox(
+                                    height: 15.0,
                                   )
                                 ],
                               ),

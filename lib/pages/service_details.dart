@@ -1,9 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:foodinz/models/restaurants.dart';
 import 'package:foodinz/models/service.dart';
+import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/global_data.dart';
 import 'package:foodinz/providers/services.dart';
+import 'package:foodinz/themes/light_theme.dart';
 import 'package:like_button/like_button.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class ServiceDetails extends StatefulWidget {
@@ -20,9 +25,14 @@ class _ServiceDetailsState extends State<ServiceDetails> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final _services = Provider.of<ServicesData>(context, listen: true);
+    final _serviceData = Provider.of<ServicesData>(context, listen: true);
+    final _restaurantData = Provider.of<RestaurantData>(context, listen: true);
+
+    final List<ServiceModel> services = _serviceData.services;
+    final List<Restaurant> restaurant = _restaurantData.restaurants;
+
     return Scaffold(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 245, 245, 245),
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics()),
@@ -67,43 +77,17 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                     ),
                     Positioned(
                       child: Card(
+                        elevation: 15.0,
                         color: Colors.white,
-                        margin: EdgeInsets.symmetric(
+                        shadowColor: Colors.black.withOpacity(.3),
+                        margin: const EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 10.0),
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 10.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    "Likes",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w700),
-                                  ),
-                                  LikeButton(
-                                    animationDuration:
-                                        const Duration(milliseconds: 600),
-                                    bubblesColor: const BubblesColor(
-                                        dotPrimaryColor: Colors.pink,
-                                        dotSecondaryColor: Colors.orange),
-                                    isLiked: false,
-                                    likeCount: widget.service.likes,
-                                    circleSize: 40.0,
-                                    likeCountAnimationType:
-                                        LikeCountAnimationType.part,
-                                    countBuilder: (_, liked, data) {
-                                      if (liked) {
-                                        _services.toggleFavorite(
-                                            widget.service.serviceId);
-                                        debugPrint("toggled it");
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
                               Column(
                                 children: [
                                   const Text(
@@ -117,7 +101,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                     },
                                     child: Row(
                                       children: [
-                                        Icon(Icons.star_rounded,
+                                        const Icon(Icons.star_rounded,
                                             color: Colors.amber),
                                         Text(widget.service.comments.toString())
                                       ],
@@ -128,19 +112,19 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                               Column(
                                 children: [
                                   const Text(
-                                    "Directions",
+                                    "Direction",
                                     style:
                                         TextStyle(fontWeight: FontWeight.w700),
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      debugPrint("add reviews");
+                                      debugPrint("Get Direction");
                                     },
                                     child: Row(
-                                      children: [
+                                      children: const [
                                         Icon(Icons.directions_rounded,
                                             color: Colors.pink),
-                                        Text(widget.service.comments.toString())
+                                        Text("Get Direction")
                                       ],
                                     ),
                                   ),
@@ -155,7 +139,92 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       right: 0,
                     )
                   ],
-                ))
+                )),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  ListTile(
+                    title: Text(
+                      widget.service.name,
+                      style: Primary.heading,
+                    ),
+                    leading: const Icon(
+                      Icons.room_service_rounded,
+                    ),
+                    subtitle: Text(
+                      widget.service.description,
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.timer_rounded,
+                    ),
+                    title: Text(widget.service.duration),
+                    trailing: const Icon(
+                      Icons.check_rounded,
+                      color: Colors.lightGreen,
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.location_on_outlined,
+                      color: Colors.lightGreen,
+                    ),
+                    title: Text("Coverage: ${widget.service.coverage}"),
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.attach_money_rounded,
+                      color: Colors.lightGreen,
+                    ),
+                    title: Text(
+                      widget.service.cost.isEmpty
+                          ? "0 CFA"
+                          : widget.service.cost,
+                    ),
+                  ),
+                  const Center(
+                    child: Text(
+                      "See my work samples",
+                      style: Primary.heading,
+                    ),
+                  ),
+                  MasonryGridView.count(
+                      itemCount: widget.service.gallery.length,
+                      shrinkWrap: true,
+                      addRepaintBoundaries: true,
+                      primary: true,
+                      crossAxisCount: 2,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (_, index) {
+                        String image = widget.service.gallery[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: CachedNetworkImage(
+                              imageUrl: image,
+                              fadeInCurve: Curves.bounceIn,
+                              fadeOutCurve: Curves.bounceOut,
+                              alignment: Alignment.center,
+                              fit: BoxFit.cover,
+                              placeholder: (_, stackTrace) => Lottie.asset(
+                                "assets/loading5.json",
+                                fit: BoxFit.cover,
+                                alignment: Alignment.center,
+                              ),
+                              filterQuality: FilterQuality.high,
+                              errorWidget: (_, string, stackTrace) {
+                                return Lottie.asset(
+                                    "assets/no-connection2.json");
+                              },
+                            ),
+                          ),
+                        );
+                      })
+                ],
+              ),
+            )
           ],
         ));
   }

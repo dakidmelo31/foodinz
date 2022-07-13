@@ -1,8 +1,9 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../models/coupon_model.dart';
-import '../models/food.dart';
 import '../models/restaurants.dart';
 
 // FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -95,6 +96,7 @@ class RestaurantData with ChangeNotifier {
                 username: doc['username'] ?? ""),
           );
         }
+        restaurants.shuffle();
       },
     ).then((value) {
       debugPrint("done with this");

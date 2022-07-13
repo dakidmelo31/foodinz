@@ -45,6 +45,7 @@ dependencies:
   ticket_material:
   concentric_transition:
   like_button: 
+  cron: 
   firebase_auth:
   stylish_bottom_bar:
   carousel_slider:
