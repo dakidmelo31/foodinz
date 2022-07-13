@@ -106,8 +106,31 @@ class RestaurantData with ChangeNotifier {
   }
 
   Restaurant getRestaurant(String documentId) {
-    return restaurants
-        .firstWhere((element) => element.restaurantId == documentId);
+    return restaurants.firstWhere(
+      (element) => element.restaurantId == documentId,
+      orElse: () => Restaurant(
+          address: '',
+          name: '',
+          categories: [],
+          long: 0.0,
+          lat: 0.0,
+          restaurantId: '',
+          businessPhoto: '',
+          tableReservation: false,
+          cash: false,
+          momo: false,
+          specialOrders: false,
+          avatar: '',
+          closingTime: '',
+          openingTime: '',
+          companyName: '',
+          username: '',
+          email: '',
+          foodReservation: false,
+          ghostKitchen: false,
+          homeDelivery: false,
+          phoneNumber: ''),
+    );
   }
 
   List<Restaurant> get getRestaurants => [...restaurants];

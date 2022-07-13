@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lottie/lottie.dart';
 
 const Duration transitionDuration = Duration(milliseconds: 400);
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -47,6 +48,10 @@ Future<void> sendNotif(
       Random().nextInt(500), title, description, platformChannelSpecifics,
       payload: payload);
 }
+
+Widget errorWidget2 = Lottie.asset("assets/no-connection2.json");
+Widget errorWidget1 = Lottie.asset("assets/no-connection.json");
+Widget loadingWidget = Lottie.asset("assets/loading5.json");
 
 deleteCloudNotification({required String notificationId}) {
   firestore

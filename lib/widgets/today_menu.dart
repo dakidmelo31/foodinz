@@ -112,12 +112,15 @@ class TodayMenu extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Text(meal.name,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold)),
-                      Text(meal.categories.join(", "),
-                          style: const TextStyle(color: Colors.orange)),
+                      Text(
+                        meal.name,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),

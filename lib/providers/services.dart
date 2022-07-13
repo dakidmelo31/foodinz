@@ -40,6 +40,7 @@ class ServicesData with ChangeNotifier {
         );
         services.add(service);
       }
+      services.shuffle();
     });
     notifyListeners();
   }
