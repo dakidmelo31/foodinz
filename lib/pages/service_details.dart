@@ -350,43 +350,42 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                               color: Colors.transparent,
                               elevation: 0.0,
                               child: FractionallySizedBox(
-                                heightFactor: 1.0,
+                                heightFactor: 0.7,
                                 widthFactor: 1.0,
+                                alignment: Alignment.bottomCenter,
                                 child: Card(
                                   color: Colors.white,
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 10.0, vertical: 5.0),
                                   child: Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Card(
-                                            elevation: 15.0,
-                                            shadowColor:
-                                                Colors.black.withOpacity(.2),
-                                            color: Colors.white,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 12.0,
-                                                      horizontal: 0.0),
-                                              child: SizedBox(
-                                                width: size.width,
-                                                child: Text(
-                                                    parentRestaurant.name,
-                                                    style: const TextStyle(
-                                                        fontSize: 18.0,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                    textAlign:
-                                                        TextAlign.center),
-                                              ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Card(
+                                          elevation: 15.0,
+                                          shadowColor:
+                                              Colors.black.withOpacity(.2),
+                                          color: Colors.white,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 12.0,
+                                                horizontal: 0.0),
+                                            child: SizedBox(
+                                              width: size.width,
+                                              child: Text(parentRestaurant.name,
+                                                  style: const TextStyle(
+                                                      fontSize: 18.0,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                  textAlign: TextAlign.center),
                                             ),
                                           ),
-                                          ClipOval(
+                                        ),
+                                        ClipOval(
+                                          child: Hero(
+                                            tag: widget.tag,
                                             child: CachedNetworkImage(
                                               imageUrl: parentRestaurant
                                                   .businessPhoto,
@@ -401,87 +400,102 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                               height: size.width * .5,
                                             ),
                                           ),
-                                          Card(
-                                              elevation: 15.0,
-                                              shadowColor:
-                                                  Colors.black.withOpacity(.2),
-                                              color: Colors.white,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 12.0,
-                                                        horizontal: 15.0),
-                                                child: Text(
-                                                  widget.service.negociable
-                                                      ? "My price is negociable"
-                                                      : "I have a fixed Price",
-                                                ),
-                                              )),
-                                          SizedBox(
-                                            height: 15.0,
-                                          ),
-                                          RestaurantMap(
-                                              lat: parentRestaurant.lat,
-                                              long: parentRestaurant.long),
-                                          SizedBox(
-                                            height: 15.0,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              FloatingActionButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    CustomFadeTransition(
-                                                      child: RestaurantDetails(
-                                                          restaurant:
-                                                              parentRestaurant),
-                                                    ),
-                                                  );
-                                                },
-                                                child: const Icon(
-                                                    Icons.restaurant_outlined),
+                                        ),
+                                        Card(
+                                            elevation: 15.0,
+                                            shadowColor:
+                                                Colors.black.withOpacity(.2),
+                                            color: Colors.white,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12.0,
+                                                      horizontal: 15.0),
+                                              child: Text(
+                                                widget.service.negociable
+                                                    ? "My price is negociable"
+                                                    : "I have a fixed Price",
                                               ),
-                                              FloatingActionButton(
-                                                backgroundColor: Color.fromARGB(
-                                                    255, 0, 167, 22),
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    CustomFadeTransition(
-                                                      child: RestaurantDetails(
-                                                          restaurant:
-                                                              parentRestaurant),
-                                                    ),
-                                                  );
-                                                },
-                                                child: const Icon(
-                                                  Icons.whatsapp_rounded,
+                                            )),
+                                        SizedBox(
+                                          height: 15.0,
+                                        ),
+                                        ListTile(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              VerticalSizeTransition(
+                                                child: RestaurantMap(
+                                                  lat: parentRestaurant.lat,
+                                                  long: parentRestaurant.long,
                                                 ),
                                               ),
-                                              FloatingActionButton(
-                                                backgroundColor: Colors.white,
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    CustomFadeTransition(
-                                                      child: RestaurantDetails(
-                                                          restaurant:
-                                                              parentRestaurant),
-                                                    ),
-                                                  );
-                                                },
-                                                child: const Icon(
-                                                  Icons.phone_callback_rounded,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ],
+                                            );
+                                          },
+                                          leading: Icon(
+                                            Icons.map_rounded,
+                                            color: Colors.pink,
                                           ),
-                                        ],
-                                      ),
+                                          title: Text("Open your map"),
+                                        ),
+                                        SizedBox(
+                                          height: 15.0,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            FloatingActionButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  CustomFadeTransition(
+                                                    child: RestaurantDetails(
+                                                        restaurant:
+                                                            parentRestaurant),
+                                                  ),
+                                                );
+                                              },
+                                              child: const Icon(
+                                                  Icons.restaurant_outlined),
+                                            ),
+                                            FloatingActionButton(
+                                              backgroundColor: Color.fromARGB(
+                                                  255, 0, 167, 22),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  CustomFadeTransition(
+                                                    child: RestaurantDetails(
+                                                        restaurant:
+                                                            parentRestaurant),
+                                                  ),
+                                                );
+                                              },
+                                              child: const Icon(
+                                                Icons.whatsapp_rounded,
+                                              ),
+                                            ),
+                                            FloatingActionButton(
+                                              backgroundColor: Colors.white,
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  CustomFadeTransition(
+                                                    child: RestaurantDetails(
+                                                        restaurant:
+                                                            parentRestaurant),
+                                                  ),
+                                                );
+                                              },
+                                              child: const Icon(
+                                                Icons.phone_callback_rounded,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

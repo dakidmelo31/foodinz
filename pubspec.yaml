@@ -75,6 +75,7 @@ dependencies:
   timezone:
   sqflite:
   geolocator: 
+  location: 
   qr_flutter: 
   provider:
   shared_preferences:
