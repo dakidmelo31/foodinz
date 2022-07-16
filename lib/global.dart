@@ -47,6 +47,43 @@ Future<void> toggleFoodLike({required String foodId}) async {
   }
 }
 
+addToLikes({required String foodId}) async {
+  await firestore
+      .collection("allLikes")
+      .doc(auth.currentUser!.uid)
+      .collection("myLikes")
+      .add({"foodId": foodId})
+      .then((value) => debugPrint("Done adding like: $value"))
+      .catchError((onError) {
+        debugPrint("Error found adding user: $onError");
+      });
+}
+
+removeFromLikes({required String foodId}) async {
+  await firestore
+      .collection("allLikes")
+      .doc(auth.currentUser!.uid)
+      .collection("myLikes")
+      .get()
+      .then((value) {
+    var data = value.docs;
+
+    for (var item in data) {
+      if (item['foodId'] == foodId) {
+        firestore
+            .collection("allLikes")
+            .doc(auth.currentUser!.uid)
+            .collection("myLikes")
+            .doc(item.id)
+            .delete()
+            .then((value) {
+          debugPrint("done deleting");
+        });
+      }
+    }
+  });
+}
+
 Future<void> sendNotif(
     {required String title,
     required String description,

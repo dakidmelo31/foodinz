@@ -199,21 +199,10 @@ class MealsData with ChangeNotifier {
     return meals.firstWhere((element) => element.foodId == foodId);
   }
 
-  void toggleFavorite(String id) async {
-    Food meal = restaurantMenu.firstWhere((element) => element.foodId == id);
-    final dbManager = await DBManager.instance;
-
-    dbManager.addFavorite(foodId: id);
-    restaurantMenu.firstWhere((element) => element.foodId == id).favorite =
-        !meal.favorite;
-
-    notifyListeners();
-  }
-
   void toggleMeal({required String foodId}) async {
     Food meal = meals.firstWhere((element) => element.foodId == foodId);
 
-    if (await checkLike(foodId: foodId)) {
+    if (!await checkLike(foodId: foodId)) {
       await firestore.collection("meals").doc(foodId).get().then((value) {
         Map<String, dynamic> data = value.data() as Map<String, dynamic>;
         int likes = data['likes'];
@@ -229,6 +218,8 @@ class MealsData with ChangeNotifier {
             .catchError((onError) {
               debugPrint("Error while updating likes: $onError");
             });
+      }).then((value) async {
+        await addToLikes(foodId: foodId);
       });
     } else {
       firestore.collection("meals").doc(foodId).get().then((value) {
@@ -246,6 +237,8 @@ class MealsData with ChangeNotifier {
             .catchError((onError) {
               debugPrint("Error while updating likes: $onError");
             });
+      }).then((value) async {
+        await removeFromLikes(foodId: foodId);
       });
     }
 

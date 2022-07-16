@@ -71,53 +71,7 @@ CREATE TABLE IF NOT EXISTS chats (
 ''');
   }
 
-  addFavorite({required String foodId}) async {
-    Database _db = await instance.database;
-    var values =
-        await _db.query("favorites", where: "foodId=?", whereArgs: [foodId]);
-    if (values.isEmpty) {
-      await _db
-          .rawInsert('INSERT INTO favorites(foodId) VALUES("$foodId")')
-          .then((value) => debugPrint("done adding value: $value"));
-
-      firestore.collection("meals").doc(foodId).get().then((value) {
-        Map<String, dynamic> data = value.data() as Map<String, dynamic>;
-        int likes = data['likes'];
-        debugPrint("current likes is: $likes");
-        likes += 1;
-        debugPrint("new likes is: $likes");
-
-        firestore
-            .collection("meals")
-            .doc(foodId)
-            .update({"likes": likes})
-            .then((value) => debugPrint("done adding like"))
-            .catchError((onError) {
-              debugPrint("Error while updating likes: $onError");
-            });
-      });
-    } else {
-      firestore.collection("meals").doc(foodId).get().then((value) {
-        Map<String, dynamic> data = value.data() as Map<String, dynamic>;
-        int likes = data['likes'];
-        debugPrint("current likes is: $likes");
-        likes -= 1;
-        debugPrint("new likes is: $likes");
-
-        firestore
-            .collection("meals")
-            .doc(foodId)
-            .update({"likes": likes})
-            .then((value) => debugPrint("done reducing like"))
-            .catchError((onError) {
-              debugPrint("Error while updating likes: $onError");
-            });
-      });
-
-      await _db.delete("favorites", where: "foodId=?", whereArgs: [foodId]);
-    }
-  }
-
+  
   addFavoriteService({required String foodId}) async {
     Database _db = await instance.database;
     var values =
