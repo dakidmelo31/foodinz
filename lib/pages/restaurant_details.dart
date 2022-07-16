@@ -1,5 +1,3 @@
-import 'package:animations/animations.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/all_chats.dart';
@@ -8,14 +6,12 @@ import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/restaurant_info_table.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:provider/provider.dart';
-
 import '../models/chats_model.dart';
 import '../models/restaurants.dart';
 import '../providers/auth.dart';
-import '../themes/light_theme.dart';
 import '../widgets/food_card.dart';
+import '../widgets/other_details.dart';
 import '../widgets/promo_code.dart';
-import '../widgets/recent_comments.dart';
 import '../widgets/today_menu.dart';
 
 class RestaurantDetails extends StatelessWidget {
@@ -42,7 +38,6 @@ class RestaurantDetails extends StatelessWidget {
               slivers: [
                 SliverAppBar(
                   automaticallyImplyLeading: false,
-                  actions: [],
                   floating: true,
                   pinned: false,
                   backgroundColor: Colors.white,
@@ -64,7 +59,6 @@ class RestaurantDetails extends StatelessWidget {
                 SliverList(
                   delegate: SliverChildListDelegate(
                     [
-                      const Spacer(),
                       Hero(
                         tag: restaurant.restaurantId,
                         child: Material(
@@ -94,7 +88,6 @@ class RestaurantDetails extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Spacer(),
                       if (false)
                         Column(
                           children: [
@@ -108,8 +101,6 @@ class RestaurantDetails extends StatelessWidget {
                           ],
                         ), //meal.averageRating
 
-                      const Spacer(),
-
                       OpacityTween(
                         child: SlideUpTween(
                           begin: const Offset(-30, 30),
@@ -118,7 +109,7 @@ class RestaurantDetails extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Spacer(flex: 5),
+                      OtherDetails(restaurant: restaurant)
                     ],
                   ),
                 ),
@@ -148,12 +139,12 @@ class RestaurantDetails extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 9),
                           child: Row(
-                            children: [
-                              const Icon(Icons.arrow_back_rounded,
+                            children: const [
+                              Icon(Icons.arrow_back_rounded,
                                   color: Colors.black),
-                              const Material(
+                              Material(
                                   color: Colors.transparent,
-                                  child: const Text("Back")),
+                                  child: Text("Back")),
                             ],
                           ),
                         ),
@@ -200,17 +191,17 @@ class RestaurantDetails extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 9),
                           child: Row(
-                            children: [
-                              const Icon(
+                            children: const [
+                              Icon(
                                 Icons.message_rounded,
                               ),
-                              const Text(
+                              Text(
                                 "Tap to message business",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
                                 ),
                               ),
-                              const Icon(
+                              Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 color: Colors.white,
                                 size: 20,

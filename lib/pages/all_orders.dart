@@ -118,8 +118,6 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                     for (var doc in snapshot.data!.docs) {
                       String documentId = doc.id;
 
-                      debugPrint(documentId);
-
                       if (!checkId(orderId: documentId)) {
                         var currentOrder = Order(
                           restaurantId: doc['restaurantId'],
@@ -130,7 +128,7 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                           names: List<String>.from(doc['names']),
                           prices: List<double>.from(doc['prices']),
                           homeDelivery: doc['homeDelivery'] ?? false,
-                          deliveryCost: doc['deliveryCost']?.toInt() ?? 0,
+                          deliveryCost: doc['deliveryCost']?.toDouble() ?? 0,
                           time: doc["time"],
                           userId: doc['userId'] ?? "no user",
                         );
@@ -142,6 +140,7 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
 
                       // debugPrint(List<String>.from(doc['names']).join(", "));
                     }
+                    debugPrint("Done loading orders");
 
                     return SizedBox(
                       height: size.height - 130,
@@ -161,190 +160,165 @@ class _AllOrdersState extends State<AllOrders> with TickerProviderStateMixin {
                               width: size.width,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Dismissible(
-                                  key: GlobalKey(),
-                                  background: Container(
-                                      color: Colors.grey.withOpacity(.15),
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: AnimatedIcon(
-                                            icon: AnimatedIcons.ellipsis_search,
-                                            progress: iconAnimation,
-                                            size: 30,
-                                          ),
-                                        ),
-                                      )),
-                                  behavior: HitTestBehavior.deferToChild,
-                                  direction: DismissDirection.endToStart,
-                                  secondaryBackground: Container(
-                                      color: Colors.deepPurple,
-                                      child: const Icon(
-                                        Icons.home,
-                                        color: Colors.white,
-                                      )),
-                                  child: InkWell(
-                                    splashColor:
-                                        const Color.fromARGB(26, 59, 4, 209),
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                              transitionDuration:
-                                                  Duration(milliseconds: 400),
-                                              reverseTransitionDuration:
-                                                  Duration(milliseconds: 400),
-                                              opaque: true,
-                                              barrierColor: Colors.white,
-                                              pageBuilder: ((context, animation,
-                                                  secondaryAnimation) {
-                                                return FadeTransition(
-                                                    opacity: animation,
-                                                    child: OrderDetails(
-                                                      order: order,
-                                                      total: orderTotal.toInt(),
-                                                    ));
-                                              })));
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 14.0, horizontal: 3),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 12.0),
-                                              child: CircleAvatar(
-                                                backgroundColor: order.status
-                                                            .toLowerCase() ==
-                                                        "pending"
-                                                    ? Colors.deepOrange
-                                                    : order.status
-                                                                .toLowerCase() ==
-                                                            "processing"
-                                                        ? Colors.blue
-                                                        : order.status
-                                                                    .toLowerCase() ==
-                                                                "takeout"
-                                                            ? Colors.green[700]
-                                                            : order.status
-                                                                        .toLowerCase() ==
-                                                                    "complete"
-                                                                ? Colors
-                                                                    .purple[800]
-                                                                : Colors.pink,
-                                                child: const Icon(
-                                                  Icons.restaurant_menu_rounded,
-                                                  color: Colors.white,
-                                                ),
+                                child: InkWell(
+                                  splashColor:
+                                      const Color.fromARGB(26, 59, 4, 209),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                            transitionDuration: const Duration(
+                                                milliseconds: 400),
+                                            reverseTransitionDuration:
+                                                const Duration(
+                                                    milliseconds: 400),
+                                            opaque: true,
+                                            barrierColor: Colors.white,
+                                            pageBuilder: ((context, animation,
+                                                secondaryAnimation) {
+                                              return FadeTransition(
+                                                  opacity: animation,
+                                                  child: OrderDetails(
+                                                    order: order,
+                                                    total: orderTotal.toInt(),
+                                                  ));
+                                            })));
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 14.0, horizontal: 3),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 12.0),
+                                            child: CircleAvatar(
+                                              backgroundColor: order.status
+                                                          .toLowerCase() ==
+                                                      "pending"
+                                                  ? Colors.deepOrange
+                                                  : order.status
+                                                              .toLowerCase() ==
+                                                          "processing"
+                                                      ? Colors.blue
+                                                      : order.status
+                                                                  .toLowerCase() ==
+                                                              "takeout"
+                                                          ? Colors.green[700]
+                                                          : order.status
+                                                                      .toLowerCase() ==
+                                                                  "complete"
+                                                              ? Colors
+                                                                  .purple[800]
+                                                              : Colors.pink,
+                                              child: const Icon(
+                                                Icons.restaurant_menu_rounded,
+                                                color: Colors.white,
                                               ),
                                             ),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 8.0,
-                                                        horizontal: 0),
-                                                    child: Text(
-                                                        "#" +
-                                                            order.friendlyId
-                                                                .toString(),
-                                                        style: Primary.heading),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 4.0),
-                                                    child: Hero(
-                                                      tag: order.friendlyId,
-                                                      child: Material(
-                                                        child: Text(
-                                                          NumberFormat().format(
-                                                                  (orderTotal)) +
-                                                              " CFA",
-                                                          style: TextStyle(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                              .9,
-                                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      vertical: 8.0,
+                                                      horizontal: 0),
+                                                  child: Text(
+                                                      "#" +
+                                                          order.friendlyId
+                                                              .toString(),
+                                                      style: Primary.heading),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 4.0),
+                                                  child: Hero(
+                                                    tag: order.friendlyId,
+                                                    child: Material(
+                                                      child: Text(
+                                                        NumberFormat().format(
+                                                                (orderTotal)) +
+                                                            " CFA",
+                                                        style: TextStyle(
+                                                          color: Colors.black
+                                                              .withOpacity(
+                                                            .9,
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                            Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                FittedBox(
-                                                    child: Hero(
-                                                  tag: order.restaurantId
-                                                          .toString() +
-                                                      order.friendlyId
-                                                          .toString(),
-                                                  child: Material(
-                                                    child: Text(
-                                                      timeAgo.format(
-                                                        order.time.toDate(),
-                                                      ),
-                                                    ),
                                                   ),
-                                                )),
-                                                const SizedBox(height: 5),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8.0),
-                                                  child: ClipOval(
-                                                    child: Hero(
-                                                      tag: order.friendlyId
-                                                              .toString() +
-                                                          "status",
-                                                      child: Container(
-                                                        color: order.status
-                                                                    .toLowerCase() ==
-                                                                "pending"
-                                                            ? Colors.deepOrange
-                                                            : order.status
-                                                                        .toLowerCase() ==
-                                                                    "processing"
-                                                                ? Colors.blue
-                                                                : order.status
-                                                                            .toLowerCase() ==
-                                                                        "takeout"
-                                                                    ? Colors.green[
-                                                                        700]
-                                                                    : order.status.toLowerCase() ==
-                                                                            "complete"
-                                                                        ? Colors.purple[
-                                                                            800]
-                                                                        : Colors
-                                                                            .pink,
-                                                        width: 10,
-                                                        height: 10,
-                                                      ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              FittedBox(
+                                                  child: Hero(
+                                                tag: order.restaurantId
+                                                        .toString() +
+                                                    order.friendlyId.toString(),
+                                                child: Material(
+                                                  child: Text(
+                                                    timeAgo.format(
+                                                      order.time.toDate(),
                                                     ),
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ]),
-                                    ),
+                                              )),
+                                              const SizedBox(height: 5),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 8.0),
+                                                child: ClipOval(
+                                                  child: Hero(
+                                                    tag: order.friendlyId
+                                                            .toString() +
+                                                        "status",
+                                                    child: Container(
+                                                      color: order.status
+                                                                  .toLowerCase() ==
+                                                              "pending"
+                                                          ? Colors.deepOrange
+                                                          : order.status
+                                                                      .toLowerCase() ==
+                                                                  "processing"
+                                                              ? Colors.blue
+                                                              : order.status
+                                                                          .toLowerCase() ==
+                                                                      "takeout"
+                                                                  ? Colors.green[
+                                                                      700]
+                                                                  : order.status
+                                                                              .toLowerCase() ==
+                                                                          "complete"
+                                                                      ? Colors.purple[
+                                                                          800]
+                                                                      : Colors
+                                                                          .pink,
+                                                      width: 10,
+                                                      height: 10,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ]),
                                   ),
                                 ),
                               ),

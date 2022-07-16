@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const Duration transitionDuration = Duration(milliseconds: 400);
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -28,6 +29,23 @@ final List<String> globalCategories = [
   "Casual",
   "Classic"
 ];
+
+Future<bool> checkLike({required String foodId}) async {
+  final prefs = await SharedPreferences.getInstance();
+  bool answer = prefs.containsKey(foodId);
+  return answer;
+}
+
+Future<void> toggleFoodLike({required String foodId}) async {
+  final prefs = await SharedPreferences.getInstance();
+  if (await checkLike(foodId: foodId)) {
+    debugPrint("removing like");
+    prefs.remove(foodId);
+  } else {
+    prefs.setBool(foodId, true);
+    debugPrint("adding like");
+  }
+}
 
 Future<void> sendNotif(
     {required String title,

@@ -75,8 +75,8 @@ dependencies:
   timezone:
   sqflite:
   geolocator: 
-  location: 
   qr_flutter: 
+  carousel_grid:
   provider:
   shared_preferences:
   flutter_animated_button:

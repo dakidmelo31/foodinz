@@ -32,7 +32,7 @@ class CartData with ChangeNotifier {
   }
 
   void checkout(
-      {required int deliveryCost,
+      {required double deliveryCost,
       required bool isHomeDelivery,
       required BuildContext context}) {
     List<String> names = myCart.map((e) {
@@ -67,7 +67,7 @@ class CartData with ChangeNotifier {
         userId: auth.currentUser!.uid,
         payload: order.restaurantId,
         restaurantId: order.restaurantId,
-        image: myInfo!.image,
+        image: myInfo.image,
       );
       firestore.collection("notifications").add(cloudNotification.toMap());
       debugPrint("Done placing order");

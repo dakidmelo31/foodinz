@@ -119,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             names: List<String>.from(doc['names']),
                             prices: List<double>.from(doc['prices']),
                             homeDelivery: doc['homeDelivery'] ?? false,
-                            deliveryCost: doc['deliveryCost']?.toInt() ?? 0,
+                            deliveryCost: doc['deliveryCost']?.toDouble() ?? 0,
                             time: doc["time"],
                             userId: doc['userId'] ?? "no user",
                           );
@@ -157,15 +157,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                 color: Colors.white.withOpacity(.95),
                                 shadowColor: Colors.black.withOpacity(.21),
                                 child: InkWell(
-                                  onTap: () {
+                                  onTap: () async {
                                     debugPrint("move to orders");
-                                    Navigator.push(
-                                        context,
-                                        ConcentricPageRoute(
-                                            builder: (_) => OrderDetails(
-                                                order: order,
-                                                total: totalCost)));
-
+                                    await Navigator.push(
+                                            context,
+                                            ConcentricPageRoute(
+                                                builder: (_) => OrderDetails(
+                                                    order: order,
+                                                    total: totalCost)))
+                                        .then((value) => setState(() {}));
                                     // Navigator.push(
                                     //   context,
                                     //   PageTransition(

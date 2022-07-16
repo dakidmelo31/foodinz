@@ -11,7 +11,7 @@ class Order {
   final List<String> names;
   final List<double> prices;
   final bool homeDelivery;
-  final int deliveryCost;
+  final double deliveryCost;
   final Timestamp time;
   final String userId;
   String orderId = '';
@@ -36,7 +36,7 @@ class Order {
     List<String>? names,
     List<double>? prices,
     bool? homeDelivery,
-    int? deliveryCost,
+    double? deliveryCost,
     Timestamp? time,
     String? userId,
     int? friendlyId,

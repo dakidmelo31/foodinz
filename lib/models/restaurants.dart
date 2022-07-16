@@ -20,8 +20,8 @@ class Restaurant {
       foodReservation,
       ghostKitchen;
   final double lat, long;
-  final List<String> categories;
-  int deliveryCost = 500;
+  final List<String> categories, gallery;
+  double deliveryCost;
   int comments = 0;
   int likes = 0;
 
@@ -29,6 +29,7 @@ class Restaurant {
       {required this.address,
       required this.name,
       required this.categories,
+      required this.gallery,
       required this.long,
       required this.lat,
       this.comments = 0,

@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/widgets/food_info_table_item.dart';
 import 'package:foodinz/widgets/rating_list.dart';
+import 'package:foodinz/widgets/transitions.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -61,27 +62,14 @@ class _MealGalleryState extends State<MealGallery> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    PageRouteBuilder(
-                      opaque: false,
-                      barrierColor: Colors.transparent,
-                      transitionDuration: const Duration(milliseconds: 700),
-                      transitionsBuilder:
-                          (_, animation, anotherAnimation, child) {
-                        return FadeTransition(
-                          opacity: CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.fastOutSlowIn,
-                            reverseCurve: Curves.fastLinearToSlowEaseIn,
-                          ),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          Scaffold(
+                    VerticalSizeTransition(
+                      child: Scaffold(
                         backgroundColor: Colors.black,
                         appBar: AppBar(
+                            backgroundColor: Colors.black,
                             title: Text(
                               meal.name,
+                              style: Primary.whiteText,
                             ),
                             centerTitle: true),
                         body: Center(
@@ -107,7 +95,7 @@ class _MealGalleryState extends State<MealGallery> {
                   );
                 },
                 child: Hero(
-                  tag: widget.heroTag,
+                  tag: widget.heroTag + "abc",
                   child: ClipOval(
                     child: CachedNetworkImage(
                       imageUrl: widget.meal.image,
@@ -212,25 +200,27 @@ class _MealGalleryState extends State<MealGallery> {
                                       title: Text(meal.name,
                                           style: Primary.whiteText),
                                       centerTitle: true),
-                                  body: Hero(
-                                    tag: nextTag,
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.contain,
-                                      imageUrl: gallery[index],
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      errorWidget: (_, text, __) {
-                                        return Lottie.asset(
-                                          "assets/no-connection2.json",
-                                        );
-                                      },
+                                  body: Center(
+                                    child: Hero(
+                                      tag: nextTag,
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: gallery[index],
+                                        width: size.width,
+                                        height: size.width,
+                                        errorWidget: (_, text, __) {
+                                          return Lottie.asset(
+                                            "assets/no-connection2.json",
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
                                 );
                               }));
                     },
                     child: Hero(
-                      tag: nextTag,
+                      tag: nextTag + "_carousel",
                       child: CachedNetworkImage(
                           fit: BoxFit.cover,
                           imageUrl: gallery[index],

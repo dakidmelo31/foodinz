@@ -94,8 +94,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   int seconds = 60;
 
   String verificationCode = "", phoneNumber = "";
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _otpController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   bool hideResend = false;
 
@@ -117,12 +116,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         // Sign the user in (or link) with the auto-generated credential
         await auth.signInWithCredential(credential).then((value) async {
           debugPrint("done logging in");
-        }).catchError((onError) =>
-            {debugPrint("error saving user: ${onError.toString()}")});
+        }).catchError((onError) {
+          debugPrint("error saving user: ${onError.toString()}");
+        });
       },
       verificationFailed: (FirebaseAuthException e) {
         if (e.code == 'invalid-phone-number') {
-          print('The provided phone number is not valid. ${phoneNumber}');
+          debugPrint('The provided phone number is not valid. ${phoneNumber}');
         } else {
           debugPrint("there is another error: ${e.message}");
         }
@@ -165,6 +165,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   @override
   void dispose() {
     _animationController.dispose();
+    countdownTimerController.dispose();
     super.dispose();
   }
 

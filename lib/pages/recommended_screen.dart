@@ -18,8 +18,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
-
 import '../models/food.dart';
 import '../themes/light_theme.dart';
 import '../widgets/meals_block.dart';
@@ -134,7 +132,7 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
         );
       },
       child: _userData.loadingUser
-          ? Lottie.asset("assets/loading5.json")
+          ? Center(child: Lottie.asset("assets/loading5.json"))
           : Stack(
               alignment: Alignment.center,
               children: [
@@ -491,19 +489,20 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                               children: [
                                                 Hero(
                                                   tag: meal.foodId,
-                                                  child: FittedBox(
-                                                    child: Material(
-                                                      type: MaterialType
-                                                          .transparency,
-                                                      child: Text(
-                                                        meal.name.toUpperCase(),
-                                                        style: const TextStyle(
-                                                          fontSize: 25,
-                                                          color: Colors.black,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
+                                                  child: Material(
+                                                    type: MaterialType
+                                                        .transparency,
+                                                    child: Text(
+                                                      meal.name.toUpperCase(),
+                                                      style: const TextStyle(
+                                                        fontSize: 25,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 2,
                                                     ),
                                                   ),
                                                 ),
@@ -597,9 +596,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                         child: SizedBox(
                                           height: size.height * .6,
                                           width: size.width,
-                                          child: CachedNetworkImage(
-                                            imageUrl:
-                                                "https://media.istockphoto.com/photos/cropped-shot-of-an-africanamerican-young-woman-using-smart-phone-at-picture-id1313901506?b=1&k=20&m=1313901506&s=170667a&w=0&h=Dg9qzoAe0pYsBceTUZ6lzaWeUuG3ZQ2WZuLqXvYc718=",
+                                          child: Image.asset(
+                                            "assets/bg.jpg",
                                             fit: BoxFit.cover,
                                             width: size.width,
                                             height: size.height * .6,

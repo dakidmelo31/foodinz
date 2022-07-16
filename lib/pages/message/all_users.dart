@@ -286,7 +286,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           var map =
                               chatMessages[chatMessages.length - 1 - index];
                           Chat msg = Chat(
-                            senderName: user!.name.toString(),
+                            senderName: user.name.toString(),
                             opened: map['opened'] ?? true,
                             messageId: map.id,
                             restaurantId: map['restaurantId'],

@@ -619,15 +619,15 @@ class _MessagesOverviewState extends State<MessagesOverview>
                                                   Colors.transparent,
                                               onTap: () async {
                                                 debugPrint("showDetails");
-                                                bool outcome =
-                                                    await Navigator.push(
+
+                                                Navigator.push(
                                                   context,
                                                   PageRouteBuilder(
                                                     transitionDuration:
-                                                        Duration(
+                                                        const Duration(
                                                             milliseconds: 300),
                                                     reverseTransitionDuration:
-                                                        Duration(
+                                                        const Duration(
                                                             milliseconds: 200),
                                                     pageBuilder: (_, animation,
                                                         secondaryAnimation) {

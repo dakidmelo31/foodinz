@@ -3,11 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:foodinz/providers/global_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../global.dart';
 import '../models/food.dart';
 import 'message_database.dart';
 
 class MealsData with ChangeNotifier {
-  List<Food> meals = [], filteredMeals = [], breakfasts = [];
+  List<Food> meals = [], filteredMeals = [], breakfasts = [], myFavorites = [];
 
   void runFilter(String filter) {
     filteredMeals.clear();
@@ -163,11 +164,20 @@ class MealsData with ChangeNotifier {
             duration: data['duration'],
             categories: List<String>.from(data['categories']));
 
-        fd.favorite = await DBManager.instance.checkFavorite(foodId: foodId);
+        fd.favorite = await checkLike(foodId: foodId);
+        debugPrint(fd.likes.toString());
+
         meals.add(
           fd,
         );
         meals.shuffle();
+        for (var element in meals) {
+          if (element.favorite) {
+            debugPrint("added to favorites");
+            myFavorites.add(element);
+          }
+        }
+        debugPrint("length of favorites is: " + myFavorites.length.toString());
       }
     }).then((value) {
       for (Food d in meals) {
@@ -200,22 +210,59 @@ class MealsData with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleMeal({required String id}) {
-    Food meal = meals.firstWhere((element) => element.foodId == id);
-    final dbManager = DBManager.instance;
+  void toggleMeal({required String foodId}) async {
+    Food meal = meals.firstWhere((element) => element.foodId == foodId);
 
-    dbManager.addFavorite(foodId: id);
+    if (await checkLike(foodId: foodId)) {
+      await firestore.collection("meals").doc(foodId).get().then((value) {
+        Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+        int likes = data['likes'];
+        debugPrint("current likes is: $likes");
+        likes += 1;
+        debugPrint("new likes is: $likes");
+
+        firestore
+            .collection("meals")
+            .doc(foodId)
+            .update({"likes": likes})
+            .then((value) => debugPrint("done adding like"))
+            .catchError((onError) {
+              debugPrint("Error while updating likes: $onError");
+            });
+      });
+    } else {
+      firestore.collection("meals").doc(foodId).get().then((value) {
+        Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+        int likes = data['likes'];
+        debugPrint("current likes is: $likes");
+        likes -= 1;
+        debugPrint("new likes is: $likes");
+
+        firestore
+            .collection("meals")
+            .doc(foodId)
+            .update({"likes": likes})
+            .then((value) => debugPrint("done reducing like"))
+            .catchError((onError) {
+              debugPrint("Error while updating likes: $onError");
+            });
+      });
+    }
+
+    toggleFoodLike(foodId: foodId);
+
     if (meal.favorite) {
       //reduce likes
-      meals.firstWhere((element) => element.foodId == id).likes =
+      meals.firstWhere((element) => element.foodId == foodId).likes =
           meal.likes - 1;
     } else {
       //add like
-      meals.firstWhere((element) => element.foodId == id).likes =
+      meals.firstWhere((element) => element.foodId == foodId).likes =
           meal.likes + 1;
     }
-    meals.firstWhere((element) => element.foodId == id).favorite =
+    meals.firstWhere((element) => element.foodId == foodId).favorite =
         !meal.favorite;
+    meal.likes = meal.likes < 0 ? 0 : meal.likes;
     notifyListeners();
   }
 
@@ -228,44 +275,5 @@ class MealsData with ChangeNotifier {
       food.restaurantId == id ? restaurantMenu.add(food) : null;
     }
     // debugPrint(restaurantMenu.length.toString());
-  }
-
-  toggleLike(
-      {required String userId,
-      required String foodId,
-      required dynamic value,
-      required String name}) async {
-    WriteBatch batch = FirebaseFirestore.instance.batch();
-    final _prefs = await SharedPreferences.getInstance();
-    if (_prefs.containsKey(foodId)) {
-      debugPrint("already liked");
-    } else {
-      debugPrint("add like");
-      FirebaseFirestore.instance
-          .collection("meals")
-          .where("foodId", isEqualTo: foodId)
-          .get()
-          .then(
-        (querySnapshot) {
-          for (var document in querySnapshot.docs) {
-            int likes = document.data()["likes"];
-            likes++;
-            FirebaseFirestore.instance.collection("meals").doc(foodId).update(
-              {
-                "likes": likes,
-              },
-            ).then(
-              (value) {
-                debugPrint("done updating");
-              },
-            ).catchError(
-              (error) {
-                debugPrint("Error while updating: $error");
-              },
-            );
-          }
-        },
-      );
-    }
   }
 }

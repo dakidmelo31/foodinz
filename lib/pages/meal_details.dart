@@ -59,7 +59,7 @@ class _FoodDetailsState extends State<FoodDetails>
   final listState = GlobalKey<AnimatedListState>();
   @override
   void initState() {
-    heroTag = widget.heroTag;
+    heroTag = widget.heroTag + "_mixed";
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
     _animation =
@@ -186,7 +186,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                                   debugPrint("toggle favorite");
                                                   setState(() {
                                                     _restaurantData.toggleMeal(
-                                                        id: meal.foodId);
+                                                        foodId: meal.foodId);
                                                   });
                                                 },
                                               ),
@@ -309,7 +309,7 @@ class _FoodDetailsState extends State<FoodDetails>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   "Choose What to eat with",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w800,

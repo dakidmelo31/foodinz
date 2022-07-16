@@ -25,7 +25,7 @@ class _CartScreenState extends State<CartScreen> {
   late String start;
 
   bool homeDelivery = false;
-  int deliveryCost = 0;
+  double deliveryCost = 0;
   @override
   Widget build(BuildContext context) {
     final _cartData = Provider.of<CartData>(context, listen: false);

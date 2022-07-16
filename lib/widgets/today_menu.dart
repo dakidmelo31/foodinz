@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:foodinz/widgets/transitions.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -54,17 +55,11 @@ class TodayMenu extends StatelessWidget {
 
                     Navigator.push(
                       context,
-                      PageRouteBuilder(
-                        transitionDuration: const Duration(milliseconds: 600),
-                        pageBuilder: (context, animation, secondaryAnimation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: FoodDetails(
-                              meal: meal,
-                              heroTag: myTag,
-                            ),
-                          );
-                        },
+                      HorizontalSizeTransition(
+                        child: FoodDetails(
+                          meal: meal,
+                          heroTag: myTag + "meal_hero",
+                        ),
                       ),
                     );
                   },
@@ -93,20 +88,16 @@ class TodayMenu extends StatelessWidget {
                           Positioned(
                             right: 5,
                             top: 8,
-                            child: ClipOval(
-                              child: Container(
-                                color: Colors.white.withOpacity(.3),
-                                child: IconButton(
-                                  onPressed: () {
-                                    _restaurantData.toggleFavorite(meal.foodId);
-                                  },
-                                  icon: meal.favorite
-                                      ? const Icon(Icons.favorite_rounded,
-                                          color: Colors.pink)
-                                      : const Icon(
-                                          Icons.favorite_border_rounded,
-                                          color: Colors.white),
-                                ),
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 8.0,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(children: [
+                                  Text(
+                                    meal.duration,
+                                  )
+                                ]),
                               ),
                             ),
                           ),
