@@ -1,15 +1,14 @@
 import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/global.dart';
 import 'package:foodinz/widgets/food_info_table_item.dart';
 import 'package:foodinz/widgets/rating_list.dart';
 import 'package:foodinz/widgets/transitions.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
 import '../models/food.dart';
 import '../themes/light_theme.dart';
 
@@ -27,7 +26,6 @@ class _MealGalleryState extends State<MealGallery> {
   late int reviewCount;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -82,6 +80,7 @@ class _MealGalleryState extends State<MealGallery> {
                                   imageUrl: meal.image,
                                   width: double.infinity,
                                   height: double.infinity,
+                                  placeholder: (_, __) => loadingWidget,
                                   errorWidget: (_, text, __) {
                                     return Lottie.asset(
                                       "assets/no-connection2.json",
@@ -95,9 +94,10 @@ class _MealGalleryState extends State<MealGallery> {
                   );
                 },
                 child: Hero(
-                  tag: widget.heroTag + "abc",
+                  tag: widget.heroTag,
                   child: ClipOval(
                     child: CachedNetworkImage(
+                      placeholder: (_, __) => loadingWidget,
                       imageUrl: widget.meal.image,
                       alignment: Alignment.center,
                       fit: BoxFit.cover,
@@ -208,6 +208,7 @@ class _MealGalleryState extends State<MealGallery> {
                                         imageUrl: gallery[index],
                                         width: size.width,
                                         height: size.width,
+                                        placeholder: (_, __) => loadingWidget,
                                         errorWidget: (_, text, __) {
                                           return Lottie.asset(
                                             "assets/no-connection2.json",
@@ -220,11 +221,12 @@ class _MealGalleryState extends State<MealGallery> {
                               }));
                     },
                     child: Hero(
-                      tag: nextTag + "_carousel",
+                      tag: nextTag,
                       child: CachedNetworkImage(
                           fit: BoxFit.cover,
                           imageUrl: gallery[index],
                           width: size.width * .35,
+                          placeholder: (_, __) => loadingWidget,
                           errorWidget: (_, text, __) {
                             return Lottie.asset(
                               "assets/no-connection2.json",

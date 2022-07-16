@@ -110,8 +110,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final mealsData = Provider.of<MealsData>(context);
-    final _userData = Provider.of<MyData>(context);
+    final mealsData = Provider.of<MealsData>(context, listen: true);
+    final _userData = Provider.of<MyData>(context, listen: true);
 
     final meals = mealsData.meals;
     final size = MediaQuery.of(context).size;

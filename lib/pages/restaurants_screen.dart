@@ -9,6 +9,7 @@ import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
+import '../global.dart';
 import '../models/restaurants.dart';
 import '../providers/data.dart';
 import '../widgets/slide_up_tween.dart';
@@ -251,6 +252,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                   ),
                                 ),
                                 child: CachedNetworkImage(
+                                  placeholder: (_, __) => loadingWidget2,
                                   imageUrl: restaurant.businessPhoto,
                                   alignment: Alignment.center,
                                   fit: BoxFit.cover,
@@ -310,29 +312,6 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              const Text("Phone Number"),
-                              Text(restaurant.phoneNumber
-                                  .split("+237")
-                                  .join(" ")),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Text("Home Delivery"),
-                              Text(
-                                  restaurant.homeDelivery
-                                      ? "Available"
-                                      : "Not available",
-                                  style: TextStyle(
-                                      color: restaurant.homeDelivery
-                                          ? Colors.green
-                                          : Colors.pink)),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
                               ValueListenableBuilder<bool>(
                                 valueListenable: _showCardDetails,
                                 builder: (_, value, child) {
@@ -351,13 +330,6 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                               ),
                             ],
                           ),
-                          if (restaurant.ghostKitchen)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: const [
-                                Text("You can hire us"),
-                              ],
-                            ),
                         ],
                       ),
                     ),

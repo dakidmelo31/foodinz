@@ -105,8 +105,9 @@ Future<void> sendNotif(
 }
 
 Widget errorWidget2 = Lottie.asset("assets/no-connection2.json");
-Widget errorWidget1 = Lottie.asset("assets/no-connection.json");
+Widget errorWidget1 = Lottie.asset("assets/no-connection3.json");
 Widget loadingWidget = Lottie.asset("assets/loading5.json");
+Widget loadingWidget2 = Lottie.asset("assets/loading2.json");
 
 deleteCloudNotification({required String notificationId}) {
   firestore

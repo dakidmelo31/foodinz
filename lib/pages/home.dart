@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/pages/cart_screen.dart';
 import 'package:foodinz/pages/messages_overview.dart';
-import 'package:foodinz/pages/recent_contacts.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
-import '../global.dart';
 import '../widgets/home_screen.dart';
 import 'my_favorites.dart';
 import 'my_settings.dart';
@@ -150,7 +148,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
+          onPressed: () async {
             Navigator.push(
                 context,
                 PageRouteBuilder(
@@ -166,6 +164,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   },
                 )).then((value) {
               debugPrint("done with cart");
+            }).then((value) {
+              setState(() {});
             });
           },
           backgroundColor: Colors.white,

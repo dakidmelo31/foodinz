@@ -32,8 +32,6 @@ class MealsBlock extends StatefulWidget {
 class _MealsBlockState extends State<MealsBlock> {
   @override
   Widget build(BuildContext context) {
-    final _servicesData = Provider.of<ServicesData>(context, listen: true);
-
     final _cartData = Provider.of<CartData>(context, listen: true);
     var filteredMeals = Provider.of<MealsData>(context, listen: true);
     final filteredList = filteredMeals.filterCategory(keyword: widget.filter);

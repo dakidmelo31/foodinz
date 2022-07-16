@@ -1,9 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/global.dart';
+import 'package:foodinz/pages/restaurant_details.dart';
 import 'package:foodinz/pages/review_screen.dart';
+import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/reviews.dart';
 import 'package:foodinz/widgets/food_info_table.dart';
 import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
+import 'package:foodinz/widgets/transitions.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +19,7 @@ import '../providers/auth.dart';
 import '../providers/bookmarks.dart';
 import '../providers/cart.dart';
 import '../providers/meals.dart';
+import '../themes/light_theme.dart';
 import '../widgets/meal_gallery_slideshow.dart';
 import 'review_form.dart';
 
@@ -74,9 +80,10 @@ class _FoodDetailsState extends State<FoodDetails>
   ) {
     final _restaurantData = Provider.of<MealsData>(context, listen: true);
     final _bookmarksData = Provider.of<BookmarkData>(context, listen: true);
-    final _userData = Provider.of<MyData>(context, listen: true);
-    final Size size = MediaQuery.of(context).size;
     final Food meal = widget.meal;
+    final restaurant = Provider.of<RestaurantData>(context, listen: true)
+        .getRestaurant(meal.restaurantId);
+    final Size size = MediaQuery.of(context).size;
     final CartData _cart = Provider.of<CartData>(context, listen: false);
     // final cartData = Provider.of<CartData>(context);
     final isAlreadyInCart = _cart.isAvailable(meal.foodId);
@@ -272,6 +279,77 @@ class _FoodDetailsState extends State<FoodDetails>
                           MealGallery(
                             meal: meal,
                             heroTag: heroTag,
+                          ),
+                          const SizedBox(height: 10),
+                          Card(
+                            margin: EdgeInsets.only(top: 15.0),
+                            elevation: 15.0,
+                            shadowColor: Colors.black.withOpacity(.2),
+                            color: Colors.white,
+                            child: Center(
+                              child: SizedBox(
+                                height: 70.0,
+                                width: size.width - 15.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          HorizontalSizeTransition(
+                                              child: RestaurantDetails(
+                                                  restaurant: restaurant)));
+                                    },
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                  restaurant.companyName,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                                Text(
+                                                  restaurant.address,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                ),
+                                              ],
+                                            ),
+                                            width: size.width - 90,
+                                          ),
+                                          ClipOval(
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  restaurant.businessPhoto,
+                                              placeholder: (_, __) =>
+                                                  loadingWidget,
+                                              errorWidget: (_, __, ___) =>
+                                                  errorWidget1,
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.center,
+                                              height: 70,
+                                              width: 60,
+                                            ),
+                                          )
+                                        ]),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 10),
                           OpacityTween(

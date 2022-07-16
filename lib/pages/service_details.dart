@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:foodinz/global.dart';
@@ -10,15 +9,12 @@ import 'package:foodinz/models/service.dart';
 import 'package:foodinz/pages/maps/single_map.dart';
 import 'package:foodinz/pages/restaurant_details.dart';
 import 'package:foodinz/providers/data.dart';
-import 'package:foodinz/providers/global_data.dart';
 import 'package:foodinz/providers/services.dart';
-import 'package:foodinz/theme/main_theme.dart';
 import 'package:foodinz/themes/light_theme.dart';
-import 'package:foodinz/widgets/restaurant_info_table.dart';
 import 'package:foodinz/widgets/transitions.dart';
-import 'package:like_button/like_button.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:open_whatsapp/open_whatsapp.dart';
 import 'package:provider/provider.dart';
 
 class ServiceDetails extends StatefulWidget {
@@ -37,9 +33,9 @@ class _ServiceDetailsState extends State<ServiceDetails> {
     Size size = MediaQuery.of(context).size;
     final _serviceData = Provider.of<ServicesData>(context, listen: true);
     final _restaurantData = Provider.of<RestaurantData>(context, listen: true);
-
     final List<ServiceModel> services = _serviceData.services;
-    final List<Restaurant> restaurant = _restaurantData.restaurants;
+    final restaurant =
+        _restaurantData.getRestaurant(widget.service.restaurantId);
 
     return SafeArea(
       child: Scaffold(
@@ -81,6 +77,9 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                               child: Hero(
                                 tag: widget.tag,
                                 child: CachedNetworkImage(
+                                  errorWidget: ((context, url, error) =>
+                                      errorWidget1),
+                                  placeholder: (_, __) => loadingWidget2,
                                   imageUrl: widget.service.image,
                                   fit: BoxFit.cover,
                                   width: size.width,
@@ -321,7 +320,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                 child: Card(
                   elevation: 15.0,
                   margin: EdgeInsets.zero,
-                  color: Colors.deepOrange,
+                  color: Colors.lightGreen,
                   child: InkWell(
                     onTap: () async {
                       Restaurant? parentRestaurant = _restaurantData
@@ -329,7 +328,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       if (parentRestaurant.name.isEmpty) {
                         ScaffoldMessenger.of(context).hideCurrentSnackBar();
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text("Restaurant no more exists"),
                             elevation: 10.0,
                             backgroundColor: Colors.white,
@@ -395,7 +394,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                               placeholder: (_, __) =>
                                                   loadingWidget,
                                               errorWidget: (_, __, ___) =>
-                                                  errorWidget2,
+                                                  errorWidget1,
                                               width: size.width * .5,
                                               height: size.width * .5,
                                             ),
@@ -479,14 +478,14 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                             FloatingActionButton(
                                               backgroundColor: Colors.white,
                                               onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  CustomFadeTransition(
-                                                    child: RestaurantDetails(
-                                                        restaurant:
-                                                            parentRestaurant),
-                                                  ),
-                                                );
+                                                String number = restaurant
+                                                    .phoneNumber
+                                                    .split("+")
+                                                    .last;
+                                                debugPrint(number);
+                                                FlutterOpenWhatsapp
+                                                    .sendSingleMessage(number,
+                                                        "Hi, I'm interested in your services");
                                               },
                                               child: const Icon(
                                                 Icons.phone_callback_rounded,
