@@ -793,13 +793,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  open_whatsapp:
-    dependency: "direct main"
-    description:
-      name: open_whatsapp
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   page_transition:
     dependency: "direct main"
     description:
@@ -1288,6 +1281,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1"
+  whatsapp_unilink:
+    dependency: "direct main"
+    description:
+      name: whatsapp_unilink
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1+1"
   win32:
     dependency: transitive
     description:

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -289,7 +290,7 @@ class _CartScreenState extends State<CartScreen> {
                         margin:
                             EdgeInsets.symmetric(horizontal: size.width * .2),
                         child: InkWell(
-                          onTap: () {
+                          onTap: () async {
                             if (_cartData.isMultipleRestaurants) {
                               MaterialBanner materialBanner = MaterialBanner(
                                   elevation: 10,
@@ -322,20 +323,23 @@ class _CartScreenState extends State<CartScreen> {
                                   Provider.of<MyData>(context, listen: false)
                                       .user;
 
-                              Chat newChat = Chat(
-                                opened: false,
-                                senderName: user.name.toString(),
-                                userId: FirebaseAuth.instance.currentUser!.uid,
-                                lastMessageTime: DateTime.now(),
-                                lastmessage:
-                                    "Hi, I'd like to follow up on my order",
-                                restaurantId: _cartData.myCart[0].restaurantId,
-                                restaurantName: restaurant.companyName,
-                                restaurantImage: restaurant.companyName,
-                                userImage: user.image ?? "",
-                                sender: FirebaseAuth.instance.currentUser!.uid,
-                              );
-
+                              await firestore
+                                  .collection("overviews")
+                                  .doc(restaurant.restaurantId)
+                                  .collection("chats")
+                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                  .set({
+                                    "name": user.name,
+                                    "photo": user.image,
+                                    "lastMessage":
+                                        "Hi, I'm interested in your product(s)",
+                                    "newMessage": true,
+                                    "time": FieldValue.serverTimestamp(),
+                                    "sentByMe": false
+                                  }, SetOptions(merge: true))
+                                  .then((value) => debugPrint("now opened"))
+                                  .catchError((onError) => debugPrint(
+                                      "Error adding Overview: $onError"));
                               // DBManager.instance.addOverview(chat: newChat);
 
                               _cartData.checkout(

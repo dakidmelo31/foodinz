@@ -77,7 +77,7 @@ dependencies:
   geolocator: 
   qr_flutter: 
   carousel_grid:
-  open_whatsapp:
+  whatsapp_unilink:
   provider:
   shared_preferences:
   flutter_animated_button:

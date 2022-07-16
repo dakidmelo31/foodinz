@@ -71,7 +71,6 @@ CREATE TABLE IF NOT EXISTS chats (
 ''');
   }
 
-  
   addFavoriteService({required String foodId}) async {
     Database _db = await instance.database;
     var values =
@@ -331,11 +330,19 @@ sendMessage({required Chat chat}) async {
       message: chat.lastmessage,
       newTime: chat.lastMessageTime,
       resturantId: chat.restaurantId);
-  firestore
-      .collection("messages")
-      .add(chat.toMap())
-      .then((value) => debugPrint("done adding message"))
-      .catchError((onError) {
+  firestore.collection("messages").add(chat.toMap()).then((value) async {
+    firestore
+        .collection("overviews")
+        .doc(chat.restaurantId)
+        .collection("chats")
+        .doc(auth.currentUser!.uid)
+        .set({
+      "lastMessage": chat.lastmessage,
+      "newMessage": true,
+      "time": FieldValue.serverTimestamp(),
+      "sentByMe": false
+    }, SetOptions(merge: true)).then((value) => debugPrint("now opened"));
+  }).catchError((onError) {
     debugPrint("error found: $onError");
   });
 }

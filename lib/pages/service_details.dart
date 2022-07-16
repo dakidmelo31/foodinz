@@ -14,8 +14,8 @@ import 'package:foodinz/themes/light_theme.dart';
 import 'package:foodinz/widgets/transitions.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:open_whatsapp/open_whatsapp.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ServiceDetails extends StatefulWidget {
   const ServiceDetails({Key? key, required this.service, required this.tag})
@@ -395,8 +395,8 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                                   loadingWidget,
                                               errorWidget: (_, __, ___) =>
                                                   errorWidget1,
-                                              width: size.width * .5,
-                                              height: size.width * .5,
+                                              width: size.width * .4,
+                                              height: size.width * .4,
                                             ),
                                           ),
                                         ),
@@ -462,14 +462,15 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                               backgroundColor: Color.fromARGB(
                                                   255, 0, 167, 22),
                                               onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  CustomFadeTransition(
-                                                    child: RestaurantDetails(
-                                                        restaurant:
-                                                            parentRestaurant),
-                                                  ),
-                                                );
+                                                String number = restaurant
+                                                    .phoneNumber
+                                                    .split("+")
+                                                    .last;
+                                                debugPrint(number);
+                                                launchWhatsApp(
+                                                    phoneNumber: number,
+                                                    message:
+                                                        "Hi, I'm interested in your business");
                                               },
                                               child: const Icon(
                                                 Icons.whatsapp_rounded,
@@ -477,15 +478,11 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                             ),
                                             FloatingActionButton(
                                               backgroundColor: Colors.white,
-                                              onPressed: () {
-                                                String number = restaurant
-                                                    .phoneNumber
-                                                    .split("+")
-                                                    .last;
-                                                debugPrint(number);
-                                                FlutterOpenWhatsapp
-                                                    .sendSingleMessage(number,
-                                                        "Hi, I'm interested in your services");
+                                              onPressed: () async {
+                                                Uri url = Uri.parse("tel:" +
+                                                    restaurant.phoneNumber);
+                                                if (await launchUrl(url))
+                                                  throw "Could not launch $url";
                                               },
                                               child: const Icon(
                                                 Icons.phone_callback_rounded,

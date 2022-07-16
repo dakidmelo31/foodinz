@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
 const Duration transitionDuration = Duration(milliseconds: 400);
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -176,4 +178,9 @@ Color getColor({required String status}) {
               : status.toLowerCase() == "completed"
                   ? Colors.deepPurple
                   : Colors.pink;
+}
+
+launchWhatsApp({required String phoneNumber, required String message}) async {
+  final link = WhatsAppUnilink(phoneNumber: phoneNumber, text: message);
+  await launch("$link");
 }
