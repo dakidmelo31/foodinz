@@ -34,17 +34,61 @@ final List<String> globalCategories = [
 
 Future<bool> checkLike({required String foodId}) async {
   final prefs = await SharedPreferences.getInstance();
-  bool answer = prefs.containsKey(foodId);
+  bool answer = prefs.containsKey("favoriteMeals");
+  if (answer) {
+    List<String>? vals = prefs.getStringList("favoriteMeals");
+    if (vals == null) {
+      prefs.setStringList("favoriteMeals", []);
+      return false;
+    }
+    if (vals.isEmpty) {
+      return false;
+    }
+
+    if (vals.contains(foodId)) {
+      return true;
+    }
+  } else {
+    prefs.setStringList("favoriteMeals", []);
+  }
+  return answer;
+}
+
+Future<bool> checkFollow({required String restaurantId}) async {
+  final prefs = await SharedPreferences.getInstance();
+  bool answer = prefs.containsKey("favoriteRestaurants");
+  if (answer) {
+    List<String>? vals = prefs.getStringList("favoriteRestaurants");
+    if (vals == null) {
+      await prefs.setStringList("favoriteRestaurants", []);
+      return false;
+    }
+    if (vals.isEmpty) {
+      await prefs.setStringList("favoriteRestaurants", []);
+      return false;
+    }
+
+    if (vals.contains(restaurantId)) {
+      return true;
+    }
+  } else {
+    prefs.setStringList("favoriteRestaurants", []);
+  }
   return answer;
 }
 
 Future<void> toggleFoodLike({required String foodId}) async {
   final prefs = await SharedPreferences.getInstance();
+  var list = prefs.getStringList("favoriteMeals") ?? [];
+
   if (await checkLike(foodId: foodId)) {
     debugPrint("removing like");
-    prefs.remove(foodId);
+    list.remove(foodId);
+    prefs.setStringList("favoriteMeals", list);
   } else {
-    prefs.setBool(foodId, true);
+    debugPrint("removing like");
+    list.add(foodId);
+    prefs.setStringList("favoriteMeals", list);
     debugPrint("adding like");
   }
 }
@@ -61,7 +105,7 @@ addToLikes({required String foodId}) async {
       });
 }
 
-removeFromLikes({required String foodId}) async {
+removeFromLikes({required String foodId, VoidCallback? update}) async {
   await firestore
       .collection("allLikes")
       .doc(auth.currentUser!.uid)
@@ -182,5 +226,62 @@ Color getColor({required String status}) {
 
 launchWhatsApp({required String phoneNumber, required String message}) async {
   final link = WhatsAppUnilink(phoneNumber: phoneNumber, text: message);
+  // ignore: deprecated_member_use
   await launch("$link");
+}
+
+Future<void> addFollow({required String restaurantId}) async {
+  String? deviceToken = await getToken();
+  await firestore
+      .collection("subscriptions")
+      .doc(restaurantId)
+      .collection("followers")
+      .doc(auth.currentUser!.uid)
+      .set({
+    "followDate": FieldValue.serverTimestamp(),
+    "deviceToken": deviceToken
+  }).then((value) async {
+    firestore.collection("restaurants").doc(restaurantId).get().then((value) {
+      int followers = value.data()!["followers"];
+      followers++;
+      firestore
+          .collection("restaurants")
+          .doc(restaurantId)
+          .update({"followers": followers});
+    });
+  }).then((value) => debugPrint("added follow globally"));
+}
+
+Future<void> removeFollow({required String restaurantId}) async {
+  await firestore
+      .collection("subscriptions")
+      .doc(restaurantId)
+      .collection("followers")
+      .doc(auth.currentUser!.uid)
+      .delete()
+      .then((value) async {
+    firestore.collection("restaurants").doc(restaurantId).get().then((value) {
+      int followers = value.data()!["followers"];
+      followers--;
+      firestore
+          .collection("restaurants")
+          .doc(restaurantId)
+          .update({"followers": followers});
+    });
+  }).then((value) => debugPrint("removed follow globally"));
+}
+
+Future<List<String>> getFavoriteMeals() async {
+  List<String> foodIds = [];
+
+  final prefs = await SharedPreferences.getInstance();
+  var keys = prefs.getStringList("favoriteRestaurants");
+  if (keys == null || keys.isEmpty) {
+    return [];
+  }
+
+  keys.map(((e) => foodIds.add(e)));
+  debugPrint(foodIds.toString());
+
+  return foodIds;
 }

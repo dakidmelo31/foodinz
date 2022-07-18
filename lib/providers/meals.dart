@@ -199,14 +199,28 @@ class MealsData with ChangeNotifier {
     return meals.firstWhere((element) => element.foodId == foodId);
   }
 
+  List<Food> filterMeals(List<String> foodIds) {
+    List<Food> myMeals = [];
+
+    for (var item in meals) {
+      if (foodIds.contains(item.foodId)) {
+        myMeals.add(item);
+      }
+    }
+
+    return myMeals;
+  }
+
   void toggleMeal({required String foodId}) async {
     Food meal = meals.firstWhere((element) => element.foodId == foodId);
+    bool likedAlready = await checkLike(foodId: foodId);
 
     if (!await checkLike(foodId: foodId)) {
       await firestore.collection("meals").doc(foodId).get().then((value) {
         Map<String, dynamic> data = value.data() as Map<String, dynamic>;
         int likes = data['likes'];
         debugPrint("current likes is: $likes");
+        
         likes += 1;
         debugPrint("new likes is: $likes");
 

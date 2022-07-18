@@ -583,7 +583,7 @@ class _TextWidgetState extends State<TextWidget> {
                 onPressed: () async {
                   Chat chat = Chat(
                     opened: false,
-                    senderName: user!.name.toString(),
+                    senderName: user.name.toString(),
                     lastMessageTime: DateTime.now(),
                     lastmessage: _editingController.text,
                     restaurantId: restaurant.restaurantId,

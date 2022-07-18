@@ -12,8 +12,9 @@ class Restaurant {
       phoneNumber,
       username,
       companyName;
-  final bool momo,
+  bool momo,
       cash,
+      following,
       tableReservation,
       specialOrders,
       homeDelivery,
@@ -24,12 +25,14 @@ class Restaurant {
   double deliveryCost;
   int comments = 0;
   int likes = 0;
+  int followers;
 
   Restaurant(
       {required this.address,
       required this.name,
       required this.categories,
       required this.gallery,
+      required this.followers,
       required this.long,
       required this.lat,
       this.comments = 0,
@@ -43,6 +46,7 @@ class Restaurant {
       required this.specialOrders,
       required this.avatar,
       required this.closingTime,
+      this.following = false,
       required this.openingTime,
       required this.companyName,
       required this.username,

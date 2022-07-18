@@ -66,10 +66,8 @@ class RestaurantInfoTable extends StatelessWidget {
             child: RestaurantInfoTableItem(
                 icon: const Icon(Icons.star_rounded,
                     color: Colors.amber, size: 16),
-                description: restaurant.comments == 0
-                    ? "be first"
-                    : NumberFormat().format(restaurant.comments),
-                title: "Reviews"),
+                description: restaurant.followers.toString(),
+                title: "Followers"),
           ),
         ),
         FittedBox(

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/pages/restaurant_details.dart';
 import 'package:foodinz/pages/review_screen.dart';
@@ -294,6 +295,8 @@ class _FoodDetailsState extends State<FoodDetails>
                                   padding: const EdgeInsets.all(2.0),
                                   child: InkWell(
                                     onTap: () {
+                                      HapticFeedback.mediumImpact();
+
                                       Navigator.push(
                                           context,
                                           HorizontalSizeTransition(
@@ -415,6 +418,8 @@ class _FoodDetailsState extends State<FoodDetails>
                                       const EdgeInsets.symmetric(vertical: 8.0),
                                   child: InkWell(
                                     onTap: () {
+                                      HapticFeedback.mediumImpact();
+
                                       if (_selectedCompliments
                                           .contains(compliment)) {
                                         _selectedCompliments.remove(compliment);
@@ -539,6 +544,8 @@ class _FoodDetailsState extends State<FoodDetails>
                           const SizedBox(height: 60),
                           InkWell(
                             onTap: () {
+                              HapticFeedback.mediumImpact();
+
                               Navigator.push(
                                   context,
                                   PageRouteBuilder(
@@ -673,6 +680,8 @@ class _FoodDetailsState extends State<FoodDetails>
                           color: Colors.black,
                           child: InkWell(
                             onTap: () {
+                              HapticFeedback.mediumImpact();
+
                               setState(() {
                                 _cart.updateCart(
                                     item: Cart(
@@ -801,6 +810,8 @@ class _FoodDetailsState extends State<FoodDetails>
                           child: InkWell(
                             onTap: () {
                               debugPrint("$_counter");
+
+                              HapticFeedback.mediumImpact();
 
                               setState(() {
                                 _cart.addToCart(Cart(

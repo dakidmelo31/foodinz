@@ -1,23 +1,47 @@
+import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/pages/all_chats.dart';
 import 'package:foodinz/providers/global_data.dart';
 import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/restaurant_info_table.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../global.dart';
 import '../models/chats_model.dart';
 import '../models/restaurants.dart';
 import '../providers/auth.dart';
+import '../themes/light_theme.dart';
 import '../widgets/food_card.dart';
 import '../widgets/other_details.dart';
 import '../widgets/promo_code.dart';
 import '../widgets/today_menu.dart';
 
-class RestaurantDetails extends StatelessWidget {
+class RestaurantDetails extends StatefulWidget {
   const RestaurantDetails({Key? key, required this.restaurant})
       : super(key: key);
   final Restaurant restaurant;
+
+  @override
+  State<RestaurantDetails> createState() => _RestaurantDetailsState();
+}
+
+class _RestaurantDetailsState extends State<RestaurantDetails> {
+  bool following = false;
+
+  initiateCheck() async {
+    await checkFollow(restaurantId: widget.restaurant.restaurantId);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    initiateCheck();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +73,9 @@ class RestaurantDetails extends StatelessWidget {
                       child: InkWell(
                         onDoubleTap: () {},
                         child: Hero(
-                          tag: restaurant.businessPhoto,
-                          child: FoodCard(image: restaurant.businessPhoto),
+                          tag: widget.restaurant.businessPhoto,
+                          child:
+                              FoodCard(image: widget.restaurant.businessPhoto),
                         ),
                       ),
                     ),
@@ -59,8 +84,330 @@ class RestaurantDetails extends StatelessWidget {
                 SliverList(
                   delegate: SliverChildListDelegate(
                     [
+                      Card(
+                        color: Colors.white,
+                        elevation: 0.0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text("Followers"),
+                                  Text(
+                                    widget.restaurant.followers.toString(),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 400),
+                                reverseDuration:
+                                    const Duration(milliseconds: 400),
+                                transitionBuilder: (child, animation) {
+                                  return ScaleTransition(
+                                    alignment: Alignment.center,
+                                    filterQuality: FilterQuality.high,
+                                    scale: CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.fastLinearToSlowEaseIn,
+                                        reverseCurve:
+                                            Curves.fastLinearToSlowEaseIn),
+                                    child: child,
+                                  );
+                                },
+                                child: following
+                                    ? DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.pink,
+                                            width: 2.0,
+                                            style: BorderStyle.solid,
+                                          ),
+                                        ),
+                                        child: Card(
+                                          elevation: .0,
+                                          color: Colors.white,
+                                          child: SizedBox(
+                                            width: 120.0,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  bool outcome =
+                                                      await showCupertinoDialog(
+                                                          context: context,
+                                                          barrierDismissible:
+                                                              false,
+                                                          builder: (_) {
+                                                            return AlertDialog(
+                                                              title: const Text(
+                                                                  "Unsubscribe from merchant"),
+                                                              content:
+                                                                  const Text(
+                                                                "You will stop receiving notifications from this merchant",
+                                                                maxLines: 2,
+                                                              ),
+                                                              actions: [
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          true);
+                                                                    },
+                                                                    child: const Text(
+                                                                        "Unsubscribe")),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          false);
+                                                                    },
+                                                                    child: const Text(
+                                                                        "Cancel")),
+                                                              ],
+                                                            );
+                                                          });
+                                                  if (!outcome) {
+                                                    return;
+                                                  }
+
+                                                  setState(() {
+                                                    widget.restaurant
+                                                            .following =
+                                                        !widget.restaurant
+                                                            .following;
+                                                    following = !following;
+                                                  });
+                                                  debugPrint(widget
+                                                      .restaurant.following
+                                                      .toString());
+                                                  final prefs =
+                                                      await SharedPreferences
+                                                          .getInstance();
+                                                  await checkFollow(
+                                                      restaurantId: widget
+                                                          .restaurant
+                                                          .restaurantId);
+                                                  var favoritesRestaurants =
+                                                      prefs.getStringList(
+                                                          "favoriteRestaurants");
+
+                                                  HapticFeedback.heavyImpact();
+                                                  if (await DBManager.instance
+                                                      .checkFollowing(
+                                                          restaurantId: widget
+                                                              .restaurant
+                                                              .restaurantId)) {
+                                                    debugPrint(
+                                                        "unfollowing restaurant");
+
+                                                    favoritesRestaurants
+                                                        ?.remove(widget
+                                                            .restaurant
+                                                            .restaurantId);
+
+                                                    widget.restaurant
+                                                        .followers -= 1;
+                                                    if (widget.restaurant
+                                                            .followers <
+                                                        0) {
+                                                      widget.restaurant
+                                                          .followers = 0;
+                                                    }
+
+                                                    DBManager.instance
+                                                        .dropFollowing(
+                                                            restaurantId: widget
+                                                                .restaurant
+                                                                .restaurantId)
+                                                        .then((value) => removeFollow(
+                                                            restaurantId: widget
+                                                                .restaurant
+                                                                .restaurantId))
+                                                        .then((value) => debugPrint(
+                                                            "dropping follow"));
+                                                  } else {
+                                                    await checkFollow(
+                                                        restaurantId: widget
+                                                            .restaurant
+                                                            .restaurantId);
+                                                    if (favoritesRestaurants ==
+                                                        null) {
+                                                      favoritesRestaurants = [];
+                                                    } else {
+                                                      favoritesRestaurants =
+                                                          favoritesRestaurants;
+                                                    }
+                                                    favoritesRestaurants.add(
+                                                        widget.restaurant
+                                                            .restaurantId);
+
+                                                    widget.restaurant
+                                                        .followers += 1;
+
+                                                    DBManager.instance
+                                                        .addFollowing(
+                                                            restaurantId: widget
+                                                                .restaurant
+                                                                .restaurantId)
+                                                        .then((value) => addFollow(
+                                                            restaurantId: widget
+                                                                .restaurant
+                                                                .restaurantId));
+                                                    debugPrint(
+                                                        "following restaurant");
+                                                  }
+                                                  setState(() {});
+                                                  debugPrint(widget
+                                                      .restaurant.followers
+                                                      .toString());
+                                                },
+                                                child: Center(
+                                                    child: Row(
+                                                  children: const [
+                                                    Icon(
+                                                        Icons.vibration_rounded,
+                                                        color: Colors.pink),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      "Now following",
+                                                      style: TextStyle(
+                                                          color: Colors.pink),
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Card(
+                                        elevation: 15.0,
+                                        color: Colors.pink,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            setState(() {
+                                              widget.restaurant.following =
+                                                  !widget.restaurant.following;
+                                              following = !following;
+                                            });
+                                            final prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            await checkFollow(
+                                                restaurantId: widget
+                                                    .restaurant.restaurantId);
+                                            var favoritesRestaurants =
+                                                prefs.getStringList(
+                                                    "favoriteRestaurants");
+
+                                            HapticFeedback.heavyImpact();
+                                            if (await DBManager.instance
+                                                .checkFollowing(
+                                                    restaurantId: widget
+                                                        .restaurant
+                                                        .restaurantId)) {
+                                              debugPrint(
+                                                  "unfollowing restaurant");
+
+                                              favoritesRestaurants?.remove(
+                                                  widget
+                                                      .restaurant.restaurantId);
+
+                                              widget.restaurant.followers -= 1;
+                                              if (widget.restaurant.followers <
+                                                  0) {
+                                                widget.restaurant.followers = 0;
+                                              }
+
+                                              DBManager.instance
+                                                  .dropFollowing(
+                                                      restaurantId: widget
+                                                          .restaurant
+                                                          .restaurantId)
+                                                  .then((value) => removeFollow(
+                                                      restaurantId: widget
+                                                          .restaurant
+                                                          .restaurantId))
+                                                  .then((value) => debugPrint(
+                                                      "dropping follow"));
+                                            } else {
+                                              await checkFollow(
+                                                  restaurantId: widget
+                                                      .restaurant.restaurantId);
+                                              if (favoritesRestaurants ==
+                                                  null) {
+                                                favoritesRestaurants = [];
+                                              } else {
+                                                favoritesRestaurants =
+                                                    favoritesRestaurants;
+                                              }
+                                              favoritesRestaurants.add(widget
+                                                  .restaurant.restaurantId);
+
+                                              widget.restaurant.followers += 1;
+
+                                              DBManager.instance
+                                                  .addFollowing(
+                                                      restaurantId: widget
+                                                          .restaurant
+                                                          .restaurantId)
+                                                  .then((value) => addFollow(
+                                                      restaurantId: widget
+                                                          .restaurant
+                                                          .restaurantId));
+                                              debugPrint(
+                                                  "following restaurant");
+                                            }
+                                            setState(() {});
+                                            debugPrint(widget
+                                                .restaurant.followers
+                                                .toString());
+                                          },
+                                          child: SizedBox(
+                                            width: 120.0,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: Center(
+                                                  child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: const [
+                                                  Icon(
+                                                    Icons
+                                                        .notification_add_rounded,
+                                                    color: Colors.white,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    "Follow for Updates",
+                                                    style: Primary.whiteText,
+                                                  ),
+                                                ],
+                                              )),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       Hero(
-                        tag: restaurant.restaurantId,
+                        tag: widget.restaurant.restaurantId,
                         child: Material(
                           color: Colors.transparent,
                           child: ListView(
@@ -81,7 +428,7 @@ class RestaurantDetails extends StatelessWidget {
                                     vertical: 10,
                                   ),
                                   child: RestaurantInfoTable(
-                                      restaurant: restaurant),
+                                      restaurant: widget.restaurant),
                                 ),
                               ),
                             ],
@@ -97,7 +444,7 @@ class RestaurantDetails extends StatelessWidget {
                                     begin: const Offset(-30, 30),
                                     child: PromoCode(
                                         restaurantId:
-                                            restaurant.restaurantId))),
+                                            widget.restaurant.restaurantId))),
                           ],
                         ), //meal.averageRating
 
@@ -105,11 +452,11 @@ class RestaurantDetails extends StatelessWidget {
                         child: SlideUpTween(
                           begin: const Offset(-30, 30),
                           child: TodayMenu(
-                            restaurantId: restaurant.restaurantId,
+                            restaurantId: widget.restaurant.restaurantId,
                           ),
                         ),
                       ),
-                      OtherDetails(restaurant: restaurant)
+                      OtherDetails(restaurant: widget.restaurant)
                     ],
                   ),
                 ),
@@ -162,9 +509,9 @@ class RestaurantDetails extends StatelessWidget {
                               senderName: user.name.toString(),
                               lastMessageTime: DateTime.now(),
                               lastmessage: "",
-                              restaurantId: restaurant.restaurantId,
-                              restaurantImage: restaurant.businessPhoto,
-                              restaurantName: restaurant.companyName,
+                              restaurantId: widget.restaurant.restaurantId,
+                              restaurantImage: widget.restaurant.businessPhoto,
+                              restaurantName: widget.restaurant.companyName,
                               sender: currentUser.uid,
                               userId: currentUser.uid,
                               userImage: "",

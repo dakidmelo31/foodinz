@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class CloudMsgService {
@@ -26,7 +27,7 @@ class CloudMsgService {
   static Future<void> initialize(
     SelectNotificationCallback onSelectNotification,
   ) async {
-    print(await _messaging.getToken());
+    debugPrint(await _messaging.getToken());
     await _requestPermission();
 
     await _initializeLocalNotification(onSelectNotification);
@@ -36,7 +37,7 @@ class CloudMsgService {
   }
 
   static void invokeLocalNotification(RemoteMessage remoteMessage) async {
-    print("Received notification ${remoteMessage.data}");
+    debugPrint("Received notification ${remoteMessage.data}");
     RemoteNotification? notification = remoteMessage.notification;
     AndroidNotification? android = remoteMessage.notification?.android;
 
@@ -82,11 +83,11 @@ class CloudMsgService {
   static Future<void> _initializeLocalNotification(
     SelectNotificationCallback onSelectNotification,
   ) async {
-    final android = AndroidInitializationSettings(
+    const android = AndroidInitializationSettings(
       "ic_launcher",
     );
-    final ios = IOSInitializationSettings();
-    final initSetting = InitializationSettings(android: android, iOS: ios);
+    const ios = IOSInitializationSettings();
+    const initSetting = InitializationSettings(android: android, iOS: ios);
 
     await _localNotification.initialize(initSetting,
         onSelectNotification: onSelectNotification);

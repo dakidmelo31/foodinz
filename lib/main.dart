@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,14 +11,12 @@ import 'package:foodinz/providers/reviews.dart';
 import 'package:foodinz/providers/services.dart';
 import 'package:provider/provider.dart';
 import 'package:foodinz/firebase_options.dart';
-import 'package:foodinz/pages/home.dart';
 import 'package:foodinz/pages/start_page.dart';
 import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/bookmarks.dart';
 import 'package:foodinz/providers/cart.dart';
 import 'package:foodinz/providers/comments_service.dart';
 import 'package:foodinz/providers/data.dart';
-import 'package:foodinz/providers/notification_stream.dart';
 import 'package:foodinz/themes/light_theme.dart';
 import 'package:workmanager/workmanager.dart';
 import 'global.dart';
@@ -125,7 +122,6 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => DatabaseHelper.instance),
         ChangeNotifierProvider(create: (_) => RestaurantData()),
         ChangeNotifierProvider(create: (_) => MealsData()),
-        ChangeNotifierProvider(create: (_) => CategoryData()),
         ChangeNotifierProvider(create: (_) => CartData()),
         ChangeNotifierProvider(create: (_) => CommentsData()),
         ChangeNotifierProvider(create: (_) => BookmarkData()),

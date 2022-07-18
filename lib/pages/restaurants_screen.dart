@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/pages/restaurant_briefing.dart';
 import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
@@ -59,8 +60,6 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
     double long = widget.long;
     final mealsData = Provider.of<MealsData>(context);
     final _restaurantsData = Provider.of<RestaurantData>(context);
-    final _categoryData = Provider.of<CategoryData>(context);
-    final _categories = _categoryData.getCategories();
     final restaurants = _restaurantsData.getRestaurants;
     final size = MediaQuery.of(context).size;
     return LayoutBuilder(
@@ -70,57 +69,6 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
 
         return Column(
           children: [
-            SizedBox(
-              height: 80,
-              width: size.width,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _categories.length,
-                  itemBuilder: (_, index) {
-                    return SlideUpTween(
-                      begin: const Offset(80, 0),
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.bounceIn,
-                      child: AnimatedPadding(
-                        duration: const Duration(milliseconds: 350),
-                        curve: Curves.bounceIn,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 14),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _categoryData.selectedIndex = index;
-                            });
-                          },
-                          radius: 15,
-                          child: Chip(
-                            backgroundColor:
-                                _categoryData.selectedIndex != index
-                                    ? Colors.grey.withOpacity(.15)
-                                    : Theme.of(context).primaryColor,
-                            avatar: _categoryData.selectedIndex == index
-                                ? const Icon(Icons.restaurant_menu_outlined,
-                                    color: Colors.white)
-                                : null,
-                            labelPadding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            label: Text(
-                              _categories[index].name,
-                              style: TextStyle(
-                                color: _categoryData.selectedIndex != index
-                                    ? Colors.black
-                                    : Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-            ),
             SizedBox(
               height: size.height < 600 ? h * .4 : h * .55,
               width: w * .85,

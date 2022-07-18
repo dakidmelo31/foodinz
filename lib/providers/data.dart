@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foodinz/global.dart';
 
 import '../models/coupon_model.dart';
 import '../models/restaurants.dart';
@@ -66,16 +65,20 @@ class RestaurantData with ChangeNotifier {
 
   loadRestaurants() async {
     firestore.collection("restaurants").get().then(
-      (QuerySnapshot querySnapshot) {
+      (QuerySnapshot querySnapshot) async {
         for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
+          bool following = await checkFollow(restaurantId: doc.id);
+          debugPrint("following is now: $following");
           restaurants.add(
             Restaurant(
                 address: doc["address"] ?? "",
+                followers: doc["followers"] ?? 0,
                 comments: doc['comments'] ?? 0,
                 deliveryCost: doc['deliveryCost'] ?? 0,
                 likes: doc['likes'] ?? 0,
                 categories: List<String>.from(doc["categories"]),
+                following: following,
                 gallery: List<String>.from(doc["gallery"]),
                 lat: doc["lat"] ?? 0.0,
                 long: doc["long"] ?? 0.0,
@@ -117,6 +120,7 @@ class RestaurantData with ChangeNotifier {
           gallery: [],
           long: 0.0,
           lat: 0.0,
+          followers: 0,
           restaurantId: '',
           businessPhoto: '',
           tableReservation: false,
@@ -137,4 +141,16 @@ class RestaurantData with ChangeNotifier {
   }
 
   List<Restaurant> get getRestaurants => [...restaurants];
+
+  List<Restaurant> filterRestaurants(List<String> restaurantIds) {
+    List<Restaurant> myRestaurants = [];
+
+    for (var item in restaurants) {
+      if (restaurantIds.contains(item.restaurantId)) {
+        myRestaurants.add(item);
+      }
+    }
+
+    return myRestaurants;
+  }
 }
