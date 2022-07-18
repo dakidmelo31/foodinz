@@ -59,11 +59,7 @@ Future<bool> checkFollow({required String restaurantId}) async {
   bool answer = prefs.containsKey("favoriteRestaurants");
   if (answer) {
     List<String>? vals = prefs.getStringList("favoriteRestaurants");
-    if (vals == null) {
-      await prefs.setStringList("favoriteRestaurants", []);
-      return false;
-    }
-    if (vals.isEmpty) {
+    if (vals == null || vals.isEmpty) {
       await prefs.setStringList("favoriteRestaurants", []);
       return false;
     }
@@ -75,6 +71,35 @@ Future<bool> checkFollow({required String restaurantId}) async {
     prefs.setStringList("favoriteRestaurants", []);
   }
   return answer;
+}
+
+Future<void> toggleLocalFollow({required String restaurantId}) async {
+  final prefs = await SharedPreferences.getInstance();
+  if (await checkFollow(restaurantId: restaurantId)) {
+    List<String>? container = prefs.getStringList("favoriteRestaurants");
+
+    List<String> length = [];
+    for (String item in container!) {
+      if (item != restaurantId) {
+        length.add(item);
+      }
+    }
+    debugPrint("before Remove: " + container.toString());
+
+    debugPrint(container.toString());
+    debugPrint("after Remove: " + length.toString());
+
+    prefs.setStringList("favoriteRestaurants", length);
+
+    debugPrint("removed follow");
+  } else {
+    List<String>? container = prefs.getStringList("favoriteRestaurants");
+    debugPrint("before Add: " + container.toString());
+    container!.add(restaurantId);
+    debugPrint("after Add: " + container.toString());
+    prefs.setStringList("favoriteRestaurants", container);
+    debugPrint("follow added");
+  }
 }
 
 Future<void> toggleFoodLike({required String foodId}) async {

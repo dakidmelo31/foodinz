@@ -34,6 +34,7 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
 
   initiateCheck() async {
     await checkFollow(restaurantId: widget.restaurant.restaurantId);
+    debugPrint("done loading follow status: $following");
     setState(() {});
   }
 
@@ -131,12 +132,14 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                                           elevation: .0,
                                           color: Colors.white,
                                           child: SizedBox(
-                                            width: 120.0,
+                                            width: 190.0,
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(10.0),
                                               child: InkWell(
                                                 onTap: () async {
+                                                  HapticFeedback.heavyImpact();
+
                                                   bool outcome =
                                                       await showCupertinoDialog(
                                                           context: context,
@@ -176,97 +179,14 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                                                   if (!outcome) {
                                                     return;
                                                   }
-
                                                   setState(() {
-                                                    widget.restaurant
-                                                            .following =
-                                                        !widget.restaurant
-                                                            .following;
                                                     following = !following;
                                                   });
-                                                  debugPrint(widget
-                                                      .restaurant.following
-                                                      .toString());
-                                                  final prefs =
-                                                      await SharedPreferences
-                                                          .getInstance();
-                                                  await checkFollow(
+                                                  await toggleLocalFollow(
                                                       restaurantId: widget
                                                           .restaurant
                                                           .restaurantId);
-                                                  var favoritesRestaurants =
-                                                      prefs.getStringList(
-                                                          "favoriteRestaurants");
-
-                                                  HapticFeedback.heavyImpact();
-                                                  if (await DBManager.instance
-                                                      .checkFollowing(
-                                                          restaurantId: widget
-                                                              .restaurant
-                                                              .restaurantId)) {
-                                                    debugPrint(
-                                                        "unfollowing restaurant");
-
-                                                    favoritesRestaurants
-                                                        ?.remove(widget
-                                                            .restaurant
-                                                            .restaurantId);
-
-                                                    widget.restaurant
-                                                        .followers -= 1;
-                                                    if (widget.restaurant
-                                                            .followers <
-                                                        0) {
-                                                      widget.restaurant
-                                                          .followers = 0;
-                                                    }
-
-                                                    DBManager.instance
-                                                        .dropFollowing(
-                                                            restaurantId: widget
-                                                                .restaurant
-                                                                .restaurantId)
-                                                        .then((value) => removeFollow(
-                                                            restaurantId: widget
-                                                                .restaurant
-                                                                .restaurantId))
-                                                        .then((value) => debugPrint(
-                                                            "dropping follow"));
-                                                  } else {
-                                                    await checkFollow(
-                                                        restaurantId: widget
-                                                            .restaurant
-                                                            .restaurantId);
-                                                    if (favoritesRestaurants ==
-                                                        null) {
-                                                      favoritesRestaurants = [];
-                                                    } else {
-                                                      favoritesRestaurants =
-                                                          favoritesRestaurants;
-                                                    }
-                                                    favoritesRestaurants.add(
-                                                        widget.restaurant
-                                                            .restaurantId);
-
-                                                    widget.restaurant
-                                                        .followers += 1;
-
-                                                    DBManager.instance
-                                                        .addFollowing(
-                                                            restaurantId: widget
-                                                                .restaurant
-                                                                .restaurantId)
-                                                        .then((value) => addFollow(
-                                                            restaurantId: widget
-                                                                .restaurant
-                                                                .restaurantId));
-                                                    debugPrint(
-                                                        "following restaurant");
-                                                  }
                                                   setState(() {});
-                                                  debugPrint(widget
-                                                      .restaurant.followers
-                                                      .toString());
                                                 },
                                                 child: Center(
                                                     child: Row(
@@ -294,86 +214,17 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                                         color: Colors.pink,
                                         child: InkWell(
                                           onTap: () async {
+                                            HapticFeedback.heavyImpact();
                                             setState(() {
-                                              widget.restaurant.following =
-                                                  !widget.restaurant.following;
                                               following = !following;
                                             });
-                                            final prefs =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            await checkFollow(
+                                            await toggleLocalFollow(
                                                 restaurantId: widget
                                                     .restaurant.restaurantId);
-                                            var favoritesRestaurants =
-                                                prefs.getStringList(
-                                                    "favoriteRestaurants");
-
-                                            HapticFeedback.heavyImpact();
-                                            if (await DBManager.instance
-                                                .checkFollowing(
-                                                    restaurantId: widget
-                                                        .restaurant
-                                                        .restaurantId)) {
-                                              debugPrint(
-                                                  "unfollowing restaurant");
-
-                                              favoritesRestaurants?.remove(
-                                                  widget
-                                                      .restaurant.restaurantId);
-
-                                              widget.restaurant.followers -= 1;
-                                              if (widget.restaurant.followers <
-                                                  0) {
-                                                widget.restaurant.followers = 0;
-                                              }
-
-                                              DBManager.instance
-                                                  .dropFollowing(
-                                                      restaurantId: widget
-                                                          .restaurant
-                                                          .restaurantId)
-                                                  .then((value) => removeFollow(
-                                                      restaurantId: widget
-                                                          .restaurant
-                                                          .restaurantId))
-                                                  .then((value) => debugPrint(
-                                                      "dropping follow"));
-                                            } else {
-                                              await checkFollow(
-                                                  restaurantId: widget
-                                                      .restaurant.restaurantId);
-                                              if (favoritesRestaurants ==
-                                                  null) {
-                                                favoritesRestaurants = [];
-                                              } else {
-                                                favoritesRestaurants =
-                                                    favoritesRestaurants;
-                                              }
-                                              favoritesRestaurants.add(widget
-                                                  .restaurant.restaurantId);
-
-                                              widget.restaurant.followers += 1;
-
-                                              DBManager.instance
-                                                  .addFollowing(
-                                                      restaurantId: widget
-                                                          .restaurant
-                                                          .restaurantId)
-                                                  .then((value) => addFollow(
-                                                      restaurantId: widget
-                                                          .restaurant
-                                                          .restaurantId));
-                                              debugPrint(
-                                                  "following restaurant");
-                                            }
                                             setState(() {});
-                                            debugPrint(widget
-                                                .restaurant.followers
-                                                .toString());
                                           },
                                           child: SizedBox(
-                                            width: 120.0,
+                                            width: 190.0,
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(10.0),
