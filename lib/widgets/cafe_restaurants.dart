@@ -105,8 +105,10 @@ class _CafeRestaurantsScreenState extends State<CafeRestaurantsScreen> {
                             pageBuilder: (_, animation, __) {
                               return FadeTransition(
                                 opacity: animation,
-                                child:
-                                    RestaurantDetails(restaurant: restaurant),
+                                child: RestaurantDetails(
+                                    heroTag: restaurant.phoneNumber +
+                                        restaurant.businessPhoto,
+                                    restaurant: restaurant),
                               );
                             },
                           ),
@@ -116,7 +118,7 @@ class _CafeRestaurantsScreenState extends State<CafeRestaurantsScreen> {
                         });
                       },
                       child: Hero(
-                        tag: restaurant.businessPhoto,
+                        tag: restaurant.phoneNumber + restaurant.businessPhoto,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 400),
                           curve: Curves.easeInOut,

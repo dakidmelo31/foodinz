@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import '../global.dart';
 import '../models/restaurants.dart';
 import '../providers/data.dart';
-import '../widgets/slide_up_tween.dart';
 import 'restaurant_details.dart';
 
 class RestaurantsScreen extends StatefulWidget {
@@ -70,8 +69,8 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
         return Column(
           children: [
             SizedBox(
-              height: size.height < 600 ? h * .4 : h * .55,
-              width: w * .85,
+              height: size.height < 600 ? h * .64 : h * 0.70,
+              width: w * .94,
               child: PageView.builder(
                 physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
@@ -109,8 +108,10 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                             pageBuilder: (_, animation, __) {
                               return FadeTransition(
                                 opacity: animation,
-                                child:
-                                    RestaurantDetails(restaurant: restaurant),
+                                child: RestaurantDetails(
+                                    restaurant: restaurant,
+                                    heroTag: restaurant.restaurantId +
+                                        restaurant.avatar),
                               );
                             },
                           ),
@@ -222,7 +223,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
             ),
             const SizedBox(height: 30),
             SizedBox(
-              height: size.height < 600 ? h * .25 : h * .2,
+              height: 50,
               child: PageView.builder(
                 itemCount: restaurants.length,
                 physics: const NeverScrollableScrollPhysics(),

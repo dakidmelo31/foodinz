@@ -301,6 +301,8 @@ class _FoodDetailsState extends State<FoodDetails>
                                           context,
                                           HorizontalSizeTransition(
                                               child: RestaurantDetails(
+                                                  heroTag: restaurant.address +
+                                                      restaurant.avatar,
                                                   restaurant: restaurant)));
                                     },
                                     child: Row(
@@ -335,17 +337,21 @@ class _FoodDetailsState extends State<FoodDetails>
                                             width: size.width - 90,
                                           ),
                                           ClipOval(
-                                            child: CachedNetworkImage(
-                                              imageUrl:
-                                                  restaurant.businessPhoto,
-                                              placeholder: (_, __) =>
-                                                  loadingWidget,
-                                              errorWidget: (_, __, ___) =>
-                                                  errorWidget1,
-                                              fit: BoxFit.cover,
-                                              alignment: Alignment.center,
-                                              height: 70,
-                                              width: 60,
+                                            child: Hero(
+                                              tag: restaurant.address +
+                                                  restaurant.avatar,
+                                              child: CachedNetworkImage(
+                                                imageUrl:
+                                                    restaurant.businessPhoto,
+                                                placeholder: (_, __) =>
+                                                    loadingWidget,
+                                                errorWidget: (_, __, ___) =>
+                                                    errorWidget1,
+                                                fit: BoxFit.cover,
+                                                alignment: Alignment.center,
+                                                height: 70,
+                                                width: 60,
+                                              ),
                                             ),
                                           )
                                         ]),

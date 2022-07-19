@@ -148,48 +148,6 @@ CREATE TABLE IF NOT EXISTS chats (
     return id;
   }
 
-  Future<bool> checkFollowing({required String restaurantId}) async {
-    Database _db = await instance.database;
-    var values = await _db.rawQuery(
-        '''SELECT * FROM  following WHERE restaurantId="$restaurantId" ''');
-
-    return values.isNotEmpty;
-  }
-
-  Future<List<String>> getFollowing() async {
-    Database _db = await instance.database;
-    var values = await _db.rawQuery('''SELECT * FROM  following''');
-    List<String> restaurantIds = [];
-
-    if (values.isEmpty) return [];
-    values.map((e) {
-      var item = e as String;
-      restaurantIds.add(item);
-    });
-
-    return restaurantIds;
-  }
-
-  Future<int> addFollowing({required restaurantId}) async {
-    final db = await instance.database;
-
-    final id = await db
-        .rawInsert(
-            "INSERT INTO following(restaurantId) VALUES('$restaurantId')")
-        .catchError((onError) => debugPrint("following error: $onError"));
-    return id;
-  }
-
-  Future<int> dropFollowing({required restaurantId}) async {
-    final db = await instance.database;
-
-    final id = await db.rawDelete(
-        "DELETE FROM following WHERE restaurantId = ?", [
-      restaurantId
-    ]).catchError((onError) => debugPrint("following error: $onError"));
-    return id;
-  }
-
   Future<List<Chat>> getChatOverviews() async {
     final db = await instance.database;
     var allMaps =

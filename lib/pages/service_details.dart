@@ -384,7 +384,9 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                         ),
                                         ClipOval(
                                           child: Hero(
-                                            tag: widget.tag,
+                                            tag:
+                                                parentRestaurant.businessPhoto +
+                                                    parentRestaurant.avatar,
                                             child: CachedNetworkImage(
                                               imageUrl: parentRestaurant
                                                   .businessPhoto,
@@ -450,6 +452,10 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                                   context,
                                                   CustomFadeTransition(
                                                     child: RestaurantDetails(
+                                                        heroTag: parentRestaurant
+                                                                .businessPhoto +
+                                                            parentRestaurant
+                                                                .avatar,
                                                         restaurant:
                                                             parentRestaurant),
                                                   ),

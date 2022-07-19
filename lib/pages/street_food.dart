@@ -214,7 +214,7 @@ class _ServicesListState extends State<ServicesList> {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text("Popular Street Foods", style: Primary.heading),
+                  child: Text("Hire Services", style: Primary.heading),
                 ),
               ),
 

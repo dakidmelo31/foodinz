@@ -8,7 +8,6 @@ import 'package:foodinz/global.dart';
 import 'package:foodinz/pages/street_food.dart';
 import 'package:foodinz/providers/cart.dart';
 import 'package:foodinz/providers/meals.dart';
-import 'package:foodinz/providers/services.dart';
 import 'package:foodinz/widgets/view_category.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';

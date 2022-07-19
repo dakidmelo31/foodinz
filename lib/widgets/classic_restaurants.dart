@@ -1,22 +1,16 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foodinz/pages/meal_details.dart';
-import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/meals.dart';
-import 'package:foodinz/widgets/view_category.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import '../models/food.dart';
 import '../models/restaurants.dart';
 import '../pages/restaurant_details.dart';
 import '../providers/data.dart';
 import '../themes/light_theme.dart';
-import '../widgets/slide_up_tween.dart';
 
 class ClassicRestaurantsScreen extends StatefulWidget {
   ClassicRestaurantsScreen({Key? key}) : super(key: key);
@@ -142,8 +136,11 @@ class _ClassicRestaurantsScreenState extends State<ClassicRestaurantsScreen> {
                             pageBuilder: (_, animation, __) {
                               return FadeTransition(
                                 opacity: animation,
-                                child:
-                                    RestaurantDetails(restaurant: restaurant),
+                                child: RestaurantDetails(
+                                    heroTag: restaurant.restaurantId +
+                                        restaurant.address +
+                                        restaurant.businessPhoto,
+                                    restaurant: restaurant),
                               );
                             },
                           ),
@@ -153,7 +150,9 @@ class _ClassicRestaurantsScreenState extends State<ClassicRestaurantsScreen> {
                         });
                       },
                       child: Hero(
-                        tag: restaurant.businessPhoto,
+                        tag: restaurant.restaurantId +
+                            restaurant.address +
+                            restaurant.businessPhoto,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 400),
                           curve: Curves.easeInOut,

@@ -538,7 +538,7 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                       ContainerTransitionType.fadeThrough,
                                   tappable: true,
                                   openBuilder: (_, closedContainer) =>
-                                      const ViewCategory(title: " Cafe"),
+                                      const ViewCategory(title: "Street Food"),
                                 ),
                                 const StreetFood(),
                                 const SizedBox(
@@ -574,7 +574,7 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
 
                                 SizedBox(
                                   width: size.width,
-                                  height: size.height * .75,
+                                  height: size.height * .72,
                                   child:
                                       RestaurantsScreen(lat: lat, long: long),
                                 ),

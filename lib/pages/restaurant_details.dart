@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/restaurant_info_table.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../global.dart';
 import '../models/chats_model.dart';
 import '../models/restaurants.dart';
@@ -21,9 +19,11 @@ import '../widgets/promo_code.dart';
 import '../widgets/today_menu.dart';
 
 class RestaurantDetails extends StatefulWidget {
-  const RestaurantDetails({Key? key, required this.restaurant})
+  const RestaurantDetails(
+      {Key? key, required this.restaurant, required this.heroTag})
       : super(key: key);
   final Restaurant restaurant;
+  final String heroTag;
 
   @override
   State<RestaurantDetails> createState() => _RestaurantDetailsState();
@@ -33,7 +33,7 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
   bool following = false;
 
   initiateCheck() async {
-    await checkFollow(restaurantId: widget.restaurant.restaurantId);
+    following = await checkFollow(restaurantId: widget.restaurant.restaurantId);
     debugPrint("done loading follow status: $following");
     setState(() {});
   }
@@ -74,7 +74,7 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                       child: InkWell(
                         onDoubleTap: () {},
                         child: Hero(
-                          tag: widget.restaurant.businessPhoto,
+                          tag: widget.heroTag,
                           child:
                               FoodCard(image: widget.restaurant.businessPhoto),
                         ),
@@ -180,6 +180,15 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                                                     return;
                                                   }
                                                   setState(() {
+                                                    if (following) {
+                                                      widget.restaurant
+                                                          .followers--;
+                                                    } else {
+                                                      widget.restaurant
+                                                          .followers++;
+                                                    }
+                                                  });
+                                                  setState(() {
                                                     following = !following;
                                                   });
                                                   await toggleLocalFollow(
@@ -215,6 +224,13 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                                         child: InkWell(
                                           onTap: () async {
                                             HapticFeedback.heavyImpact();
+                                            setState(() {
+                                              if (following) {
+                                                widget.restaurant.followers--;
+                                              } else {
+                                                widget.restaurant.followers++;
+                                              }
+                                            });
                                             setState(() {
                                               following = !following;
                                             });

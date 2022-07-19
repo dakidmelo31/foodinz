@@ -199,6 +199,10 @@ class _SearchCardState extends State<SearchCard> {
                                   context,
                                   FadeSearch(
                                       page: RestaurantDetails(
+                                          heroTag: restaurant.restaurantId +
+                                              restaurant.avatar +
+                                              restaurant.avatar +
+                                              restaurant.businessPhoto,
                                           restaurant: restaurant)));
                             },
                             child: Padding(

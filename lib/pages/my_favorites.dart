@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/models/restaurants.dart';
+import 'package:foodinz/pages/meal_details.dart';
+import 'package:foodinz/pages/restaurant_details.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/global_data.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:foodinz/widgets/transitions.dart';
 import 'package:provider/provider.dart';
 
 import '../models/food.dart';
@@ -21,13 +25,16 @@ class _MyFavoritesState extends State<MyFavorites>
   final listState1 = GlobalKey<AnimatedListState>();
   late TabController _tabController;
   List<String> foodIds = [], restaurantIds = [];
+  late final AnimationController _animationController;
+
   bool loading = false;
   loadIds() async {
     setState(() {
       loading = true;
     });
-    await getFavoriteMeals();
-    restaurantIds = await DBManager.instance.getFollowing();
+    foodIds = await getFavoriteMeals();
+    restaurantIds = await getFavoriteRestaurants();
+
     setState(() {
       loading = false;
     });
@@ -36,6 +43,13 @@ class _MyFavoritesState extends State<MyFavorites>
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 800,
+      ),
+    );
+    loadIds();
     super.initState();
   }
 
@@ -53,95 +67,199 @@ class _MyFavoritesState extends State<MyFavorites>
     final totalRestaurants = _restaurants.filterRestaurants(restaurantIds);
     final size = MediaQuery.of(context).size;
     return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            SizedBox(
-              height: kToolbarHeight,
-              width: size.width,
-              child: TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  enableFeedback: true,
-                  tabs: [
-                    Tab(
-                      child: Text("Meals"),
+        child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (_, animation) {
+              return Scaffold(
+                body: Column(
+                  children: [
+                    SizedBox(
+                      height: kToolbarHeight,
+                      width: size.width,
+                      child: TabBar(
+                          controller: _tabController,
+                          isScrollable: true,
+                          enableFeedback: true,
+                          tabs: const [
+                            Tab(
+                              child: Text("Meals"),
+                            ),
+                            Tab(
+                              child: Text("Restaurants"),
+                            ),
+                          ]),
                     ),
-                    Tab(
-                      child: Text("Restaurants"),
-                    ),
-                  ]),
-            ),
-            Expanded(
-                child: TabBarView(
-                    controller: _tabController,
-                    physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    children: [
-                  AnimatedList(
-                    key: listState2,
-                    initialItemCount: totalMeals.length,
-                    physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    itemBuilder: (_, index, animation) {
-                      Food food = totalMeals[index];
-                      animation = CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.fastLinearToSlowEaseIn);
+                    Expanded(
+                        child: TabBarView(
+                            controller: _tabController,
+                            physics: const BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                            children: [
+                          AnimatedList(
+                            key: listState2,
+                            initialItemCount: totalMeals.length,
+                            physics: const BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                            itemBuilder: (_, index, animation) {
+                              Food food = totalMeals[index];
+                              animation = CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.fastLinearToSlowEaseIn);
+                              debugPrint(food.name);
 
-                      return SlideTransition(
-                        position: Tween<Offset>(
-                                begin: const Offset(0.0, 0.0),
-                                end: const Offset(-1.0, 0.0))
-                            .animate(animation),
-                        child: Container(
-                          height: 110.0,
-                          width: size.width,
-                          alignment: Alignment.center,
-                          color: Colors.white,
-                          child: Text(
-                            food.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                              return Dismissible(
+                                key: GlobalKey(),
+                                background: Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 28.0),
+                                      child: Row(
+                                        children: const [
+                                          Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.pink,
+                                          ),
+                                          Text("Remove")
+                                        ],
+                                      ),
+                                    )),
+                                child: Card(
+                                  elevation: 10.0,
+                                  shadowColor: Colors.black.withOpacity(.25),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 10),
+                                  child: ListTile(
+                                    title: Text(
+                                      food.name,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w700),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      child: CachedNetworkImage(
+                                          imageUrl: food.image,
+                                          width: 60,
+                                          height: 60,
+                                          alignment: Alignment.center,
+                                          fit: BoxFit.cover,
+                                          errorWidget: (_, __, ___) =>
+                                              errorWidget1,
+                                          placeholder: (_, __) =>
+                                              loadingWidget),
+                                    ),
+                                    dense: true,
+                                    enableFeedback: true,
+                                    minVerticalPadding: 10,
+                                    subtitle: Text(
+                                      "With: " + food.categories.join(", "),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          VerticalSizeTransition(
+                                              child: FoodDetails(
+                                                  heroTag:
+                                                      food.image + food.foodId,
+                                                  meal: food)));
+                                    },
+                                    trailing: IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(Icons.close_rounded,
+                                            color: Colors.pink)),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  AnimatedList(
-                    key: listState1,
-                    initialItemCount: totalRestaurants.length,
-                    physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    itemBuilder: (_, index, animation) {
-                      Restaurant restaurant = totalRestaurants[index];
-                      animation = CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.fastLinearToSlowEaseIn);
+                          AnimatedList(
+                            key: listState1,
+                            initialItemCount: totalRestaurants.length,
+                            physics: const BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                            itemBuilder: (_, index, animation) {
+                              Restaurant restaurant = totalRestaurants[index];
+                              animation = CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.fastLinearToSlowEaseIn);
 
-                      return SlideTransition(
-                        position: Tween<Offset>(
-                                begin: const Offset(0.0, 0.0),
-                                end: const Offset(-1.0, 0.0))
-                            .animate(animation),
-                        child: Container(
-                          height: 110.0,
-                          width: size.width,
-                          alignment: Alignment.center,
-                          color: Colors.white,
-                          child: Text(
-                            restaurant.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                              return Dismissible(
+                                key: GlobalKey(),
+                                background: Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 28.0),
+                                      child: Row(
+                                        children: const [
+                                          Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.pink,
+                                          ),
+                                          Text("Remove")
+                                        ],
+                                      ),
+                                    )),
+                                child: Card(
+                                  elevation: 10.0,
+                                  shadowColor: Colors.black.withOpacity(.25),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 10),
+                                  child: ListTile(
+                                    title: Text(
+                                      restaurant.name,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w700),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      child: CachedNetworkImage(
+                                          imageUrl: restaurant.businessPhoto,
+                                          width: 60,
+                                          height: 60,
+                                          alignment: Alignment.center,
+                                          fit: BoxFit.cover,
+                                          errorWidget: (_, __, ___) =>
+                                              errorWidget1,
+                                          placeholder: (_, __) =>
+                                              loadingWidget),
+                                    ),
+                                    dense: true,
+                                    enableFeedback: true,
+                                    minVerticalPadding: 10,
+                                    subtitle: Text(
+                                      "With: " +
+                                          restaurant.categories.join(", "),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          VerticalSizeTransition(
+                                              child: RestaurantDetails(
+                                            heroTag: restaurant.avatar +
+                                                restaurant.businessPhoto,
+                                            restaurant: restaurant,
+                                          )));
+                                    },
+                                    trailing: IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(Icons.close_rounded,
+                                            color: Colors.pink)),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ])),
-          ],
-        ),
-      ),
-    );
+                        ])),
+                  ],
+                ),
+              );
+            }));
   }
 }

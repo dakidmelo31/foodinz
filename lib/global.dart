@@ -65,6 +65,7 @@ Future<bool> checkFollow({required String restaurantId}) async {
     }
 
     if (vals.contains(restaurantId)) {
+      debugPrint("this is currently available");
       return true;
     }
   } else {
@@ -84,6 +85,7 @@ Future<void> toggleLocalFollow({required String restaurantId}) async {
         length.add(item);
       }
     }
+    removeFollow(restaurantId: restaurantId);
     debugPrint("before Remove: " + container.toString());
 
     debugPrint(container.toString());
@@ -93,6 +95,7 @@ Future<void> toggleLocalFollow({required String restaurantId}) async {
 
     debugPrint("removed follow");
   } else {
+    addFollow(restaurantId: restaurantId);
     List<String>? container = prefs.getStringList("favoriteRestaurants");
     debugPrint("before Add: " + container.toString());
     container!.add(restaurantId);
@@ -104,7 +107,7 @@ Future<void> toggleLocalFollow({required String restaurantId}) async {
 
 Future<void> toggleFoodLike({required String foodId}) async {
   final prefs = await SharedPreferences.getInstance();
-  var list = prefs.getStringList("favoriteMeals") ?? [];
+  List<String> list = prefs.getStringList("favoriteMeals") ?? [];
 
   if (await checkLike(foodId: foodId)) {
     debugPrint("removing like");
@@ -297,16 +300,15 @@ Future<void> removeFollow({required String restaurantId}) async {
 }
 
 Future<List<String>> getFavoriteMeals() async {
-  List<String> foodIds = [];
-
   final prefs = await SharedPreferences.getInstance();
-  var keys = prefs.getStringList("favoriteRestaurants");
-  if (keys == null || keys.isEmpty) {
-    return [];
-  }
+  List<String> keys = prefs.getStringList("favoriteMeals") ?? [];
+  debugPrint("favorite Meals: " + keys.length.toString());
+  return keys;
+}
 
-  keys.map(((e) => foodIds.add(e)));
-  debugPrint(foodIds.toString());
-
-  return foodIds;
+Future<List<String>> getFavoriteRestaurants() async {
+  final prefs = await SharedPreferences.getInstance();
+  List<String> keys = prefs.getStringList("favoriteRestaurants") ?? [];
+  debugPrint("favorite restaurants: " + keys.length.toString());
+  return keys;
 }
