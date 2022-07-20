@@ -8,7 +8,6 @@ import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/providers/reviews.dart';
 import 'package:foodinz/widgets/food_info_table.dart';
 import 'package:foodinz/widgets/opacity_tween.dart';
-import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:foodinz/widgets/transitions.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,19 +15,17 @@ import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
 import '../models/food.dart';
-import '../providers/auth.dart';
 import '../providers/bookmarks.dart';
 import '../providers/cart.dart';
 import '../providers/meals.dart';
-import '../themes/light_theme.dart';
 import '../widgets/meal_gallery_slideshow.dart';
 import 'review_form.dart';
 
 class FoodDetails extends StatefulWidget {
-  const FoodDetails({Key? key, required this.heroTag, required this.meal})
+  const FoodDetails({Key? key, this.myTag, required this.meal})
       : super(key: key);
+  final String? myTag;
   final Food meal;
-  final String heroTag;
 
   @override
   State<FoodDetails> createState() => _FoodDetailsState();
@@ -62,11 +59,9 @@ class _FoodDetailsState extends State<FoodDetails>
 
   late AnimationController _animationController;
   late Animation<double> _animation;
-  late String heroTag;
   final listState = GlobalKey<AnimatedListState>();
   @override
   void initState() {
-    heroTag = widget.heroTag + "_mixed";
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 600));
     _animation =
@@ -95,7 +90,6 @@ class _FoodDetailsState extends State<FoodDetails>
 
     if (updateCount) {
       updateCount = false;
-      debugPrint("first open");
       if (isAlreadyInCart != null) {
         debugPrint("is already in cart");
         _counter = isAlreadyInCart.quantity;
@@ -277,10 +271,7 @@ class _FoodDetailsState extends State<FoodDetails>
                               height: kToolbarHeight,
                               width: size.width),
                           const SizedBox(height: 10),
-                          MealGallery(
-                            meal: meal,
-                            heroTag: heroTag,
-                          ),
+                          MealGallery(meal: meal, myTag: widget.myTag),
                           const SizedBox(height: 10),
                           Card(
                             margin: EdgeInsets.only(top: 15.0),
@@ -301,8 +292,6 @@ class _FoodDetailsState extends State<FoodDetails>
                                           context,
                                           HorizontalSizeTransition(
                                               child: RestaurantDetails(
-                                                  heroTag: restaurant.address +
-                                                      restaurant.avatar,
                                                   restaurant: restaurant)));
                                     },
                                     child: Row(
@@ -337,21 +326,17 @@ class _FoodDetailsState extends State<FoodDetails>
                                             width: size.width - 90,
                                           ),
                                           ClipOval(
-                                            child: Hero(
-                                              tag: restaurant.address +
-                                                  restaurant.avatar,
-                                              child: CachedNetworkImage(
-                                                imageUrl:
-                                                    restaurant.businessPhoto,
-                                                placeholder: (_, __) =>
-                                                    loadingWidget,
-                                                errorWidget: (_, __, ___) =>
-                                                    errorWidget1,
-                                                fit: BoxFit.cover,
-                                                alignment: Alignment.center,
-                                                height: 70,
-                                                width: 60,
-                                              ),
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  restaurant.businessPhoto,
+                                              placeholder: (_, __) =>
+                                                  loadingWidget,
+                                              errorWidget: (_, __, ___) =>
+                                                  errorWidget1,
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.center,
+                                              height: 70,
+                                              width: 60,
                                             ),
                                           )
                                         ]),
@@ -364,7 +349,7 @@ class _FoodDetailsState extends State<FoodDetails>
                           OpacityTween(
                             duration: const Duration(milliseconds: 800),
                             child: Hero(
-                              tag: meal.foodId + meal.foodId,
+                              tag: widget.myTag! + "name",
                               child: Text(
                                 meal.name,
                                 style: const TextStyle(

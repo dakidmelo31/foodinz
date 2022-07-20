@@ -78,7 +78,9 @@ class _MealBottomSheetState extends State<MealBottomSheet> {
                       child: Column(
                         children: [
                           const Spacer(),
-                          MealGallery(meal: meal, heroTag: myTag),
+                          MealGallery(
+                            meal: meal,
+                          ),
                           const Spacer(),
                           Text(
                             meal.name,

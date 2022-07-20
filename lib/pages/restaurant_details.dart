@@ -19,11 +19,10 @@ import '../widgets/promo_code.dart';
 import '../widgets/today_menu.dart';
 
 class RestaurantDetails extends StatefulWidget {
-  const RestaurantDetails(
-      {Key? key, required this.restaurant, required this.heroTag})
+  const RestaurantDetails({Key? key, required this.restaurant, this.restHero})
       : super(key: key);
   final Restaurant restaurant;
-  final String heroTag;
+  final String? restHero;
 
   @override
   State<RestaurantDetails> createState() => _RestaurantDetailsState();
@@ -72,12 +71,10 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                       width: w,
                       height: h * .6,
                       child: InkWell(
-                        onDoubleTap: () {},
-                        child: Hero(
-                          tag: widget.heroTag,
-                          child:
-                              FoodCard(image: widget.restaurant.businessPhoto),
-                        ),
+                        onDoubleTap: () {
+                          debugPrint("pressed");
+                        },
+                        child: FoodCard(image: widget.restaurant.businessPhoto),
                       ),
                     ),
                   ),
@@ -273,33 +270,30 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                           ),
                         ),
                       ),
-                      Hero(
-                        tag: widget.restaurant.restaurantId,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: ListView(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: [
-                              Card(
-                                color: Colors.white,
-                                elevation: 15,
-                                shadowColor: Colors.grey.withOpacity(.25),
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: w * 0.03,
+                      Material(
+                        color: Colors.transparent,
+                        child: ListView(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            Card(
+                              color: Colors.white,
+                              elevation: 15,
+                              shadowColor: Colors.grey.withOpacity(.25),
+                              margin: EdgeInsets.symmetric(
+                                horizontal: w * 0.03,
+                                vertical: 10,
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: w * 0.1,
                                   vertical: 10,
                                 ),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: w * 0.1,
-                                    vertical: 10,
-                                  ),
-                                  child: RestaurantInfoTable(
-                                      restaurant: widget.restaurant),
-                                ),
+                                child: RestaurantInfoTable(
+                                    restaurant: widget.restaurant),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                       if (false)

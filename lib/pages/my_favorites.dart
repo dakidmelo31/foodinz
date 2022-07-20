@@ -161,10 +161,7 @@ class _MyFavoritesState extends State<MyFavorites>
                                       Navigator.push(
                                           context,
                                           VerticalSizeTransition(
-                                              child: FoodDetails(
-                                                  heroTag:
-                                                      food.image + food.foodId,
-                                                  meal: food)));
+                                              child: FoodDetails(meal: food)));
                                     },
                                     trailing: IconButton(
                                         onPressed: () {},
@@ -242,8 +239,6 @@ class _MyFavoritesState extends State<MyFavorites>
                                           context,
                                           VerticalSizeTransition(
                                               child: RestaurantDetails(
-                                            heroTag: restaurant.avatar +
-                                                restaurant.businessPhoto,
                                             restaurant: restaurant,
                                           )));
                                     },

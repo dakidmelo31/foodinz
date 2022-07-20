@@ -94,7 +94,7 @@ class _ProductDetailsState extends State<ProductDetails>
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            MealGallery(meal: meal, heroTag: widget.heroTag),
+                            MealGallery(meal: meal),
                             Text(
                               meal.name,
                               style: const TextStyle(

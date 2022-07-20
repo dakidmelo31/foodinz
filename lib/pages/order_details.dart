@@ -224,27 +224,20 @@ class _OrderDetailsState extends State<OrderDetails>
                             ),
                             Column(
                               children: [
-                                const Hero(
-                                  tag: "showAll",
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Text(
-                                      "Order Receipt",
-                                      style: Primary.heading,
-                                    ),
+                                Material(
+                                  color: Colors.transparent,
+                                  child: Text(
+                                    "Order Receipt",
+                                    style: Primary.heading,
                                   ),
                                 ),
-                                Hero(
-                                  tag: widget.order.restaurantId.toString() +
-                                      widget.order.friendlyId.toString(),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Text(
-                                        timeAgo.format(
-                                          widget.order.time.toDate(),
-                                        ),
-                                        style: Primary.lightParagraph),
-                                  ),
+                                Material(
+                                  color: Colors.transparent,
+                                  child: Text(
+                                      timeAgo.format(
+                                        widget.order.time.toDate(),
+                                      ),
+                                      style: Primary.lightParagraph),
                                 )
                               ],
                             ),
@@ -272,20 +265,17 @@ class _OrderDetailsState extends State<OrderDetails>
                       Center(
                         child: OpacityTween(
                           duration: const Duration(milliseconds: 700),
-                          child: Hero(
-                            tag: widget.order.friendlyId,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: Text(
-                                NumberFormat().format(
-                                      widget.total,
-                                    ) +
-                                    " CFA",
-                                style: TextStyle(
-                                    fontSize: size.height * .04,
-                                    color:
-                                        const Color.fromARGB(255, 40, 1, 214)),
-                              ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              NumberFormat().format(
+                                    widget.total,
+                                  ) +
+                                  " CFA",
+                              style: TextStyle(
+                                  fontSize: size.height * .04,
+                                  color:
+                                      const Color.fromARGB(255, 40, 1, 214)),
                             ),
                           ),
                         ),
@@ -313,51 +303,47 @@ class _OrderDetailsState extends State<OrderDetails>
                               begin: const Offset(0, 100),
                               child: OpacityTween(
                                 child: ClipOval(
-                                  child: Hero(
-                                    tag: widget.order.friendlyId.toString() +
-                                        "status",
-                                    child: Container(
-                                      color: widget.order.status
-                                                  .toLowerCase() ==
-                                              "pending"
-                                          ? Colors.deepOrange.withOpacity(.2)
-                                          : widget.order.status.toLowerCase() ==
-                                                  "processing"
-                                              ? Colors.blue.withOpacity(.2)
-                                              : widget.order.status
-                                                          .toLowerCase() ==
-                                                      "takeout"
-                                                  ? Colors.green.withOpacity(.2)
-                                                  : widget.order.status
-                                                              .toLowerCase() ==
-                                                          "complete"
-                                                      ? Colors.purple
-                                                          .withOpacity(.2)
-                                                      : Colors.pink
-                                                          .withOpacity(.2),
-                                      width: radius + 15,
-                                      height: radius + 15,
-                                      child: Align(
-                                        alignment: Alignment.center,
-                                        child: ClipOval(
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: CachedNetworkImage(
-                                              maxWidthDiskCache: radius,
-                                              maxHeightDiskCache: radius,
-                                              imageUrl:
-                                                  restaurant!.businessPhoto,
-                                              errorWidget:
-                                                  (_, data, stacktrace) {
-                                                return Lottie.asset(
-                                                    "assets/no-connection2.json",
-                                                    reverse: true);
-                                              },
-                                              width: radius.toDouble(),
-                                              height: radius.toDouble(),
-                                              fit: BoxFit.cover,
-                                              alignment: Alignment.center,
-                                            ),
+                                  child: Container(
+                                    color: widget.order.status
+                                                .toLowerCase() ==
+                                            "pending"
+                                        ? Colors.deepOrange.withOpacity(.2)
+                                        : widget.order.status.toLowerCase() ==
+                                                "processing"
+                                            ? Colors.blue.withOpacity(.2)
+                                            : widget.order.status
+                                                        .toLowerCase() ==
+                                                    "takeout"
+                                                ? Colors.green.withOpacity(.2)
+                                                : widget.order.status
+                                                            .toLowerCase() ==
+                                                        "complete"
+                                                    ? Colors.purple
+                                                        .withOpacity(.2)
+                                                    : Colors.pink
+                                                        .withOpacity(.2),
+                                    width: radius + 15,
+                                    height: radius + 15,
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: ClipOval(
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: CachedNetworkImage(
+                                            maxWidthDiskCache: radius,
+                                            maxHeightDiskCache: radius,
+                                            imageUrl:
+                                                restaurant!.businessPhoto,
+                                            errorWidget:
+                                                (_, data, stacktrace) {
+                                              return Lottie.asset(
+                                                  "assets/no-connection2.json",
+                                                  reverse: true);
+                                            },
+                                            width: radius.toDouble(),
+                                            height: radius.toDouble(),
+                                            fit: BoxFit.cover,
+                                            alignment: Alignment.center,
                                           ),
                                         ),
                                       ),

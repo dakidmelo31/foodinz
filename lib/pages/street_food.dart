@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/models/service.dart';
@@ -8,7 +6,6 @@ import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/pages/service_details.dart';
 import 'package:foodinz/providers/meals.dart';
 import 'package:foodinz/providers/services.dart';
-import 'package:like_button/like_button.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +13,6 @@ import '../models/food.dart';
 import '../providers/cart.dart';
 import '../providers/data.dart';
 import '../themes/light_theme.dart';
-import '../widgets/view_category.dart';
 
 class StreetFood extends StatefulWidget {
   const StreetFood({Key? key}) : super(key: key);
@@ -59,10 +55,9 @@ class _StreetFoodState extends State<StreetFood> {
 
                   final restaurant = restaurantData.selectRestaurant(
                       restaurantId: food.restaurantId);
-                  int rating = food.comments;
 
-                  final String myTag = food.foodId +
-                      (Random().nextDouble() * -999999999999).toString();
+                  final String tag =
+                      food.image + Random().nextInt(500000).toString();
 
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -75,15 +70,13 @@ class _StreetFoodState extends State<StreetFood> {
                           child: GestureDetector(
                             onTap: () {
                               debugPrint("open new page");
-                              const Duration transitionDuration =
-                                  Duration(milliseconds: 800);
                               Navigator.push(
                                   context,
                                   PageRouteBuilder(
                                     transitionDuration:
-                                        const Duration(milliseconds: 1600),
+                                        const Duration(milliseconds: 1200),
                                     reverseTransitionDuration:
-                                        const Duration(milliseconds: 200),
+                                        const Duration(milliseconds: 380),
                                     barrierDismissible: true,
                                     transitionsBuilder: (_, animation,
                                         anotherAnimation, child) {
@@ -109,14 +102,14 @@ class _StreetFoodState extends State<StreetFood> {
                                         axisAlignment: 0.0,
                                         child: FoodDetails(
                                           meal: food,
-                                          heroTag: myTag,
+                                          myTag: tag,
                                         ),
                                       );
                                     },
                                   ));
                             },
                             child: Hero(
-                              tag: food.image.toUpperCase(),
+                              tag: tag,
                               child: Opacity(
                                 opacity: isAlreadyInCart ? .25 : 1.0,
                                 child: CachedNetworkImage(
@@ -255,85 +248,79 @@ class _ServicesListState extends State<ServicesList> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
-                                    child: Hero(
-                                      transitionOnUserGestures: true,
-                                      tag: myTag,
-                                      child: Align(
-                                        alignment: Alignment.topLeft,
-                                        child: ClipRRect(
-                                          borderRadius: const BorderRadius.only(
-                                              bottomRight:
-                                                  Radius.circular(70.0)),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              debugPrint("open new page");
-                                              Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration:
-                                                        const Duration(
-                                                            milliseconds: 1200),
-                                                    reverseTransitionDuration:
-                                                        const Duration(
-                                                            milliseconds: 800),
-                                                    barrierDismissible: true,
-                                                    transitionsBuilder: (_,
-                                                        animation,
-                                                        anotherAnimation,
-                                                        child) {
-                                                      return SizeTransition(
-                                                        sizeFactor: CurvedAnimation(
-                                                            curve: Curves
-                                                                .fastOutSlowIn,
-                                                            parent: animation,
-                                                            reverseCurve: Curves
-                                                                .decelerate),
-                                                        axis: Axis.vertical,
-                                                        axisAlignment: 0.0,
-                                                        child: child,
-                                                      );
-                                                    },
-                                                    pageBuilder: (context,
-                                                        animation,
-                                                        secondaryAnimation) {
-                                                      return SizeTransition(
-                                                        sizeFactor: CurvedAnimation(
-                                                            curve: Curves
-                                                                .fastLinearToSlowEaseIn,
-                                                            parent: animation,
-                                                            reverseCurve: Curves
-                                                                .decelerate),
-                                                        axis: Axis.vertical,
-                                                        axisAlignment: 0.0,
-                                                        child: ServiceDetails(
-                                                            service: service,
-                                                            tag: myTag),
-                                                      );
-                                                    },
-                                                  ));
-                                            },
-                                            child: Opacity(
-                                              opacity: 1.0,
-                                              child: CachedNetworkImage(
-                                                imageUrl: service.image,
-                                                alignment: Alignment.center,
+                                    child: Align(
+                                      alignment: Alignment.topLeft,
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.only(
+                                            bottomRight: Radius.circular(70.0)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            debugPrint("open new page");
+                                            Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration:
+                                                      const Duration(
+                                                          milliseconds: 1200),
+                                                  reverseTransitionDuration:
+                                                      const Duration(
+                                                          milliseconds: 800),
+                                                  barrierDismissible: true,
+                                                  transitionsBuilder: (_,
+                                                      animation,
+                                                      anotherAnimation,
+                                                      child) {
+                                                    return SizeTransition(
+                                                      sizeFactor: CurvedAnimation(
+                                                          curve: Curves
+                                                              .fastOutSlowIn,
+                                                          parent: animation,
+                                                          reverseCurve: Curves
+                                                              .decelerate),
+                                                      axis: Axis.vertical,
+                                                      axisAlignment: 0.0,
+                                                      child: child,
+                                                    );
+                                                  },
+                                                  pageBuilder: (context,
+                                                      animation,
+                                                      secondaryAnimation) {
+                                                    return SizeTransition(
+                                                      sizeFactor: CurvedAnimation(
+                                                          curve: Curves
+                                                              .fastLinearToSlowEaseIn,
+                                                          parent: animation,
+                                                          reverseCurve: Curves
+                                                              .decelerate),
+                                                      axis: Axis.vertical,
+                                                      axisAlignment: 0.0,
+                                                      child: ServiceDetails(
+                                                          service: service,
+                                                          tag: myTag),
+                                                    );
+                                                  },
+                                                ));
+                                          },
+                                          child: Opacity(
+                                            opacity: 1.0,
+                                            child: CachedNetworkImage(
+                                              imageUrl: service.image,
+                                              alignment: Alignment.center,
+                                              fit: BoxFit.cover,
+                                              placeholder: (_, stackTrace) =>
+                                                  Lottie.asset(
+                                                "assets/loading5.json",
                                                 fit: BoxFit.cover,
-                                                placeholder: (_, stackTrace) =>
-                                                    Lottie.asset(
-                                                  "assets/loading5.json",
-                                                  fit: BoxFit.cover,
-                                                  alignment: Alignment.center,
-                                                ),
-                                                filterQuality:
-                                                    FilterQuality.high,
-                                                errorWidget:
-                                                    (_, string, stackTrace) {
-                                                  return Lottie.asset(
-                                                      "assets/no-connection2.json");
-                                                },
-                                                width: size.width * .4,
-                                                height: 160,
+                                                alignment: Alignment.center,
                                               ),
+                                              filterQuality: FilterQuality.high,
+                                              errorWidget:
+                                                  (_, string, stackTrace) {
+                                                return Lottie.asset(
+                                                    "assets/no-connection2.json");
+                                              },
+                                              width: size.width * .4,
+                                              height: 160,
                                             ),
                                           ),
                                         ),

@@ -96,88 +96,82 @@ class AllMessages extends StatelessWidget {
               ),
             );
           },
-          leading: Hero(
-            tag: imageUrl,
-            child: InkWell(
-              onTap: () {
-                showDialog(
-                    useSafeArea: true,
-                    barrierDismissible: true,
-                    barrierLabel: "Profile Photo",
-                    context: context,
-                    builder: (_) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Hero(
-                            tag: imageUrl,
-                            child: ClipOval(
-                              child: CachedNetworkImage(
-                                imageUrl: imageUrl,
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                                width: 250,
-                                height: 250,
+          leading: InkWell(
+            onTap: () {
+              showDialog(
+                  useSafeArea: true,
+                  barrierDismissible: true,
+                  barrierLabel: "Profile Photo",
+                  context: context,
+                  builder: (_) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            alignment: Alignment.center,
+                            fit: BoxFit.cover,
+                            width: 250,
+                            height: 250,
+                          ),
+                        ),
+                        Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 10),
+                          color: Colors.white,
+                          elevation: 10,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 200,
+                              child: Column(
+                                children: [
+                                  Text(username, style: Primary.heading),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                          Icons.phone,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const FaIcon(
+                                          FontAwesomeIcons.barsStaggered,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                          Icons.delete_forever,
+                                          color: Colors.deepOrange,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
                               ),
                             ),
                           ),
-                          Card(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            color: Colors.white,
-                            elevation: 10,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: 200,
-                                child: Column(
-                                  children: [
-                                    Text(username, style: Primary.heading),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(
-                                            Icons.phone,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {},
-                                          icon: const FaIcon(
-                                            FontAwesomeIcons.barsStaggered,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {},
-                                          icon: const Icon(
-                                            Icons.delete_forever,
-                                            color: Colors.deepOrange,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    });
-              },
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  width: 54,
-                  height: 54,
-                  fit: BoxFit.cover,
-                  imageUrl: imageUrl,
-                ),
+                        )
+                      ],
+                    );
+                  });
+            },
+            child: ClipOval(
+              child: CachedNetworkImage(
+                width: 54,
+                height: 54,
+                fit: BoxFit.cover,
+                imageUrl: imageUrl,
               ),
             ),
           ),

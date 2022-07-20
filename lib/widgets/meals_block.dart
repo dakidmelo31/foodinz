@@ -109,8 +109,7 @@ class _MealsBlockState extends State<MealsBlock> {
                                           parent: animation,
                                           curve: Curves.elasticInOut,
                                           reverseCurve: Curves.decelerate),
-                                      child: FoodDetails(
-                                          meal: meal, heroTag: myTag),
+                                      child: FoodDetails(meal: meal),
                                     );
                                   }));
                         },
@@ -129,31 +128,28 @@ class _MealsBlockState extends State<MealsBlock> {
                                         duration:
                                             const Duration(milliseconds: 450),
                                         opacity: isAlreadyInCart ? .2 : 1.0,
-                                        child: Hero(
-                                          tag: myTag,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            child: CachedNetworkImage(
-                                              imageUrl: meal.image,
-                                              errorWidget:
-                                                  (_, style, stackTrace) {
-                                                return Lottie.asset(
-                                                    "assets/no-connection2.json");
-                                              },
-                                              filterQuality: FilterQuality.high,
-                                              placeholder: (__, ___) =>
-                                                  Lottie.asset(
-                                                      "assets/loading5.json"),
-                                              fit: BoxFit.cover,
-                                              alignment: Alignment.center,
-                                              width: filteredList.length == 1
-                                                  ? size.width - 20
-                                                  : size.width * .6,
-                                              height: filteredList.length == 1
-                                                  ? size.width
-                                                  : 180.0,
-                                            ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          child: CachedNetworkImage(
+                                            imageUrl: meal.image,
+                                            errorWidget:
+                                                (_, style, stackTrace) {
+                                              return Lottie.asset(
+                                                  "assets/no-connection2.json");
+                                            },
+                                            filterQuality: FilterQuality.high,
+                                            placeholder: (__, ___) =>
+                                                Lottie.asset(
+                                                    "assets/loading5.json"),
+                                            fit: BoxFit.cover,
+                                            alignment: Alignment.center,
+                                            width: filteredList.length == 1
+                                                ? size.width - 20
+                                                : size.width * .6,
+                                            height: filteredList.length == 1
+                                                ? size.width
+                                                : 180.0,
                                           ),
                                         ),
                                       ),
@@ -477,8 +473,7 @@ class _MealsBlockState extends State<MealsBlock> {
                 Food meal = filteredList[index];
                 final isAlreadyInCart =
                     _cartData.isAlreadyInCart(foodId: meal.foodId);
-                final String myTag = meal.foodId +
-                    (Random().nextDouble() * -999999999999).toString();
+                final String tag = meal.foodId + meal.image;
 
                 return InkWell(
                   onTap: () {
@@ -505,7 +500,7 @@ class _MealsBlockState extends State<MealsBlock> {
                                     parent: animation,
                                     curve: Curves.elasticInOut,
                                     reverseCurve: Curves.decelerate),
-                                child: FoodDetails(meal: meal, heroTag: myTag),
+                                child: FoodDetails(meal: meal, myTag: tag),
                               );
                             }));
                   },
@@ -523,28 +518,25 @@ class _MealsBlockState extends State<MealsBlock> {
                                   curve: Curves.easeInOut,
                                   duration: const Duration(milliseconds: 450),
                                   opacity: isAlreadyInCart ? .2 : 1.0,
-                                  child: Hero(
-                                    tag: myTag,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      child: CachedNetworkImage(
-                                        imageUrl: meal.image,
-                                        errorWidget: (_, style, stackTrace) {
-                                          return Lottie.asset(
-                                              "assets/no-connection2.json");
-                                        },
-                                        filterQuality: FilterQuality.high,
-                                        placeholder: (__, ___) => Lottie.asset(
-                                            "assets/loading5.json"),
-                                        fit: BoxFit.cover,
-                                        alignment: Alignment.center,
-                                        width: filteredList.length == 1
-                                            ? size.width - 20
-                                            : size.width * .6,
-                                        height: filteredList.length == 1
-                                            ? size.width
-                                            : 180.0,
-                                      ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    child: CachedNetworkImage(
+                                      imageUrl: meal.image,
+                                      errorWidget: (_, style, stackTrace) {
+                                        return Lottie.asset(
+                                            "assets/no-connection2.json");
+                                      },
+                                      filterQuality: FilterQuality.high,
+                                      placeholder: (__, ___) =>
+                                          Lottie.asset("assets/loading5.json"),
+                                      fit: BoxFit.cover,
+                                      alignment: Alignment.center,
+                                      width: filteredList.length == 1
+                                          ? size.width - 20
+                                          : size.width * .6,
+                                      height: filteredList.length == 1
+                                          ? size.width
+                                          : 180.0,
                                     ),
                                   ),
                                 ),

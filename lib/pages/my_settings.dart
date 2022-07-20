@@ -125,142 +125,133 @@ class _MySettingsState extends State<MySettings> {
                                             width: size.width * .5,
                                             height: size.width * .5,
                                             child: Center(
-                                              child: Hero(
-                                                tag: auth.currentUser!.uid,
-                                                child: ClipOval(
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      showCupertinoDialog(
-                                                          barrierDismissible:
-                                                              true,
-                                                          barrierLabel:
-                                                              "Profile Picture",
-                                                          context: context,
-                                                          builder: (_) {
-                                                            return ClipRRect(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          15),
-                                                              child: Center(
-                                                                child: SizedBox(
-                                                                  height:
-                                                                      size.width -
-                                                                          100,
+                                              child: ClipOval(
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    showCupertinoDialog(
+                                                        barrierDismissible:
+                                                            true,
+                                                        barrierLabel:
+                                                            "Profile Picture",
+                                                        context: context,
+                                                        builder: (_) {
+                                                          return ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
+                                                            child: Center(
+                                                              child: SizedBox(
+                                                                height:
+                                                                    size.width -
+                                                                        100,
+                                                                width:
+                                                                    size.width -
+                                                                        100,
+                                                                child: CachedNetworkImage(
+                                                                    imageUrl:
+                                                                  user[
+                                                                      'image'],
+                                                                    width:
+                                                                  size.width *
+                                                                      .4,
+                                                                    height:
+                                                                  size.width *
+                                                                      .4,
+                                                                    fit: BoxFit
+                                                                  .cover,
+                                                                    alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                                    placeholder:
+                                                                  (_, data) =>
+                                                                      Shimmer(
+                                                                gradient:
+                                                                    const LinearGradient(
+                                                                        colors: [
+                                                                      Color.fromARGB(255, 225, 225, 225),
+                                                                      Colors.white,
+                                                                    ]),
+                                                                direction:
+                                                                    ShimmerDirection.ltr,
+                                                                enabled:
+                                                                    true,
+                                                                period: const Duration(
+                                                                    milliseconds:
+                                                                        600),
+                                                                child: Lottie
+                                                                    .asset(
+                                                                  "assets/loading7.json",
                                                                   width:
-                                                                      size.width -
-                                                                          100,
-                                                                  child: Hero(
-                                                                    tag: auth
-                                                                        .currentUser!
-                                                                        .uid,
-                                                                    child:
-                                                                        CachedNetworkImage(
-                                                                      imageUrl:
-                                                                          user[
-                                                                              'image'],
-                                                                      width:
-                                                                          size.width *
-                                                                              .4,
-                                                                      height:
-                                                                          size.width *
-                                                                              .4,
-                                                                      fit: BoxFit
-                                                                          .cover,
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .center,
-                                                                      placeholder:
-                                                                          (_, data) =>
-                                                                              Shimmer(
-                                                                        gradient:
-                                                                            const LinearGradient(
-                                                                                colors: [
-                                                                              Color.fromARGB(255, 225, 225, 225),
-                                                                              Colors.white,
-                                                                            ]),
-                                                                        direction:
-                                                                            ShimmerDirection.ltr,
-                                                                        enabled:
-                                                                            true,
-                                                                        period: const Duration(
-                                                                            milliseconds:
-                                                                                600),
-                                                                        child: Lottie
-                                                                            .asset(
-                                                                          "assets/loading7.json",
-                                                                          width:
-                                                                              90,
-                                                                          height:
-                                                                              90,
-                                                                        ),
-                                                                      ),
-                                                                      errorWidget: (_,
-                                                                              __,
-                                                                              ___) =>
-                                                                          Lottie
-                                                                              .asset(
-                                                                        "assets/no-connection3.json",
-                                                                        width:
-                                                                            90,
-                                                                        height:
-                                                                            90,
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
+                                                                      90,
+                                                                  height:
+                                                                      90,
+                                                                ),
+                                                                    ),
+                                                                    errorWidget: (_,
+                                                                      __,
+                                                                      ___) =>
+                                                                  Lottie
+                                                                      .asset(
+                                                                "assets/no-connection3.json",
+                                                                width:
+                                                                    90,
+                                                                height:
+                                                                    90,
+                                                                fit: BoxFit
+                                                                    .cover,
                                                                     ),
                                                                   ),
-                                                                ),
                                                               ),
-                                                            );
-                                                          });
-                                                    },
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                      child: CachedNetworkImage(
-                                                        imageUrl: user['image'],
-                                                        width: size.width * .4,
-                                                        height: size.width * .4,
-                                                        fit: BoxFit.cover,
-                                                        alignment:
-                                                            Alignment.center,
-                                                        placeholder:
-                                                            (_, data) =>
-                                                                Shimmer(
-                                                          gradient:
-                                                              const LinearGradient(
-                                                                  colors: [
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    225,
-                                                                    225,
-                                                                    225),
-                                                                Colors.white,
-                                                              ]),
-                                                          direction:
-                                                              ShimmerDirection
-                                                                  .ltr,
-                                                          enabled: true,
-                                                          period:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      600),
-                                                          child: Lottie.asset(
-                                                            "assets/loading7.json",
-                                                            width: 90,
-                                                            height: 90,
-                                                          ),
-                                                        ),
-                                                        errorWidget:
-                                                            (_, __, ___) =>
-                                                                Lottie.asset(
-                                                          "assets/no-connection3.json",
+                                                            ),
+                                                          );
+                                                        });
+                                                  },
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: user['image'],
+                                                      width: size.width * .4,
+                                                      height: size.width * .4,
+                                                      fit: BoxFit.cover,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      placeholder:
+                                                          (_, data) =>
+                                                              Shimmer(
+                                                        gradient:
+                                                            const LinearGradient(
+                                                                colors: [
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  225,
+                                                                  225,
+                                                                  225),
+                                                              Colors.white,
+                                                            ]),
+                                                        direction:
+                                                            ShimmerDirection
+                                                                .ltr,
+                                                        enabled: true,
+                                                        period:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    600),
+                                                        child: Lottie.asset(
+                                                          "assets/loading7.json",
                                                           width: 90,
                                                           height: 90,
-                                                          fit: BoxFit.contain,
                                                         ),
+                                                      ),
+                                                      errorWidget:
+                                                          (_, __, ___) =>
+                                                              Lottie.asset(
+                                                        "assets/no-connection3.json",
+                                                        width: 90,
+                                                        height: 90,
+                                                        fit: BoxFit.contain,
                                                       ),
                                                     ),
                                                   ),

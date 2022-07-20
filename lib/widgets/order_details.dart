@@ -88,16 +88,13 @@ class OrderDetails extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: Hero(
-                                  tag: imageUrl,
-                                  child: ClipOval(
-                                    child: CachedNetworkImage(
-                                      width: 32,
-                                      height: 32,
-                                      imageUrl: imageUrl,
-                                      alignment: Alignment.center,
-                                      fit: BoxFit.cover,
-                                    ),
+                                child: ClipOval(
+                                  child: CachedNetworkImage(
+                                    width: 32,
+                                    height: 32,
+                                    imageUrl: imageUrl,
+                                    alignment: Alignment.center,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),

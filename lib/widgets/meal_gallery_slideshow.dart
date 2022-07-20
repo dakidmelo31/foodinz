@@ -13,10 +13,10 @@ import '../models/food.dart';
 import '../themes/light_theme.dart';
 
 class MealGallery extends StatefulWidget {
-  const MealGallery({Key? key, required this.meal, required this.heroTag})
+  const MealGallery({Key? key, this.myTag, required this.meal})
       : super(key: key);
+  final String? myTag;
   final Food meal;
-  final String heroTag;
 
   @override
   State<MealGallery> createState() => _MealGalleryState();
@@ -46,9 +46,12 @@ class _MealGalleryState extends State<MealGallery> {
               flex: 1,
               child: Column(
                 children: [
-                  FoodInfoTableItem(
-                      description: NumberFormat().format(meal.likes),
-                      title: "Likes"),
+                  Hero(
+                    tag: "likes",
+                    child: FoodInfoTableItem(
+                        description: NumberFormat().format(meal.likes),
+                        title: "Likes"),
+                  ),
                   const Icon(Icons.favorite_rounded,
                       color: Colors.pink, size: 30),
                 ],
@@ -62,40 +65,38 @@ class _MealGalleryState extends State<MealGallery> {
                     context,
                     VerticalSizeTransition(
                       child: Scaffold(
-                        backgroundColor: Colors.black,
+                        backgroundColor: Colors.black.withOpacity(.6),
                         appBar: AppBar(
-                            backgroundColor: Colors.black,
+                            backgroundColor: Colors.black.withOpacity(.2),
                             title: Text(
                               meal.name,
                               style: Primary.whiteText,
                             ),
                             centerTitle: true),
                         body: Center(
-                          child: Hero(
-                            tag: meal.image,
-                            child: Card(
-                              elevation: 0,
-                              child: CachedNetworkImage(
-                                  fit: BoxFit.contain,
-                                  imageUrl: meal.image,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  placeholder: (_, __) => loadingWidget,
-                                  errorWidget: (_, text, __) {
-                                    return Lottie.asset(
-                                      "assets/no-connection2.json",
-                                    );
-                                  }),
-                            ),
+                          child: Card(
+                            elevation: 0,
+                            color: Colors.transparent,
+                            child: CachedNetworkImage(
+                                fit: BoxFit.contain,
+                                imageUrl: meal.image,
+                                width: double.infinity,
+                                height: double.infinity,
+                                placeholder: (_, __) => loadingWidget,
+                                errorWidget: (_, text, __) {
+                                  return Lottie.asset(
+                                    "assets/no-connection2.json",
+                                  );
+                                }),
                           ),
                         ),
                       ),
                     ),
                   );
                 },
-                child: Hero(
-                  tag: widget.heroTag,
-                  child: ClipOval(
+                child: ClipOval(
+                  child: Hero(
+                    tag: widget.myTag!,
                     child: CachedNetworkImage(
                       placeholder: (_, __) => loadingWidget,
                       imageUrl: widget.meal.image,

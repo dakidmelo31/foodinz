@@ -177,43 +177,40 @@ class _ChatScreenState extends State<ChatScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        Hero(
-                                          tag: order.orderId,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("Total"),
-                                              ClipOval(
-                                                child: Container(
-                                                  width: 15,
-                                                  height: 15,
-                                                  color: order.status
-                                                              .toLowerCase() ==
-                                                          "pending"
-                                                      ? Colors.deepOrange
-                                                      : order.status
-                                                                  .toLowerCase() ==
-                                                              "processing"
-                                                          ? Colors.blue
-                                                          : order.status
-                                                                      .toLowerCase() ==
-                                                                  "takeout"
-                                                              ? Colors
-                                                                  .green[700]
-                                                              : order.status
-                                                                          .toLowerCase() ==
-                                                                      "complete"
-                                                                  ? Colors
-                                                                      .purple[800]
-                                                                  : Colors.pink,
-                                                ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("Total"),
+                                            ClipOval(
+                                              child: Container(
+                                                width: 15,
+                                                height: 15,
+                                                color: order.status
+                                                            .toLowerCase() ==
+                                                        "pending"
+                                                    ? Colors.deepOrange
+                                                    : order.status
+                                                                .toLowerCase() ==
+                                                            "processing"
+                                                        ? Colors.blue
+                                                        : order.status
+                                                                    .toLowerCase() ==
+                                                                "takeout"
+                                                            ? Colors
+                                                                .green[700]
+                                                            : order.status
+                                                                        .toLowerCase() ==
+                                                                    "complete"
+                                                                ? Colors
+                                                                    .purple[800]
+                                                                : Colors.pink,
                                               ),
-                                              Text(NumberFormat()
-                                                      .format(totalCost) +
-                                                  " CFA"),
-                                            ],
-                                          ),
+                                            ),
+                                            Text(NumberFormat()
+                                                    .format(totalCost) +
+                                                " CFA"),
+                                          ],
                                         ),
                                         Row(
                                           mainAxisAlignment:

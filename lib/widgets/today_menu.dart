@@ -58,7 +58,6 @@ class TodayMenu extends StatelessWidget {
                       HorizontalSizeTransition(
                         child: FoodDetails(
                           meal: meal,
-                          heroTag: myTag + "meal_hero",
                         ),
                       ),
                     );
@@ -71,18 +70,15 @@ class TodayMenu extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: Hero(
-                              tag: meal.foodId.toLowerCase(),
-                              child: CachedNetworkImage(
-                                imageUrl: meal.image,
-                                placeholder: (_, data) {
-                                  return Lottie.asset("assets/loading5.json");
-                                },
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                                height: size.height * .17,
-                                width: double.infinity,
-                              ),
+                            child: CachedNetworkImage(
+                              imageUrl: meal.image,
+                              placeholder: (_, data) {
+                                return Lottie.asset("assets/loading5.json");
+                              },
+                              alignment: Alignment.center,
+                              fit: BoxFit.cover,
+                              height: size.height * .17,
+                              width: double.infinity,
                             ),
                           ),
                           Positioned(

@@ -74,7 +74,6 @@ class ViewCategory extends StatelessWidget {
                                 opacity: animation,
                                 child: FoodDetails(
                                   meal: meal,
-                                  heroTag: myTag,
                                 ),
                               ),
                             ),
@@ -82,21 +81,17 @@ class ViewCategory extends StatelessWidget {
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(5),
-                          child: Hero(
-                            tag: meal.image.toUpperCase() + "aaa",
-                            child: CachedNetworkImage(
-                              imageUrl: meal.image,
-                              placeholder: (_, data) {
-                                return Lottie.asset("assets/loading5.json");
-                              },
-                              errorWidget: (_, style, stackTrace) {
-                                return Lottie.asset(
-                                    "assets/no-connection2.json");
-                              },
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                            ),
+                          child: CachedNetworkImage(
+                            imageUrl: meal.image,
+                            placeholder: (_, data) {
+                              return Lottie.asset("assets/loading5.json");
+                            },
+                            errorWidget: (_, style, stackTrace) {
+                              return Lottie.asset("assets/no-connection2.json");
+                            },
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            alignment: Alignment.center,
                           ),
                         ),
                       ),

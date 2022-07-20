@@ -136,11 +136,8 @@ class _ClassicRestaurantsScreenState extends State<ClassicRestaurantsScreen> {
                             pageBuilder: (_, animation, __) {
                               return FadeTransition(
                                 opacity: animation,
-                                child: RestaurantDetails(
-                                    heroTag: restaurant.restaurantId +
-                                        restaurant.address +
-                                        restaurant.businessPhoto,
-                                    restaurant: restaurant),
+                                child:
+                                    RestaurantDetails(restaurant: restaurant),
                               );
                             },
                           ),
@@ -149,94 +146,88 @@ class _ClassicRestaurantsScreenState extends State<ClassicRestaurantsScreen> {
                           _showCardDetails.value = !_showCardDetails.value;
                         });
                       },
-                      child: Hero(
-                        tag: restaurant.restaurantId +
-                            restaurant.address +
-                            restaurant.businessPhoto,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOut,
-                          transform: Matrix4.identity()
-                            ..translate(
-                              isCurrentPage ? 0.0 : -5.0,
-                              isCurrentPage ? 0.0 : 0.0,
-                            ),
-                          child: Material(
-                            shadowColor: index == _cardIndex
-                                ? Color.fromARGB(103, 0, 0, 0)
-                                : Colors.white,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                        transform: Matrix4.identity()
+                          ..translate(
+                            isCurrentPage ? 0.0 : -5.0,
+                            isCurrentPage ? 0.0 : 0.0,
+                          ),
+                        child: Material(
+                          shadowColor: index == _cardIndex
+                              ? Color.fromARGB(103, 0, 0, 0)
+                              : Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          elevation: 10,
+                          child: ClipRRect(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
-                            elevation: 10,
-                            child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              child: GridTile(
-                                header: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: constraints.maxWidth - 170,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Icon(Icons.stars_rounded,
-                                              color: Colors.white, size: 16),
-                                          IconButton(
-                                            onPressed: () {
-                                              debugPrint("add heart");
-                                            },
-                                            icon: Icon(Icons.favorite_outlined),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                footer: ClipRRect(
-                                  child: Container(
-                                    height: 70,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Colors.transparent,
-                                          Colors.transparent,
-                                          Colors.transparent,
-                                          Colors.black.withOpacity(.5),
-                                        ],
-                                      ),
+                            child: GridTile(
+                              header: Row(
+                                children: [
+                                  SizedBox(
+                                    width: constraints.maxWidth - 170,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(Icons.stars_rounded,
+                                            color: Colors.white, size: 16),
+                                        IconButton(
+                                          onPressed: () {
+                                            debugPrint("add heart");
+                                          },
+                                          icon: Icon(Icons.favorite_outlined),
+                                        )
+                                      ],
                                     ),
-                                    child: BackdropFilter(
-                                      filter: ImageFilter.blur(
-                                        sigmaX: 3,
-                                        sigmaY: 3,
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 18.0, horizontal: 10),
-                                        child: Text(
-                                          restaurant.companyName,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                  )
+                                ],
+                              ),
+                              footer: ClipRRect(
+                                child: Container(
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.transparent,
+                                        Colors.transparent,
+                                        Colors.black.withOpacity(.5),
+                                      ],
+                                    ),
+                                  ),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 3,
+                                      sigmaY: 3,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 18.0, horizontal: 10),
+                                      child: Text(
+                                        restaurant.companyName,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                child: CachedNetworkImage(
-                                  imageUrl: restaurant.businessPhoto,
-                                  alignment: Alignment.center,
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high,
-                                  errorWidget: (_, string, stackTrace) {
-                                    return Lottie.asset(
-                                        "assets/no-connection2.json");
-                                  },
-                                ),
+                              ),
+                              child: CachedNetworkImage(
+                                imageUrl: restaurant.businessPhoto,
+                                alignment: Alignment.center,
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.high,
+                                errorWidget: (_, string, stackTrace) {
+                                  return Lottie.asset(
+                                      "assets/no-connection2.json");
+                                },
                               ),
                             ),
                           ),
@@ -266,18 +257,15 @@ class _ClassicRestaurantsScreenState extends State<ClassicRestaurantsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Hero(
-                              tag: restaurant.restaurantId,
-                              child: FittedBox(
-                                child: Material(
-                                  type: MaterialType.transparency,
-                                  child: Text(
-                                    restaurant.companyName.toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 25,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            FittedBox(
+                              child: Material(
+                                type: MaterialType.transparency,
+                                child: Text(
+                                  restaurant.companyName.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),

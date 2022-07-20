@@ -274,58 +274,60 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                           final isCurrentPage =
                                               index == _cardIndex;
                                           final isFirstPage = index == 0;
-                                          return Transform.scale(
-                                            alignment: Alignment.lerp(
-                                                Alignment.centerLeft,
-                                                Alignment.center,
-                                                -progress),
-                                            scale: isScrolling && isFirstPage
-                                                ? 1 - progress
-                                                : scale,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                _showCardDetails.value =
-                                                    !_showCardDetails.value;
-                                                const transitionDuration =
-                                                    Duration(milliseconds: 750);
-
-                                                Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration:
-                                                        transitionDuration,
-                                                    reverseTransitionDuration:
-                                                        transitionDuration,
-                                                    pageBuilder:
-                                                        (_, animation, __) {
-                                                      return FadeTransition(
-                                                        opacity: animation,
-                                                        child: SizeTransition(
-                                                            axis:
-                                                                Axis.horizontal,
-                                                            sizeFactor: CurvedAnimation(
-                                                                parent:
-                                                                    animation,
-                                                                curve: const Interval(
-                                                                    .0, .80,
-                                                                    curve: Curves
-                                                                        .decelerate)),
-                                                            child: FoodDetails(
-                                                              meal: meal,
-                                                              heroTag: myTag,
-                                                            )),
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                                Future.delayed(
-                                                    transitionDuration, () {
+                                          return Hero(
+                                            tag: myTag,
+                                            child: Transform.scale(
+                                              alignment: Alignment.lerp(
+                                                  Alignment.centerLeft,
+                                                  Alignment.center,
+                                                  -progress),
+                                              scale: isScrolling && isFirstPage
+                                                  ? 1 - progress
+                                                  : scale,
+                                              child: GestureDetector(
+                                                onTap: () {
                                                   _showCardDetails.value =
                                                       !_showCardDetails.value;
-                                                });
-                                              },
-                                              child: Hero(
-                                                tag: myTag,
+                                                  const transitionDuration =
+                                                      Duration(
+                                                          milliseconds: 650);
+
+                                                  Navigator.push(
+                                                    context,
+                                                    PageRouteBuilder(
+                                                      transitionDuration:
+                                                          transitionDuration,
+                                                      reverseTransitionDuration:
+                                                          transitionDuration,
+                                                      pageBuilder:
+                                                          (_, animation, __) {
+                                                        return FadeTransition(
+                                                          opacity: animation,
+                                                          child: SizeTransition(
+                                                              axis: Axis
+                                                                  .horizontal,
+                                                              sizeFactor: CurvedAnimation(
+                                                                  parent:
+                                                                      animation,
+                                                                  curve: const Interval(
+                                                                      .0, .80,
+                                                                      curve: Curves
+                                                                          .decelerate)),
+                                                              child:
+                                                                  FoodDetails(
+                                                                myTag: myTag,
+                                                                meal: meal,
+                                                              )),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                  Future.delayed(
+                                                      transitionDuration, () {
+                                                    _showCardDetails.value =
+                                                        !_showCardDetails.value;
+                                                  });
+                                                },
                                                 child: AnimatedContainer(
                                                   duration: const Duration(
                                                       milliseconds: 400),
@@ -466,52 +468,47 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                 ),
                                 const SizedBox(height: 50),
                                 SizedBox(
-                                    height: h * .15,
-                                    child: PageView.builder(
-                                      itemCount: meals.length,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      controller: _cardDetailsController,
-                                      itemBuilder: (_, index) {
-                                        final Food meal = meals[index];
-                                        final opacity =
-                                            (index - _cardDetailsPage)
-                                                .clamp(0.0, 1.0);
-                                        return Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: w * 0.1,
-                                          ),
-                                          child: Opacity(
-                                            opacity: 1 - opacity,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Hero(
-                                                  tag: meal.foodId,
-                                                  child: Material(
-                                                    type: MaterialType
-                                                        .transparency,
-                                                    child: Text(
-                                                      meal.name.toUpperCase(),
-                                                      style: const TextStyle(
-                                                        fontSize: 25,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 2,
-                                                    ),
+                                  height: h * .15,
+                                  child: PageView.builder(
+                                    itemCount: meals.length,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    controller: _cardDetailsController,
+                                    itemBuilder: (_, index) {
+                                      final Food meal = meals[index];
+                                      final opacity = (index - _cardDetailsPage)
+                                          .clamp(0.0, 1.0);
+                                      return Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: w * 0.1,
+                                        ),
+                                        child: Opacity(
+                                          opacity: 1 - opacity,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Material(
+                                                type: MaterialType.transparency,
+                                                child: Text(
+                                                  meal.name.toUpperCase(),
+                                                  style: const TextStyle(
+                                                    fontSize: 25,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 2,
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                      },
-                                    )),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
                                 const SizedBox(height: 10), // Cafe meals
                                 OpenContainer(
                                   closedElevation: 0,

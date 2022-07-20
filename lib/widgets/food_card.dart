@@ -15,15 +15,18 @@ class FoodCard extends StatelessWidget {
         bottomLeft: Radius.circular(30),
         bottomRight: Radius.circular(30),
       ),
-      child: CachedNetworkImage(
-        imageUrl: image,
-        alignment: Alignment.center,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        errorWidget: (_, string, stackTrace) {
-          return Lottie.asset("assets/no-connection2.json");
-        },
-        height: size.height * .35,
+      child: Hero(
+        tag: image + image,
+        child: CachedNetworkImage(
+          imageUrl: image,
+          alignment: Alignment.center,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          errorWidget: (_, string, stackTrace) {
+            return Lottie.asset("assets/no-connection2.json");
+          },
+          height: size.height * .35,
+        ),
       ),
     );
   }

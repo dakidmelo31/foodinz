@@ -74,16 +74,13 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                         flexibleSpace: Stack(
                           children: [
                             Positioned(
-                              child: Hero(
-                                tag: widget.tag,
-                                child: CachedNetworkImage(
-                                  errorWidget: ((context, url, error) =>
-                                      errorWidget1),
-                                  placeholder: (_, __) => loadingWidget2,
-                                  imageUrl: widget.service.image,
-                                  fit: BoxFit.cover,
-                                  width: size.width,
-                                ),
+                              child: CachedNetworkImage(
+                                errorWidget: ((context, url, error) =>
+                                    errorWidget1),
+                                placeholder: (_, __) => loadingWidget2,
+                                imageUrl: widget.service.image,
+                                fit: BoxFit.cover,
+                                width: size.width,
                               ),
                               top: 0,
                               right: 0,
@@ -221,89 +218,77 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   padding: const EdgeInsets.all(2.0),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
-                                    child: Hero(
-                                      tag: galleryTag,
-                                      child: Material(
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              CustomFadeTransition(
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Scaffold(
-                                                    backgroundColor: Colors
-                                                        .black
-                                                        .withOpacity(.4),
-                                                    body: Center(
-                                                      child: Hero(
-                                                        tag: galleryTag,
-                                                        child: Material(
-                                                          child: AbsorbPointer(
-                                                            ignoringSemantics:
-                                                                true,
-                                                            absorbing: true,
-                                                            child:
-                                                                CachedNetworkImage(
-                                                              imageUrl: image,
-                                                              fadeInCurve: Curves
-                                                                  .decelerate,
-                                                              fadeOutCurve: Curves
-                                                                  .decelerate,
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              fit: BoxFit.cover,
-                                                              placeholder: (_,
-                                                                      stackTrace) =>
+                                    child: Material(
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CustomFadeTransition(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Scaffold(
+                                                  backgroundColor: Colors.black
+                                                      .withOpacity(.4),
+                                                  body: Center(
+                                                    child: Material(
+                                                      child: AbsorbPointer(
+                                                        ignoringSemantics: true,
+                                                        absorbing: true,
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: image,
+                                                          fadeInCurve:
+                                                              Curves.decelerate,
+                                                          fadeOutCurve:
+                                                              Curves.decelerate,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              (_, stackTrace) =>
                                                                   Lottie.asset(
-                                                                "assets/loading5.json",
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                              ),
-                                                              filterQuality:
-                                                                  FilterQuality
-                                                                      .high,
-                                                              errorWidget: (_,
-                                                                  string,
-                                                                  stackTrace) {
-                                                                return Lottie.asset(
-                                                                    "assets/no-connection2.json");
-                                                              },
-                                                            ),
+                                                            "assets/loading5.json",
+                                                            fit: BoxFit.cover,
+                                                            alignment: Alignment
+                                                                .center,
                                                           ),
+                                                          filterQuality:
+                                                              FilterQuality
+                                                                  .high,
+                                                          errorWidget: (_,
+                                                              string,
+                                                              stackTrace) {
+                                                            return Lottie.asset(
+                                                                "assets/no-connection2.json");
+                                                          },
                                                         ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            );
-                                          },
-                                          child: CachedNetworkImage(
-                                            imageUrl: image,
-                                            fadeInCurve: Curves.bounceIn,
-                                            fadeOutCurve: Curves.bounceOut,
-                                            alignment: Alignment.center,
-                                            fit: BoxFit.cover,
-                                            placeholder: (_, stackTrace) =>
-                                                Lottie.asset(
-                                              "assets/loading5.json",
-                                              fit: BoxFit.cover,
-                                              alignment: Alignment.center,
                                             ),
-                                            filterQuality: FilterQuality.high,
-                                            errorWidget:
-                                                (_, string, stackTrace) {
-                                              return Lottie.asset(
-                                                  "assets/no-connection2.json");
-                                            },
+                                          );
+                                        },
+                                        child: CachedNetworkImage(
+                                          imageUrl: image,
+                                          fadeInCurve: Curves.bounceIn,
+                                          fadeOutCurve: Curves.bounceOut,
+                                          alignment: Alignment.center,
+                                          fit: BoxFit.cover,
+                                          placeholder: (_, stackTrace) =>
+                                              Lottie.asset(
+                                            "assets/loading5.json",
+                                            fit: BoxFit.cover,
+                                            alignment: Alignment.center,
                                           ),
+                                          filterQuality: FilterQuality.high,
+                                          errorWidget: (_, string, stackTrace) {
+                                            return Lottie.asset(
+                                                "assets/no-connection2.json");
+                                          },
                                         ),
                                       ),
                                     ),
@@ -383,23 +368,18 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                           ),
                                         ),
                                         ClipOval(
-                                          child: Hero(
-                                            tag:
-                                                parentRestaurant.businessPhoto +
-                                                    parentRestaurant.avatar,
-                                            child: CachedNetworkImage(
-                                              imageUrl: parentRestaurant
-                                                  .businessPhoto,
-                                              alignment: Alignment.center,
-                                              fit: BoxFit.cover,
-                                              filterQuality: FilterQuality.high,
-                                              placeholder: (_, __) =>
-                                                  loadingWidget,
-                                              errorWidget: (_, __, ___) =>
-                                                  errorWidget1,
-                                              width: size.width * .4,
-                                              height: size.width * .4,
-                                            ),
+                                          child: CachedNetworkImage(
+                                            imageUrl:
+                                                parentRestaurant.businessPhoto,
+                                            alignment: Alignment.center,
+                                            fit: BoxFit.cover,
+                                            filterQuality: FilterQuality.high,
+                                            placeholder: (_, __) =>
+                                                loadingWidget,
+                                            errorWidget: (_, __, ___) =>
+                                                errorWidget1,
+                                            width: size.width * .4,
+                                            height: size.width * .4,
                                           ),
                                         ),
                                         Card(
@@ -452,10 +432,6 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                                   context,
                                                   CustomFadeTransition(
                                                     child: RestaurantDetails(
-                                                        heroTag: parentRestaurant
-                                                                .businessPhoto +
-                                                            parentRestaurant
-                                                                .avatar,
                                                         restaurant:
                                                             parentRestaurant),
                                                   ),
