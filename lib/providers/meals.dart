@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:foodinz/providers/global_data.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../global.dart';
 import '../models/food.dart';
@@ -139,8 +137,10 @@ class MealsData with ChangeNotifier {
 
     firestore
         .collection("meals")
-        .get()
-        .then((QuerySnapshot querySnapshot) async {
+        .snapshots()
+        .listen((QuerySnapshot querySnapshot) async {
+      meals.clear();
+      myFavorites.clear();
       for (var data in querySnapshot.docs) {
         String foodId = data.id;
         // debugPrint(
@@ -160,6 +160,7 @@ class MealsData with ChangeNotifier {
             restaurantId: data['restaurantId'],
             gallery: List<String>.from(data['gallery']),
             compliments: List<String>.from(data['accessories']),
+            ingredients: List<String>.from(data['ingredients']),
             accessories: List<String>.from(data['accessories']),
             duration: data['duration'],
             categories: List<String>.from(data['categories']));
@@ -170,25 +171,35 @@ class MealsData with ChangeNotifier {
         meals.add(
           fd,
         );
+        if (await checkLike(foodId: fd.foodId)) {
+          myFavorites.add(fd);
+          debugPrint("added meal to liked meals");
+          debugPrint("myFavorites length: " + myFavorites.length.toString());
+        }
         meals.shuffle();
         for (var element in meals) {
-          if (element.favorite) {
+          if (element.favorite && !myFavorites.contains(element)) {
             debugPrint("added to favorites");
             myFavorites.add(element);
           }
         }
-        debugPrint("length of favorites is: " + myFavorites.length.toString());
+        debugPrint(
+            "length of favorite meals is: " + myFavorites.length.toString());
       }
-    }).then((value) {
       for (Food d in meals) {
         if (d.categories.contains("Breakfast")) {
           breakfasts.add(d);
         }
       }
       debugPrint("loaded breakfast");
-    }).whenComplete(() {
-      notifyListeners();
     });
+    notifyListeners();
+  }
+
+  removeFavorite(String foodId) async {
+    myFavorites.removeWhere((element) => element.foodId == foodId);
+    await removeFromLikes(foodId: foodId);
+    notifyListeners();
   }
 
   MealsData() {
@@ -216,13 +227,17 @@ class MealsData with ChangeNotifier {
     bool likedAlready = await checkLike(foodId: foodId);
 
     if (!await checkLike(foodId: foodId)) {
-      await firestore.collection("meals").doc(foodId).get().then((value) {
+      firestore.collection("meals").doc(foodId).get().then((value) async {
         Map<String, dynamic> data = value.data() as Map<String, dynamic>;
         int likes = data['likes'];
         debugPrint("current likes is: $likes");
-        
+
         likes += 1;
         debugPrint("new likes is: $likes");
+        if (myFavorites.any((element) => element.foodId != foodId)) {
+          //add only 1
+          myFavorites.add(getMeal(foodId));
+        }
 
         firestore
             .collection("meals")
@@ -232,10 +247,13 @@ class MealsData with ChangeNotifier {
             .catchError((onError) {
               debugPrint("Error while updating likes: $onError");
             });
-      }).then((value) async {
-        await addToLikes(foodId: foodId);
+        addToLikes(foodId: foodId);
       });
     } else {
+      if (myFavorites.any((element) => element.foodId == foodId)) {
+        //check if it exists
+        myFavorites.remove(getMeal(foodId));
+      }
       firestore.collection("meals").doc(foodId).get().then((value) {
         Map<String, dynamic> data = value.data() as Map<String, dynamic>;
         int likes = data['likes'];
@@ -252,8 +270,9 @@ class MealsData with ChangeNotifier {
               debugPrint("Error while updating likes: $onError");
             });
       }).then((value) async {
-        await removeFromLikes(foodId: foodId);
+        removeFromLikes(foodId: foodId);
       });
+      notifyListeners();
     }
 
     toggleFoodLike(foodId: foodId);

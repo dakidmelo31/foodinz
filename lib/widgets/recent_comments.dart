@@ -5,9 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../models/food_coment.dart';
 import '../models/review_models.dart';
+import '../providers/auth.dart';
 import '../themes/light_theme.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -30,7 +32,6 @@ class _RecentCommentsState extends State<RecentComments> {
   bool loadMore = false;
   @override
   void initState() {
-    // TODO: implement initState
     // fixReviews();
     super.initState();
   }
@@ -39,6 +40,7 @@ class _RecentCommentsState extends State<RecentComments> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final me = Provider.of<MyData>(context, listen: false);
 
     debugPrint("is it a meal? ${widget.isMeal}");
     return SingleChildScrollView(
@@ -127,89 +129,112 @@ class _RecentCommentsState extends State<RecentComments> {
                           (item) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 15.0, vertical: 30.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                  horizontal: 8.0, vertical: 5.0),
+                              child: Card(
+                                color: me.user.userId == item.userId
+                                    ? Colors.lightGreen
+                                    : Colors.white,
+                                elevation:
+                                    me.user.userId == item.userId ? 15.0 : 0.0,
+                                shadowColor: Colors.black.withOpacity(.5),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Column(
                                     children: [
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: ClipOval(
-                                              child: CachedNetworkImage(
-                                                imageUrl: item.avatar,
-                                                alignment: Alignment.center,
-                                                fit: BoxFit.cover,
-                                                errorWidget: (_, __, ___) =>
-                                                    Lottie.asset(
-                                                        "assets/no-connection.json"),
-                                                placeholder: (
-                                                  _,
-                                                  __,
-                                                ) =>
-                                                    Lottie.asset(
-                                                        "assets/loading7.json"),
-                                                fadeInCurve: Curves
-                                                    .fastLinearToSlowEaseIn,
-                                                width: 45.0,
-                                                height: 45.0,
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: ClipOval(
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: item.avatar,
+                                                    alignment: Alignment.center,
+                                                    fit: BoxFit.cover,
+                                                    errorWidget: (_, __, ___) =>
+                                                        Lottie.asset(
+                                                            "assets/no-connection.json"),
+                                                    placeholder: (
+                                                      _,
+                                                      __,
+                                                    ) =>
+                                                        Lottie.asset(
+                                                            "assets/loading7.json"),
+                                                    fadeInCurve: Curves
+                                                        .fastLinearToSlowEaseIn,
+                                                    width: 45.0,
+                                                    height: 45.0,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                          Text(
-                                            item.username,
-                                            style: const TextStyle(
-                                                fontSize: 15.0,
-                                                fontWeight: FontWeight.w400),
+                                              Text(
+                                                item.username,
+                                                style: TextStyle(
+                                                    color: me.user.userId ==
+                                                            item.userId
+                                                        ? Colors.black
+                                                        : Colors.white,
+                                                    fontSize: 15.0,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 12.0),
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                children: [
+                                                  for (var i = 0; i < 5; i++)
+                                                    Icon(
+                                                      Icons.star_rounded,
+                                                      color: i <= item.rating
+                                                          ? me.user.userId ==
+                                                                  item.userId
+                                                              ? Colors.yellow
+                                                              : Colors.green
+                                                          : Color.fromARGB(255,
+                                                              219, 219, 219),
+                                                      size: 15.0,
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                            Text(
+                                              item.created_at.day.toString() +
+                                                  "/" +
+                                                  item.created_at.month
+                                                      .toString() +
+                                                  "/" +
+                                                  item.created_at.year
+                                                      .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 15.0,
+                                                  fontWeight: FontWeight.w400),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          width: size.width -
+                                              ((size.width / 30) * 2),
+                                          child: Text(item.description))
                                     ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0),
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(
-                                            children: [
-                                              for (var i = 0; i < 5; i++)
-                                                Icon(
-                                                  Icons.star_rounded,
-                                                  color: i <= item.rating
-                                                      ? Colors.green
-                                                      : Colors.grey
-                                                          .withOpacity(.3),
-                                                  size: 15.0,
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                        Text(
-                                          item.created_at.day.toString() +
-                                              "/" +
-                                              item.created_at.month.toString() +
-                                              "/" +
-                                              item.created_at.year.toString(),
-                                          style: const TextStyle(
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.w400),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          size.width - ((size.width / 30) * 2),
-                                      child: Text(item.description))
-                                ],
+                                ),
                               ),
                             );
                           },

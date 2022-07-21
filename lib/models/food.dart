@@ -11,15 +11,17 @@ class Food {
   String address = "";
   final bool available;
   final double averageRating, price;
+
   int likes;
   bool favorite = false;
 
   int comments;
-  final List<String> accessories, compliments, gallery, categories;
+  final List<String> accessories, compliments, gallery, categories, ingredients;
   Food(
       {favorite = false,
       required this.accessories,
       required this.compliments,
+      required this.ingredients,
       required this.available,
       required this.price,
       required this.categories,
@@ -88,7 +90,6 @@ class Food {
     bool isFavorite = favorites.checkFavorite(foodId: documentId);
     return Food(
       favorite: isFavorite,
-
       foodId: documentId,
       likes: data['likes'] as int,
       description: data['description'],
@@ -101,6 +102,7 @@ class Food {
       restaurantId: data['restaurantId'],
       gallery: List<String>.from(data['gallery']),
       compliments: List<String>.from(data['accessories']),
+      ingredients: List<String>.from(data['ingredients']),
       accessories: List<String>.from(data['accessories']),
       duration: data['duration'],
       categories: List<String>.from(data['categories']),

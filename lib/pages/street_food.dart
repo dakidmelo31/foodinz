@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/models/service.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/pages/service_details.dart';
@@ -56,8 +57,7 @@ class _StreetFoodState extends State<StreetFood> {
                   final restaurant = restaurantData.selectRestaurant(
                       restaurantId: food.restaurantId);
 
-                  final String tag =
-                      food.image + Random().nextInt(500000).toString();
+                  final String myTag = food.image + food.foodId + food.foodId;
 
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -69,49 +69,52 @@ class _StreetFoodState extends State<StreetFood> {
                         ClipOval(
                           child: GestureDetector(
                             onTap: () {
-                              debugPrint("open new page");
-                              Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    transitionDuration:
-                                        const Duration(milliseconds: 1200),
-                                    reverseTransitionDuration:
-                                        const Duration(milliseconds: 380),
-                                    barrierDismissible: true,
-                                    transitionsBuilder: (_, animation,
-                                        anotherAnimation, child) {
-                                      return SizeTransition(
-                                        sizeFactor: CurvedAnimation(
-                                            curve: Curves.fastOutSlowIn,
-                                            parent: animation,
-                                            reverseCurve: Curves.decelerate),
-                                        axis: Axis.vertical,
-                                        axisAlignment: 0.0,
-                                        child: child,
-                                      );
-                                    },
-                                    pageBuilder: (context, animation,
-                                        secondaryAnimation) {
-                                      return SizeTransition(
-                                        sizeFactor: CurvedAnimation(
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn,
-                                            parent: animation,
-                                            reverseCurve: Curves.decelerate),
-                                        axis: Axis.vertical,
-                                        axisAlignment: 0.0,
-                                        child: FoodDetails(
-                                          meal: food,
-                                          myTag: tag,
-                                        ),
-                                      );
-                                    },
-                                  ));
+                              debugPrint("open food details: ");
+                              HapticFeedback.heavyImpact();
+
+                              if (false)
+                                Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      transitionDuration:
+                                          const Duration(milliseconds: 1200),
+                                      reverseTransitionDuration:
+                                          const Duration(milliseconds: 380),
+                                      barrierDismissible: true,
+                                      transitionsBuilder: (_, animation,
+                                          anotherAnimation, child) {
+                                        return SizeTransition(
+                                          sizeFactor: CurvedAnimation(
+                                              curve: Curves.fastOutSlowIn,
+                                              parent: animation,
+                                              reverseCurve: Curves.decelerate),
+                                          axis: Axis.vertical,
+                                          axisAlignment: 0.0,
+                                          child: child,
+                                        );
+                                      },
+                                      pageBuilder: (context, animation,
+                                          secondaryAnimation) {
+                                        return SizeTransition(
+                                          sizeFactor: CurvedAnimation(
+                                              curve:
+                                                  Curves.fastLinearToSlowEaseIn,
+                                              parent: animation,
+                                              reverseCurve: Curves.decelerate),
+                                          axis: Axis.vertical,
+                                          axisAlignment: 0.0,
+                                          child: FoodDetails(
+                                            meal: food,
+                                            myTag: myTag,
+                                          ),
+                                        );
+                                      },
+                                    ));
                             },
-                            child: Hero(
-                              tag: tag,
-                              child: Opacity(
-                                opacity: isAlreadyInCart ? .25 : 1.0,
+                            child: Opacity(
+                              opacity: isAlreadyInCart ? .25 : 1.0,
+                              child: Hero(
+                                tag: myTag,
                                 child: CachedNetworkImage(
                                   imageUrl: food.image,
                                   alignment: Alignment.center,
@@ -139,9 +142,15 @@ class _StreetFoodState extends State<StreetFood> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                restaurant.address,
-                                style: Primary.paragraph,
+                              Hero(
+                                tag: myTag + "name",
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Text(
+                                    restaurant.address,
+                                    style: Primary.paragraph,
+                                  ),
+                                ),
                               ),
                               IconButton(
                                   icon: const Icon(
@@ -231,8 +240,8 @@ class _ServicesListState extends State<ServicesList> {
                       int rating = service.comments;
 
                       final String myTag = service.serviceId +
-                          (Random().nextDouble() * -999999999999).toString();
-
+                          service.serviceId +
+                          service.serviceId;
                       return Card(
                         color: Color.fromARGB(255, 245, 245, 245),
                         elevation: 15.0,
@@ -256,71 +265,76 @@ class _ServicesListState extends State<ServicesList> {
                                         child: GestureDetector(
                                           onTap: () {
                                             debugPrint("open new page");
-                                            Navigator.push(
-                                                context,
-                                                PageRouteBuilder(
-                                                  transitionDuration:
-                                                      const Duration(
-                                                          milliseconds: 1200),
-                                                  reverseTransitionDuration:
-                                                      const Duration(
-                                                          milliseconds: 800),
-                                                  barrierDismissible: true,
-                                                  transitionsBuilder: (_,
-                                                      animation,
-                                                      anotherAnimation,
-                                                      child) {
-                                                    return SizeTransition(
-                                                      sizeFactor: CurvedAnimation(
-                                                          curve: Curves
-                                                              .fastOutSlowIn,
-                                                          parent: animation,
-                                                          reverseCurve: Curves
-                                                              .decelerate),
-                                                      axis: Axis.vertical,
-                                                      axisAlignment: 0.0,
-                                                      child: child,
-                                                    );
-                                                  },
-                                                  pageBuilder: (context,
-                                                      animation,
-                                                      secondaryAnimation) {
-                                                    return SizeTransition(
-                                                      sizeFactor: CurvedAnimation(
-                                                          curve: Curves
-                                                              .fastLinearToSlowEaseIn,
-                                                          parent: animation,
-                                                          reverseCurve: Curves
-                                                              .decelerate),
-                                                      axis: Axis.vertical,
-                                                      axisAlignment: 0.0,
-                                                      child: ServiceDetails(
-                                                          service: service,
-                                                          tag: myTag),
-                                                    );
-                                                  },
-                                                ));
+                                            if (false)
+                                              Navigator.push(
+                                                  context,
+                                                  PageRouteBuilder(
+                                                    transitionDuration:
+                                                        const Duration(
+                                                            milliseconds: 1200),
+                                                    reverseTransitionDuration:
+                                                        const Duration(
+                                                            milliseconds: 800),
+                                                    barrierDismissible: true,
+                                                    transitionsBuilder: (_,
+                                                        animation,
+                                                        anotherAnimation,
+                                                        child) {
+                                                      return SizeTransition(
+                                                        sizeFactor: CurvedAnimation(
+                                                            curve: Curves
+                                                                .fastOutSlowIn,
+                                                            parent: animation,
+                                                            reverseCurve: Curves
+                                                                .decelerate),
+                                                        axis: Axis.vertical,
+                                                        axisAlignment: 0.0,
+                                                        child: child,
+                                                      );
+                                                    },
+                                                    pageBuilder: (context,
+                                                        animation,
+                                                        secondaryAnimation) {
+                                                      return SizeTransition(
+                                                        sizeFactor: CurvedAnimation(
+                                                            curve: Curves
+                                                                .fastLinearToSlowEaseIn,
+                                                            parent: animation,
+                                                            reverseCurve: Curves
+                                                                .decelerate),
+                                                        axis: Axis.vertical,
+                                                        axisAlignment: 0.0,
+                                                        child: ServiceDetails(
+                                                            service: service,
+                                                            tag: myTag),
+                                                      );
+                                                    },
+                                                  ));
                                           },
                                           child: Opacity(
                                             opacity: 1.0,
-                                            child: CachedNetworkImage(
-                                              imageUrl: service.image,
-                                              alignment: Alignment.center,
-                                              fit: BoxFit.cover,
-                                              placeholder: (_, stackTrace) =>
-                                                  Lottie.asset(
-                                                "assets/loading5.json",
-                                                fit: BoxFit.cover,
+                                            child: Hero(
+                                              tag: myTag,
+                                              child: CachedNetworkImage(
+                                                imageUrl: service.image,
                                                 alignment: Alignment.center,
+                                                fit: BoxFit.cover,
+                                                placeholder: (_, stackTrace) =>
+                                                    Lottie.asset(
+                                                  "assets/loading5.json",
+                                                  fit: BoxFit.cover,
+                                                  alignment: Alignment.center,
+                                                ),
+                                                filterQuality:
+                                                    FilterQuality.high,
+                                                errorWidget:
+                                                    (_, string, stackTrace) {
+                                                  return Lottie.asset(
+                                                      "assets/no-connection2.json");
+                                                },
+                                                width: size.width * .4,
+                                                height: 160,
                                               ),
-                                              filterQuality: FilterQuality.high,
-                                              errorWidget:
-                                                  (_, string, stackTrace) {
-                                                return Lottie.asset(
-                                                    "assets/no-connection2.json");
-                                              },
-                                              width: size.width * .4,
-                                              height: 160,
                                             ),
                                           ),
                                         ),
@@ -334,7 +348,13 @@ class _ServicesListState extends State<ServicesList> {
                                         color: Colors.amber,
                                         size: 40.0,
                                       ),
-                                      Text(service.comments.toString())
+                                      Hero(
+                                        tag: myTag + "name",
+                                        child: Material(
+                                            color: Colors.transparent,
+                                            child: Text(
+                                                service.comments.toString())),
+                                      )
                                     ],
                                   ),
                                   const SizedBox(

@@ -21,8 +21,8 @@ class MyFavorites extends StatefulWidget {
 
 class _MyFavoritesState extends State<MyFavorites>
     with TickerProviderStateMixin {
-  final listState2 = GlobalKey<AnimatedListState>();
-  final listState1 = GlobalKey<AnimatedListState>();
+  final foodListState = GlobalKey<AnimatedListState>();
+  final restaurantStateList = GlobalKey<AnimatedListState>();
   late TabController _tabController;
   List<String> foodIds = [], restaurantIds = [];
   late final AnimationController _animationController;
@@ -63,8 +63,8 @@ class _MyFavoritesState extends State<MyFavorites>
   Widget build(BuildContext context) {
     final _favorites = Provider.of<MealsData>(context, listen: true);
     final _restaurants = Provider.of<RestaurantData>(context, listen: true);
-    final totalMeals = _favorites.filterMeals(foodIds);
-    final totalRestaurants = _restaurants.filterRestaurants(restaurantIds);
+    final totalMeals = _favorites.myFavorites;
+    final totalRestaurants = _restaurants.favorites;
     final size = MediaQuery.of(context).size;
     return SafeArea(
         child: AnimatedBuilder(
@@ -96,7 +96,7 @@ class _MyFavoritesState extends State<MyFavorites>
                                 parent: AlwaysScrollableScrollPhysics()),
                             children: [
                           AnimatedList(
-                            key: listState2,
+                            key: foodListState,
                             initialItemCount: totalMeals.length,
                             physics: const BouncingScrollPhysics(
                                 parent: AlwaysScrollableScrollPhysics()),
@@ -107,8 +107,18 @@ class _MyFavoritesState extends State<MyFavorites>
                                   curve: Curves.fastLinearToSlowEaseIn);
                               debugPrint(food.name);
 
+                              String tag = food.name + food.foodId;
+                              debugPrint("food Tag: $tag");
+
                               return Dismissible(
                                 key: GlobalKey(),
+                                onDismissed: (details) {
+                                  _favorites.removeFavorite(food.foodId);
+                                  foodListState.currentState!.removeItem(
+                                      index,
+                                      (context, animation) =>
+                                          const SizedBox.shrink());
+                                },
                                 background: Container(
                                     alignment: Alignment.centerLeft,
                                     child: Padding(
@@ -116,39 +126,66 @@ class _MyFavoritesState extends State<MyFavorites>
                                           const EdgeInsets.only(left: 28.0),
                                       child: Row(
                                         children: const [
+                                          Text("Remove"),
                                           Icon(
                                             Icons.delete_forever,
                                             color: Colors.pink,
                                           ),
-                                          Text("Remove")
                                         ],
                                       ),
                                     )),
+                                secondaryBackground: Container(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 28.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: const [
+                                        Icon(
+                                          Icons.delete_forever,
+                                          color: Colors.pink,
+                                        ),
+                                        Text("Remove")
+                                      ],
+                                    ),
+                                  ),
+                                ),
                                 child: Card(
                                   elevation: 10.0,
                                   shadowColor: Colors.black.withOpacity(.25),
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 10),
                                   child: ListTile(
-                                    title: Text(
-                                      food.name,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
+                                    title: Hero(
+                                      tag: tag + "name",
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Text(
+                                          food.name,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w700),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                        ),
+                                      ),
                                     ),
-                                    leading: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      child: CachedNetworkImage(
-                                          imageUrl: food.image,
-                                          width: 60,
-                                          height: 60,
-                                          alignment: Alignment.center,
-                                          fit: BoxFit.cover,
-                                          errorWidget: (_, __, ___) =>
-                                              errorWidget1,
-                                          placeholder: (_, __) =>
-                                              loadingWidget),
+                                    leading: Hero(
+                                      tag: tag,
+                                      child: ClipRRect(
+                                        clipBehavior: Clip.antiAlias,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: CachedNetworkImage(
+                                            imageUrl: food.image,
+                                            width: 60,
+                                            height: 60,
+                                            alignment: Alignment.center,
+                                            fit: BoxFit.cover,
+                                            errorWidget: (_, __, ___) =>
+                                                errorWidget1,
+                                            placeholder: (_, __) =>
+                                                loadingWidget),
+                                      ),
                                     ),
                                     dense: true,
                                     enableFeedback: true,
@@ -161,11 +198,15 @@ class _MyFavoritesState extends State<MyFavorites>
                                       Navigator.push(
                                           context,
                                           VerticalSizeTransition(
-                                              child: FoodDetails(meal: food)));
+                                              child: FoodDetails(
+                                            meal: food,
+                                            myTag: tag,
+                                          )));
                                     },
                                     trailing: IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.close_rounded,
+                                        onPressed: () => _favorites
+                                            .removeFavorite(food.foodId),
+                                        icon: const Icon(Icons.close_rounded,
                                             color: Colors.pink)),
                                   ),
                                 ),
@@ -173,7 +214,7 @@ class _MyFavoritesState extends State<MyFavorites>
                             },
                           ),
                           AnimatedList(
-                            key: listState1,
+                            key: restaurantStateList,
                             initialItemCount: totalRestaurants.length,
                             physics: const BouncingScrollPhysics(
                                 parent: AlwaysScrollableScrollPhysics()),
@@ -182,9 +223,19 @@ class _MyFavoritesState extends State<MyFavorites>
                               animation = CurvedAnimation(
                                   parent: animation,
                                   curve: Curves.fastLinearToSlowEaseIn);
+                              String tag = restaurant.restaurantId +
+                                  restaurant.businessPhoto;
 
                               return Dismissible(
                                 key: GlobalKey(),
+                                onDismissed: (details) {
+                                  _restaurants
+                                      .removeFavorite(restaurant.restaurantId);
+                                  restaurantStateList.currentState!.removeItem(
+                                      index,
+                                      (context, animation) =>
+                                          const SizedBox.shrink());
+                                },
                                 background: Container(
                                     alignment: Alignment.centerLeft,
                                     child: Padding(
@@ -200,31 +251,56 @@ class _MyFavoritesState extends State<MyFavorites>
                                         ],
                                       ),
                                     )),
+                                secondaryBackground: Container(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 28.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: const [
+                                        Text("Remove"),
+                                        Icon(
+                                          Icons.delete_forever,
+                                          color: Colors.pink,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                                 child: Card(
                                   elevation: 10.0,
                                   shadowColor: Colors.black.withOpacity(.25),
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 10),
                                   child: ListTile(
-                                    title: Text(
-                                      restaurant.name,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
+                                    title: Material(
+                                      color: Colors.transparent,
+                                      child: Hero(
+                                        tag: tag + "name",
+                                        child: Text(
+                                          restaurant.name,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w700),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                        ),
+                                      ),
                                     ),
                                     leading: ClipRRect(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      child: CachedNetworkImage(
-                                          imageUrl: restaurant.businessPhoto,
-                                          width: 60,
-                                          height: 60,
-                                          alignment: Alignment.center,
-                                          fit: BoxFit.cover,
-                                          errorWidget: (_, __, ___) =>
-                                              errorWidget1,
-                                          placeholder: (_, __) =>
-                                              loadingWidget),
+                                      child: Hero(
+                                        tag: tag,
+                                        child: CachedNetworkImage(
+                                            imageUrl: restaurant.businessPhoto,
+                                            width: 60,
+                                            height: 60,
+                                            alignment: Alignment.center,
+                                            fit: BoxFit.cover,
+                                            errorWidget: (_, __, ___) =>
+                                                errorWidget1,
+                                            placeholder: (_, __) =>
+                                                loadingWidget),
+                                      ),
                                     ),
                                     dense: true,
                                     enableFeedback: true,
@@ -240,12 +316,24 @@ class _MyFavoritesState extends State<MyFavorites>
                                           VerticalSizeTransition(
                                               child: RestaurantDetails(
                                             restaurant: restaurant,
+                                            restHero: tag,
                                           )));
                                     },
                                     trailing: IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.close_rounded,
-                                            color: Colors.pink)),
+                                      onPressed: () {
+                                        _restaurants.removeFavorite(
+                                            restaurant.restaurantId);
+                                        restaurantStateList.currentState!
+                                            .removeItem(
+                                                index,
+                                                (context, animation) =>
+                                                    const SizedBox.shrink());
+                                      },
+                                      icon: const Icon(
+                                        Icons.close_rounded,
+                                        color: Colors.pink,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               );

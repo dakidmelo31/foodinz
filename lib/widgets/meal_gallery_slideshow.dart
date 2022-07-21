@@ -67,27 +67,40 @@ class _MealGalleryState extends State<MealGallery> {
                       child: Scaffold(
                         backgroundColor: Colors.black.withOpacity(.6),
                         appBar: AppBar(
-                            backgroundColor: Colors.black.withOpacity(.2),
-                            title: Text(
-                              meal.name,
-                              style: Primary.whiteText,
+                            backgroundColor: Colors.black,
+                            title: Hero(
+                              tag: widget.myTag! + "name",
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  meal.name,
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18.0,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
                             ),
                             centerTitle: true),
                         body: Center(
                           child: Card(
                             elevation: 0,
                             color: Colors.transparent,
-                            child: CachedNetworkImage(
-                                fit: BoxFit.contain,
-                                imageUrl: meal.image,
-                                width: double.infinity,
-                                height: double.infinity,
-                                placeholder: (_, __) => loadingWidget,
-                                errorWidget: (_, text, __) {
-                                  return Lottie.asset(
-                                    "assets/no-connection2.json",
-                                  );
-                                }),
+                            child: Hero(
+                              tag: widget.myTag!,
+                              child: CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  imageUrl: meal.image,
+                                  width: size.width,
+                                  height: size.height * .6,
+                                  placeholder: (_, __) => loadingWidget,
+                                  errorWidget: (_, text, __) {
+                                    return Lottie.asset(
+                                      "assets/no-connection2.json",
+                                    );
+                                  }),
+                            ),
                           ),
                         ),
                       ),

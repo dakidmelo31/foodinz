@@ -8,6 +8,7 @@ import 'package:foodinz/widgets/opacity_tween.dart';
 import 'package:foodinz/widgets/restaurant_info_table.dart';
 import 'package:foodinz/widgets/slide_up_tween.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../global.dart';
 import '../models/chats_model.dart';
 import '../models/restaurants.dart';
@@ -17,6 +18,7 @@ import '../widgets/food_card.dart';
 import '../widgets/other_details.dart';
 import '../widgets/promo_code.dart';
 import '../widgets/today_menu.dart';
+import '../widgets/transitions.dart';
 
 class RestaurantDetails extends StatefulWidget {
   const RestaurantDetails({Key? key, required this.restaurant, this.restHero})
@@ -74,7 +76,9 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                         onDoubleTap: () {
                           debugPrint("pressed");
                         },
-                        child: FoodCard(image: widget.restaurant.businessPhoto),
+                        child: FoodCard(
+                            image: widget.restaurant.businessPhoto,
+                            restHero: widget.restHero),
                       ),
                     ),
                   ),
@@ -82,6 +86,113 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                 SliverList(
                   delegate: SliverChildListDelegate(
                     [
+                      ListTile(
+                          dense: true,
+                          enableFeedback: true,
+                          enabled: true,
+                          title: Text(
+                            widget.restaurant.name.toUpperCase(),
+                            style: Primary.bigHeading,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          trailing: widget.restaurant.verified
+                              ? const Text(
+                                  "Verified",
+                                  style: TextStyle(
+                                    fontSize: 8.0,
+                                    color: Colors.deepPurple,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                )
+                              : const Text(
+                                  "Not Verified",
+                                  style: TextStyle(
+                                    fontSize: 8.0,
+                                    color: Colors.pink,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                )),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ClipOval(
+                            clipBehavior: Clip.antiAlias,
+                            child: Material(
+                              color: Colors.white,
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      VerticalSizeTransition(
+                                          child: ChatScreen(
+                                              restaurantId: widget
+                                                  .restaurant.restaurantId)));
+                                },
+                                icon: const Icon(Icons.restaurant_outlined),
+                              ),
+                            ),
+                          ),
+                          ClipOval(
+                            clipBehavior: Clip.antiAlias,
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(.3),
+                                    blurRadius: 10.0,
+                                    offset: const Offset(1.0, 10.0),
+                                    spreadRadius: 15.0)
+                              ]),
+                              child: ClipOval(
+                                clipBehavior: Clip.antiAlias,
+                                child: Material(
+                                  elevation: 0.0,
+                                  color: Color.fromARGB(255, 28, 141, 0),
+                                  child: IconButton(
+                                    color: Colors.white,
+                                    iconSize: 45.0,
+                                    onPressed: () {
+                                      String number = widget
+                                          .restaurant.phoneNumber
+                                          .split("+")
+                                          .last;
+                                      debugPrint(number);
+                                      launchWhatsApp(
+                                          phoneNumber: number,
+                                          message:
+                                              "Hi, I'm interested in your business");
+                                    },
+                                    icon: const Icon(
+                                      Icons.whatsapp_rounded,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          ClipOval(
+                            clipBehavior: Clip.antiAlias,
+                            child: Material(
+                              color: Colors.white,
+                              child: IconButton(
+                                color: Colors.white,
+                                onPressed: () async {
+                                  Uri url = Uri.parse(
+                                      "tel:" + widget.restaurant.phoneNumber);
+                                  if (await launchUrl(url))
+                                    throw "Could not launch $url";
+                                },
+                                icon: const Icon(
+                                  Icons.phone_callback_rounded,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
                       Card(
                         color: Colors.white,
                         elevation: 0.0,

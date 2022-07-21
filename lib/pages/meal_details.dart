@@ -15,7 +15,6 @@ import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
 import '../models/food.dart';
-import '../providers/bookmarks.dart';
 import '../providers/cart.dart';
 import '../providers/meals.dart';
 import '../widgets/meal_gallery_slideshow.dart';
@@ -75,7 +74,6 @@ class _FoodDetailsState extends State<FoodDetails>
     BuildContext context,
   ) {
     final _restaurantData = Provider.of<MealsData>(context, listen: true);
-    final _bookmarksData = Provider.of<BookmarkData>(context, listen: true);
     final Food meal = widget.meal;
     final restaurant = Provider.of<RestaurantData>(context, listen: true)
         .getRestaurant(meal.restaurantId);
@@ -83,8 +81,6 @@ class _FoodDetailsState extends State<FoodDetails>
     final CartData _cart = Provider.of<CartData>(context, listen: false);
     // final cartData = Provider.of<CartData>(context);
     final isAlreadyInCart = _cart.isAvailable(meal.foodId);
-    final currentBookmarkState =
-        _bookmarksData.isBookmarked(foodId: meal.foodId);
 
     final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
 
@@ -147,33 +143,6 @@ class _FoodDetailsState extends State<FoodDetails>
                                         SizedBox(
                                           child: Row(
                                             children: [
-                                              Tooltip(
-                                                margin: const EdgeInsets.only(
-                                                    bottom: 15),
-                                                message: "bookmark meal",
-                                                child: IconButton(
-                                                  icon: Icon(
-                                                    !currentBookmarkState
-                                                        ? Icons.bookmark_rounded
-                                                        : Icons
-                                                            .bookmark_border_rounded,
-                                                    color: Colors.black,
-                                                    size: 30,
-                                                  ),
-                                                  onPressed: () {
-                                                    debugPrint(
-                                                        "toggle bookmark");
-                                                    _bookmarksData
-                                                        .toggleBookmark(
-                                                            foodId:
-                                                                meal.foodId);
-                                                    debugPrint(_bookmarksData
-                                                        .isBookmarked(
-                                                            foodId: meal.foodId)
-                                                        .toString());
-                                                  },
-                                                ),
-                                              ),
                                               IconButton(
                                                 icon: Icon(
                                                   meal.favorite
@@ -274,7 +243,7 @@ class _FoodDetailsState extends State<FoodDetails>
                           MealGallery(meal: meal, myTag: widget.myTag),
                           const SizedBox(height: 10),
                           Card(
-                            margin: EdgeInsets.only(top: 15.0),
+                            margin: const EdgeInsets.only(top: 15.0),
                             elevation: 15.0,
                             shadowColor: Colors.black.withOpacity(.2),
                             color: Colors.white,
@@ -292,6 +261,9 @@ class _FoodDetailsState extends State<FoodDetails>
                                           context,
                                           HorizontalSizeTransition(
                                               child: RestaurantDetails(
+                                                  restHero: restaurant.address +
+                                                      restaurant.restaurantId +
+                                                      restaurant.address,
                                                   restaurant: restaurant)));
                                     },
                                     child: Row(
@@ -326,17 +298,23 @@ class _FoodDetailsState extends State<FoodDetails>
                                             width: size.width - 90,
                                           ),
                                           ClipOval(
-                                            child: CachedNetworkImage(
-                                              imageUrl:
-                                                  restaurant.businessPhoto,
-                                              placeholder: (_, __) =>
-                                                  loadingWidget,
-                                              errorWidget: (_, __, ___) =>
-                                                  errorWidget1,
-                                              fit: BoxFit.cover,
-                                              alignment: Alignment.center,
-                                              height: 70,
-                                              width: 60,
+                                            clipBehavior: Clip.antiAlias,
+                                            child: Hero(
+                                              tag: restaurant.address +
+                                                  restaurant.restaurantId +
+                                                  restaurant.address,
+                                              child: CachedNetworkImage(
+                                                imageUrl:
+                                                    restaurant.businessPhoto,
+                                                placeholder: (_, __) =>
+                                                    loadingWidget,
+                                                errorWidget: (_, __, ___) =>
+                                                    errorWidget1,
+                                                fit: BoxFit.cover,
+                                                alignment: Alignment.center,
+                                                height: 70,
+                                                width: 60,
+                                              ),
                                             ),
                                           )
                                         ]),
@@ -350,12 +328,15 @@ class _FoodDetailsState extends State<FoodDetails>
                             duration: const Duration(milliseconds: 800),
                             child: Hero(
                               tag: widget.myTag! + "name",
-                              child: Text(
-                                meal.name,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  meal.name,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
                               ),
                             ),
@@ -533,58 +514,15 @@ class _FoodDetailsState extends State<FoodDetails>
                           ),
                           OpacityTween(child: FoodInfoTable(meal: meal)),
                           const SizedBox(height: 60),
-                          InkWell(
-                            onTap: () {
-                              HapticFeedback.mediumImpact();
-
-                              Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                      transitionDuration:
-                                          const Duration(milliseconds: 500),
-                                      reverseTransitionDuration:
-                                          const Duration(milliseconds: 300),
-                                      transitionsBuilder: (_, animation,
-                                          anotherAnimation, child) {
-                                        animation = CurvedAnimation(
-                                            parent: animation,
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn);
-                                        return ScaleTransition(
-                                          scale: animation,
-                                          alignment: Alignment.bottomCenter,
-                                          filterQuality: FilterQuality.high,
-                                          child: child,
-                                        );
-                                      },
-                                      pageBuilder:
-                                          (_, animation, anotherAnimation) {
-                                        animation = CurvedAnimation(
-                                            parent: animation,
-                                            curve:
-                                                Curves.fastLinearToSlowEaseIn);
-                                        return ScaleTransition(
-                                          scale: animation,
-                                          alignment: Alignment.bottomCenter,
-                                          filterQuality: FilterQuality.high,
-                                          child: ReviewScreen(
-                                              name: meal.name,
-                                              foodId: meal.foodId,
-                                              totalReviews: meal.comments,
-                                              provider: reviewProvider),
-                                        );
-                                      }));
-                            },
-                            child: Center(
-                                child: Text(
-                              "See All reviews",
-                              style: TextStyle(
-                                color: Colors.grey.withOpacity(.6),
-                                fontSize: 30,
-                              ),
-                              textAlign: TextAlign.center,
-                            )),
-                          ),
+                          Text("Ingredients"),
+                          Column(
+                            children: meal.ingredients.map((e) {
+                              return ListTile(
+                                title: Text(e),
+                                trailing: Icon(Icons.check_rounded),
+                              );
+                            }).toList(),
+                          )
                         ],
                       ),
                     ),
@@ -727,12 +665,18 @@ class _FoodDetailsState extends State<FoodDetails>
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(15.0),
-                              child: Text(
-                                "Update ${NumberFormat().format((isAlreadyInCart.price * isAlreadyInCart.quantity).toInt())} CFA",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
+                              child: Hero(
+                                tag: widget.myTag! + "price",
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Text(
+                                    "Update ${NumberFormat().format((isAlreadyInCart.price * isAlreadyInCart.quantity).toInt())} CFA",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -857,12 +801,18 @@ class _FoodDetailsState extends State<FoodDetails>
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(15.0),
-                              child: Text(
-                                "Add to Cart  ${NumberFormat().format(meal.price.toInt())} CFA",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Hero(
+                                  tag: widget.myTag! + "price",
+                                  child: Text(
+                                    "Add to Cart  ${NumberFormat().format(meal.price.toInt())} CFA",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),

@@ -51,7 +51,7 @@ Future<bool> checkLike({required String foodId}) async {
   } else {
     prefs.setStringList("favoriteMeals", []);
   }
-  return answer;
+  return false;
 }
 
 Future<bool> checkFollow({required String restaurantId}) async {

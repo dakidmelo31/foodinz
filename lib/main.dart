@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:foodinz/models/cloud_notification.dart';
 import 'package:foodinz/providers/api_helper.dart';
 import 'package:foodinz/providers/reviews.dart';
@@ -20,8 +21,8 @@ import 'package:foodinz/providers/data.dart';
 import 'package:foodinz/themes/light_theme.dart';
 import 'package:workmanager/workmanager.dart';
 import 'global.dart';
-import 'providers/category_serice.dart';
 import 'providers/meals.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'providers/message_database.dart';
 import 'providers/notification_services.dart';
@@ -124,14 +125,23 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => MealsData()),
         ChangeNotifierProvider(create: (_) => CartData()),
         ChangeNotifierProvider(create: (_) => CommentsData()),
-        ChangeNotifierProvider(create: (_) => BookmarkData()),
-        ChangeNotifierProvider(create: (_) => BookmarkData()),
         ChangeNotifierProvider(create: (_) => MyData()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
         ChangeNotifierProvider(create: (_) => ServicesData()),
       ],
       child: MaterialApp(
           // showPerformanceOverlay: true,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('fr'),
+            Locale('es')
+          ],
           debugShowCheckedModeBanner: false,
           theme: Primary.primaryTheme,
           home: const StartPage()),

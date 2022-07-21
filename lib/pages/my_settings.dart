@@ -148,60 +148,63 @@ class _MySettingsState extends State<MySettings> {
                                                                 width:
                                                                     size.width -
                                                                         100,
-                                                                child: CachedNetworkImage(
-                                                                    imageUrl:
-                                                                  user[
+                                                                child:
+                                                                    CachedNetworkImage(
+                                                                  imageUrl: user[
                                                                       'image'],
-                                                                    width:
-                                                                  size.width *
-                                                                      .4,
-                                                                    height:
-                                                                  size.width *
-                                                                      .4,
-                                                                    fit: BoxFit
-                                                                  .cover,
-                                                                    alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                                    placeholder:
-                                                                  (_, data) =>
-                                                                      Shimmer(
-                                                                gradient:
-                                                                    const LinearGradient(
-                                                                        colors: [
-                                                                      Color.fromARGB(255, 225, 225, 225),
-                                                                      Colors.white,
-                                                                    ]),
-                                                                direction:
-                                                                    ShimmerDirection.ltr,
-                                                                enabled:
-                                                                    true,
-                                                                period: const Duration(
-                                                                    milliseconds:
-                                                                        600),
-                                                                child: Lottie
-                                                                    .asset(
-                                                                  "assets/loading7.json",
                                                                   width:
-                                                                      90,
+                                                                      size.width *
+                                                                          .4,
                                                                   height:
-                                                                      90,
-                                                                ),
-                                                                    ),
-                                                                    errorWidget: (_,
-                                                                      __,
-                                                                      ___) =>
-                                                                  Lottie
-                                                                      .asset(
-                                                                "assets/no-connection3.json",
-                                                                width:
-                                                                    90,
-                                                                height:
-                                                                    90,
-                                                                fit: BoxFit
-                                                                    .cover,
+                                                                      size.width *
+                                                                          .4,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  placeholder:
+                                                                      (_, data) =>
+                                                                          Shimmer(
+                                                                    gradient:
+                                                                        const LinearGradient(
+                                                                            colors: [
+                                                                          Color.fromARGB(
+                                                                              255,
+                                                                              225,
+                                                                              225,
+                                                                              225),
+                                                                          Colors
+                                                                              .white,
+                                                                        ]),
+                                                                    direction:
+                                                                        ShimmerDirection
+                                                                            .ltr,
+                                                                    enabled:
+                                                                        true,
+                                                                    period: const Duration(
+                                                                        milliseconds:
+                                                                            600),
+                                                                    child: Lottie
+                                                                        .asset(
+                                                                      "assets/loading7.json",
+                                                                      width: 90,
+                                                                      height:
+                                                                          90,
                                                                     ),
                                                                   ),
+                                                                  errorWidget: (_,
+                                                                          __,
+                                                                          ___) =>
+                                                                      Lottie
+                                                                          .asset(
+                                                                    "assets/no-connection3.json",
+                                                                    width: 90,
+                                                                    height: 90,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  ),
+                                                                ),
                                                               ),
                                                             ),
                                                           );
@@ -218,9 +221,8 @@ class _MySettingsState extends State<MySettings> {
                                                       fit: BoxFit.cover,
                                                       alignment:
                                                           Alignment.center,
-                                                      placeholder:
-                                                          (_, data) =>
-                                                              Shimmer(
+                                                      placeholder: (_, data) =>
+                                                          Shimmer(
                                                         gradient:
                                                             const LinearGradient(
                                                                 colors: [
@@ -235,10 +237,8 @@ class _MySettingsState extends State<MySettings> {
                                                             ShimmerDirection
                                                                 .ltr,
                                                         enabled: true,
-                                                        period:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    600),
+                                                        period: const Duration(
+                                                            milliseconds: 600),
                                                         child: Lottie.asset(
                                                           "assets/loading7.json",
                                                           width: 90,
@@ -498,6 +498,7 @@ class _MySettingsState extends State<MySettings> {
                                   ),
                                 )),
                             Container(
+                              margin: const EdgeInsets.only(bottom: 80.0),
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10)),
@@ -512,6 +513,7 @@ class _MySettingsState extends State<MySettings> {
                                 myLocationEnabled: true,
                                 myLocationButtonEnabled: true,
                                 trafficEnabled: true,
+                                liteModeEnabled: true,
                                 onCameraMove: (position) {
                                   _mapController;
                                   setState(() {
@@ -557,7 +559,7 @@ class _MySettingsState extends State<MySettings> {
                               ),
                             ),
                             const SizedBox(
-                              height: 60,
+                              height: 230.0,
                             ),
                           ]),
                     ),

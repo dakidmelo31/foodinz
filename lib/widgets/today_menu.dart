@@ -36,8 +36,7 @@ class TodayMenu extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               final Food meal = restaurantMenu[index];
-              final String myTag = meal.foodId +
-                  (Random().nextDouble() * 999999999999).toString();
+              final String myTag = meal.foodId + meal.foodId + meal.foodId;
 
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -58,6 +57,7 @@ class TodayMenu extends StatelessWidget {
                       HorizontalSizeTransition(
                         child: FoodDetails(
                           meal: meal,
+                          myTag: myTag,
                         ),
                       ),
                     );
@@ -70,15 +70,18 @@ class TodayMenu extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: CachedNetworkImage(
-                              imageUrl: meal.image,
-                              placeholder: (_, data) {
-                                return Lottie.asset("assets/loading5.json");
-                              },
-                              alignment: Alignment.center,
-                              fit: BoxFit.cover,
-                              height: size.height * .17,
-                              width: double.infinity,
+                            child: Hero(
+                              tag: myTag,
+                              child: CachedNetworkImage(
+                                imageUrl: meal.image,
+                                placeholder: (_, data) {
+                                  return Lottie.asset("assets/loading5.json");
+                                },
+                                alignment: Alignment.center,
+                                fit: BoxFit.cover,
+                                height: size.height * .17,
+                                width: double.infinity,
+                              ),
                             ),
                           ),
                           Positioned(

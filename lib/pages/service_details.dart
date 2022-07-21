@@ -74,13 +74,16 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                         flexibleSpace: Stack(
                           children: [
                             Positioned(
-                              child: CachedNetworkImage(
-                                errorWidget: ((context, url, error) =>
-                                    errorWidget1),
-                                placeholder: (_, __) => loadingWidget2,
-                                imageUrl: widget.service.image,
-                                fit: BoxFit.cover,
-                                width: size.width,
+                              child: Hero(
+                                tag: widget.tag,
+                                child: CachedNetworkImage(
+                                  errorWidget: ((context, url, error) =>
+                                      errorWidget1),
+                                  placeholder: (_, __) => loadingWidget2,
+                                  imageUrl: widget.service.image,
+                                  fit: BoxFit.cover,
+                                  width: size.width,
+                                ),
                               ),
                               top: 0,
                               right: 0,
@@ -158,9 +161,15 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       delegate: SliverChildListDelegate(
                         [
                           ListTile(
-                            title: Text(
-                              widget.service.name,
-                              style: Primary.heading,
+                            title: Hero(
+                              tag: widget.tag + "name",
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  widget.service.name,
+                                  style: Primary.heading,
+                                ),
+                              ),
                             ),
                             leading: const Icon(
                               Icons.room_service_rounded,

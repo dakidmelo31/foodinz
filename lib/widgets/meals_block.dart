@@ -81,8 +81,12 @@ class _MealsBlockState extends State<MealsBlock> {
                       Food meal = filteredList[index];
                       final isAlreadyInCart =
                           _cartData.isAlreadyInCart(foodId: meal.foodId);
-                      final String myTag = meal.foodId +
-                          (Random().nextDouble() * -999999999999).toString();
+                      final String tag = "info" +
+                          meal.foodId +
+                          "moreInfo" +
+                          meal.address +
+                          meal.foodId +
+                          Random().nextInt(6000000).toString();
 
                       return InkWell(
                         onTap: () {
@@ -109,7 +113,8 @@ class _MealsBlockState extends State<MealsBlock> {
                                           parent: animation,
                                           curve: Curves.elasticInOut,
                                           reverseCurve: Curves.decelerate),
-                                      child: FoodDetails(meal: meal),
+                                      child:
+                                          FoodDetails(meal: meal, myTag: tag),
                                     );
                                   }));
                         },
@@ -128,28 +133,31 @@ class _MealsBlockState extends State<MealsBlock> {
                                         duration:
                                             const Duration(milliseconds: 450),
                                         opacity: isAlreadyInCart ? .2 : 1.0,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                          child: CachedNetworkImage(
-                                            imageUrl: meal.image,
-                                            errorWidget:
-                                                (_, style, stackTrace) {
-                                              return Lottie.asset(
-                                                  "assets/no-connection2.json");
-                                            },
-                                            filterQuality: FilterQuality.high,
-                                            placeholder: (__, ___) =>
-                                                Lottie.asset(
-                                                    "assets/loading5.json"),
-                                            fit: BoxFit.cover,
-                                            alignment: Alignment.center,
-                                            width: filteredList.length == 1
-                                                ? size.width - 20
-                                                : size.width * .6,
-                                            height: filteredList.length == 1
-                                                ? size.width
-                                                : 180.0,
+                                        child: Hero(
+                                          tag: tag,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            child: CachedNetworkImage(
+                                              imageUrl: meal.image,
+                                              errorWidget:
+                                                  (_, style, stackTrace) {
+                                                return Lottie.asset(
+                                                    "assets/no-connection2.json");
+                                              },
+                                              filterQuality: FilterQuality.high,
+                                              placeholder: (__, ___) =>
+                                                  Lottie.asset(
+                                                      "assets/loading5.json"),
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.center,
+                                              width: filteredList.length == 1
+                                                  ? size.width - 20
+                                                  : size.width * .6,
+                                              height: filteredList.length == 1
+                                                  ? size.width
+                                                  : 180.0,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -259,12 +267,13 @@ class _MealsBlockState extends State<MealsBlock> {
                                         if (meal.likes < 10)
                                           const Icon(Icons.favorite,
                                               color: Colors.transparent,
-                                              size: 14),
+                                              size: 15.0),
                                         if (meal.likes > 10)
                                           Row(
                                             children: [
                                               const Icon(Icons.favorite,
-                                                  color: Colors.pink, size: 14),
+                                                  color: Colors.pink,
+                                                  size: 15.0),
                                               Text(
                                                 meal.likes > 1001
                                                     ? (meal.likes / 1000)
@@ -291,16 +300,22 @@ class _MealsBlockState extends State<MealsBlock> {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text(
-                                                  NumberFormat().format(
-                                                        meal.price.toInt(),
-                                                      ) +
-                                                      " CFA",
-                                                  style: const TextStyle(
-                                                      fontSize: 18.0,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: Colors.orange),
+                                                Hero(
+                                                  tag: tag + "price",
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: Text(
+                                                      NumberFormat().format(
+                                                            meal.price.toInt(),
+                                                          ) +
+                                                          " CFA",
+                                                      style: const TextStyle(
+                                                          fontSize: 18.0,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Colors.orange),
+                                                    ),
+                                                  ),
                                                 ),
                                                 Material(
                                                   elevation: 10,
@@ -473,7 +488,13 @@ class _MealsBlockState extends State<MealsBlock> {
                 Food meal = filteredList[index];
                 final isAlreadyInCart =
                     _cartData.isAlreadyInCart(foodId: meal.foodId);
-                final String tag = meal.foodId + meal.image;
+                final String mealHero = "data" +
+                    meal.foodId +
+                    "data" +
+                    meal.address +
+                    meal.foodId +
+                    Random().nextInt(6000000).toString();
+                debugPrint("show hero string: $mealHero");
 
                 return InkWell(
                   onTap: () {
@@ -500,7 +521,7 @@ class _MealsBlockState extends State<MealsBlock> {
                                     parent: animation,
                                     curve: Curves.elasticInOut,
                                     reverseCurve: Curves.decelerate),
-                                child: FoodDetails(meal: meal, myTag: tag),
+                                child: FoodDetails(meal: meal, myTag: mealHero),
                               );
                             }));
                   },
@@ -518,25 +539,29 @@ class _MealsBlockState extends State<MealsBlock> {
                                   curve: Curves.easeInOut,
                                   duration: const Duration(milliseconds: 450),
                                   opacity: isAlreadyInCart ? .2 : 1.0,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    child: CachedNetworkImage(
-                                      imageUrl: meal.image,
-                                      errorWidget: (_, style, stackTrace) {
-                                        return Lottie.asset(
-                                            "assets/no-connection2.json");
-                                      },
-                                      filterQuality: FilterQuality.high,
-                                      placeholder: (__, ___) =>
-                                          Lottie.asset("assets/loading5.json"),
-                                      fit: BoxFit.cover,
-                                      alignment: Alignment.center,
-                                      width: filteredList.length == 1
-                                          ? size.width - 20
-                                          : size.width * .6,
-                                      height: filteredList.length == 1
-                                          ? size.width
-                                          : 180.0,
+                                  child: Hero(
+                                    tag: mealHero,
+                                    child: ClipRRect(
+                                      clipBehavior: Clip.antiAlias,
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      child: CachedNetworkImage(
+                                        imageUrl: meal.image,
+                                        errorWidget: (_, style, stackTrace) {
+                                          return Lottie.asset(
+                                              "assets/no-connection2.json");
+                                        },
+                                        filterQuality: FilterQuality.high,
+                                        placeholder: (__, ___) => Lottie.asset(
+                                            "assets/loading5.json"),
+                                        fit: BoxFit.cover,
+                                        alignment: Alignment.center,
+                                        width: filteredList.length == 1
+                                            ? size.width - 20
+                                            : size.width * .6,
+                                        height: filteredList.length == 1
+                                            ? size.width
+                                            : 180.0,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -628,14 +653,21 @@ class _MealsBlockState extends State<MealsBlock> {
                                   : size.width * .60,
                               child: Column(
                                 children: [
-                                  Text(
-                                    meal.name,
-                                    style: TextStyle(
-                                        fontSize: filteredList.length == 1
-                                            ? 16.0
-                                            : 15.0),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                                  Hero(
+                                    tag: mealHero + "name",
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      elevation: 0.0,
+                                      child: Text(
+                                        meal.name,
+                                        style: TextStyle(
+                                            fontSize: filteredList.length == 1
+                                                ? 16.0
+                                                : 15.0),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   ),
                                   if (meal.likes < 10)
                                     const Icon(Icons.favorite,
@@ -670,15 +702,21 @@ class _MealsBlockState extends State<MealsBlock> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            NumberFormat().format(
-                                                  meal.price.toInt(),
-                                                ) +
-                                                " CFA",
-                                            style: const TextStyle(
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.orange),
+                                          Hero(
+                                            tag: mealHero + "price",
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: Text(
+                                                NumberFormat().format(
+                                                      meal.price.toInt(),
+                                                    ) +
+                                                    " CFA",
+                                                style: const TextStyle(
+                                                    fontSize: 18.0,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.orange),
+                                              ),
+                                            ),
                                           ),
                                           Material(
                                             elevation: 10,

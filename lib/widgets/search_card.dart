@@ -71,7 +71,7 @@ class _SearchCardState extends State<SearchCard> {
               offset: Offset(5, 10),
             ),
           ],
-          color: Color(0xFF6F12E8),
+          color: const Color(0xFF6F12E8),
           borderRadius: BorderRadius.all(
             Radius.circular(
               isExpanded ? 20 : 0,
@@ -154,8 +154,8 @@ class _SearchCardState extends State<SearchCard> {
                             "Unit Price: " +
                                 NumberFormat().format(food.price) +
                                 " CFA",
-                            style:
-                                TextStyle(fontSize: 27, color: Colors.white)),
+                            style: const TextStyle(
+                                fontSize: 27, color: Colors.white)),
                       ),
                     ],
                   ),
@@ -166,7 +166,7 @@ class _SearchCardState extends State<SearchCard> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Card(
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                             horizontal: 8,
                           ),
                           color: Colors.deepOrange,
@@ -228,9 +228,9 @@ class _SearchCardState extends State<SearchCard> {
                                   ),
                                 );
                                 ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                                    .showSnackBar(const SnackBar(
                                   content: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(8.0),
                                     child: Center(child: Text("Cart Updated")),
                                   ),
                                   elevation: 10,
@@ -238,9 +238,9 @@ class _SearchCardState extends State<SearchCard> {
                                 ));
                               } else {
                                 ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                                    .showSnackBar(const SnackBar(
                                   content: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(8.0),
                                     child:
                                         Center(child: Text("Already in cart")),
                                   ),
@@ -249,8 +249,8 @@ class _SearchCardState extends State<SearchCard> {
                                 ));
                               }
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
                               child: Icon(Icons.plus_one_outlined,
                                   size: 27, color: Color(0xFF6F12E8)),
                             ),
@@ -264,7 +264,7 @@ class _SearchCardState extends State<SearchCard> {
               crossFadeState: isExpanded
                   ? CrossFadeState.showFirst
                   : CrossFadeState.showSecond,
-              duration: Duration(milliseconds: 800),
+              duration: const Duration(milliseconds: 800),
               reverseDuration: Duration.zero,
               sizeCurve: Curves.fastLinearToSlowEaseIn,
             )

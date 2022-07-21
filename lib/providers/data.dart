@@ -8,50 +8,8 @@ import '../models/restaurants.dart';
 // FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class RestaurantData with ChangeNotifier {
-  static int convertInt(dynamic value) {
-    if (value == null) return 0;
-    var myInt = value;
-    int newInt = myInt as int;
-
-    return newInt;
-  }
-
-  static double convertDouble(dynamic value) {
-    if (value == null) return 0;
-    var myInt = value;
-    double newInt = myInt as double;
-
-    return newInt;
-  }
-
-  static List<String> convertString(dynamic list) {
-    if (list == null) {
-      return [];
-    }
-    if (list.runtimeType == String) {
-      String names = list as String;
-      List<String> d = names.split(",");
-      return d;
-    }
-
-    return [];
-  }
-
-  static List<String> convertList(dynamic list) {
-    List<String> data = [];
-    if (list == null) {
-      return data;
-    }
-
-    for (String item in list) {
-      data.add(item);
-    }
-
-    return data;
-  }
-
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  List<Restaurant> restaurants = [];
+  List<Restaurant> restaurants = [], favorites = [];
   List<Coupon> coupon = [];
   List<String> categories = [];
   RestaurantData() {
@@ -63,51 +21,66 @@ class RestaurantData with ChangeNotifier {
         .firstWhere((element) => element.restaurantId == restaurantId);
   }
 
+  removeFavorite(String restaurantId) {
+    favorites.removeWhere((element) => element.restaurantId == restaurantId);
+    removeFollow(restaurantId: restaurantId);
+    notifyListeners();
+  }
+
   loadRestaurants() async {
-    firestore.collection("restaurants").get().then(
-      (QuerySnapshot querySnapshot) async {
-        for (var doc in querySnapshot.docs) {
-          String documentId = doc.id;
-          bool following = await checkFollow(restaurantId: doc.id);
-          debugPrint("following is now: $following");
-          restaurants.add(
-            Restaurant(
-                address: doc["address"] ?? "",
-                followers: doc["followers"] ?? 0,
-                comments: doc['comments'] ?? 0,
-                deliveryCost: doc['deliveryCost'] ?? 0,
-                likes: doc['likes'] ?? 0,
-                categories: List<String>.from(doc["categories"]),
-                following: following,
-                gallery: List<String>.from(doc["gallery"]),
-                lat: doc["lat"] ?? 0.0,
-                long: doc["long"] ?? 0.0,
-                avatar: doc['avatar'] ?? "",
-                businessPhoto: doc['businessPhoto'] ?? "",
-                cash: doc['cash'] ?? false,
-                closingTime: doc['closingTime'] ?? "",
-                companyName: doc['companyName'] ?? "",
-                email: doc['email'] ?? "",
-                foodReservation: doc['foodReservation'] ?? false,
-                ghostKitchen: doc['ghostKitchen'] ?? false,
-                homeDelivery: doc['homeDelivery'] ?? false,
-                momo: doc['momo'] ?? false,
-                name: doc['name'] ?? "",
-                openingTime: doc['openTime'] ?? "",
-                phoneNumber: doc['phone'] ?? "",
-                restaurantId: documentId,
-                specialOrders: doc['specialOrders'] ?? false,
-                tableReservation: doc['tableReservation'] ?? false,
-                username: doc['username'] ?? ""),
-          );
-        }
-        restaurants.shuffle();
-      },
-    ).then((value) {
+    firestore
+        .collection("restaurants")
+        .snapshots()
+        .listen((QuerySnapshot querySnapshot) async {
+      restaurants.clear();
+      favorites.clear();
+      for (var doc in querySnapshot.docs) {
+        String documentId = doc.id;
+        bool following = await checkFollow(restaurantId: doc.id);
+        debugPrint("following is now: $following");
+        restaurants.add(
+          Restaurant(
+              address: doc["address"] ?? "",
+              followers: doc["followers"] ?? 0,
+              comments: doc['comments'] ?? 0,
+              verified: doc['verified'] ?? 0,
+              deliveryCost: doc['deliveryCost'] ?? 0,
+              likes: doc['likes'] ?? 0,
+              categories: List<String>.from(doc["categories"]),
+              following: following,
+              gallery: List<String>.from(doc["gallery"]),
+              lat: doc["lat"] ?? 0.0,
+              long: doc["long"] ?? 0.0,
+              avatar: doc['avatar'] ?? "",
+              businessPhoto: doc['businessPhoto'] ?? "",
+              cash: doc['cash'] ?? false,
+              closingTime: doc['closingTime'] ?? "",
+              companyName: doc['companyName'] ?? "",
+              email: doc['email'] ?? "",
+              foodReservation: doc['foodReservation'] ?? false,
+              ghostKitchen: doc['ghostKitchen'] ?? false,
+              homeDelivery: doc['homeDelivery'] ?? false,
+              momo: doc['momo'] ?? false,
+              name: doc['name'] ?? "",
+              openingTime: doc['openTime'] ?? "",
+              phoneNumber: doc['phone'] ?? "",
+              restaurantId: documentId,
+              specialOrders: doc['specialOrders'] ?? false,
+              tableReservation: doc['tableReservation'] ?? false,
+              username: doc['username'] ?? ""),
+        );
+      }
+      restaurants.shuffle();
       debugPrint("done with this");
-    }).whenComplete(() {
-      notifyListeners();
+      for (var element in restaurants) {
+        if (await checkFollow(restaurantId: element.restaurantId)) {
+          debugPrint("added to favorite Restaurants");
+          favorites.add(element);
+        }
+      }
+      debugPrint("length of favorites is: " + favorites.length.toString());
     });
+    notifyListeners();
   }
 
   Restaurant getRestaurant(String documentId) {
@@ -125,6 +98,7 @@ class RestaurantData with ChangeNotifier {
           businessPhoto: '',
           tableReservation: false,
           cash: false,
+          verified: false,
           momo: false,
           specialOrders: false,
           avatar: '',

@@ -57,8 +57,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
   Widget build(BuildContext context) {
     double lat = widget.lat;
     double long = widget.long;
-    final mealsData = Provider.of<MealsData>(context);
-    final _restaurantsData = Provider.of<RestaurantData>(context);
+    final _restaurantsData = Provider.of<RestaurantData>(context, listen: true);
     final restaurants = _restaurantsData.getRestaurants;
     final size = MediaQuery.of(context).size;
     return LayoutBuilder(
@@ -91,6 +90,11 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                       _cardPageController.position.isScrollingNotifier.value;
                   final isCurrentPage = index == _cardIndex;
                   final isFirstPage = index == 0;
+
+                  String tag = restaurant.address +
+                      restaurant.address +
+                      restaurant.restaurantId;
+
                   return Transform.scale(
                     alignment: Alignment.lerp(
                         Alignment.centerLeft, Alignment.center, -progress),
@@ -109,9 +113,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                               return FadeTransition(
                                 opacity: animation,
                                 child: RestaurantDetails(
-                                    restaurant: restaurant,
-                                    restHero: restaurant.businessPhoto +
-                                        restaurant.businessPhoto),
+                                    restaurant: restaurant, restHero: tag),
                               );
                             },
                           ),
@@ -139,28 +141,6 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(10)),
                             child: GridTile(
-                              header: Row(
-                                children: [
-                                  SizedBox(
-                                    width: constraints.maxWidth - 170,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Icon(Icons.stars_rounded,
-                                            color: Colors.white, size: 16),
-                                        IconButton(
-                                          onPressed: () {
-                                            debugPrint("add heart");
-                                          },
-                                          icon: const Icon(Icons.star_rounded,
-                                              size: 30, color: Colors.amber),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
                               footer: ClipRRect(
                                 child: Container(
                                   height: 70,
@@ -185,28 +165,35 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 18.0, horizontal: 10),
                                       child: FittedBox(
-                                        child: Text(
-                                          restaurant.companyName,
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              overflow: TextOverflow.ellipsis),
+                                        child: Hero(
+                                          tag: tag + "name",
+                                          child: Text(
+                                            restaurant.companyName,
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                overflow:
+                                                    TextOverflow.ellipsis),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              child: CachedNetworkImage(
-                                placeholder: (_, __) => loadingWidget2,
-                                imageUrl: restaurant.businessPhoto,
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.high,
-                                errorWidget: (_, string, stackTrace) {
-                                  return Lottie.asset(
-                                      "assets/no-connection2.json");
-                                },
+                              child: Hero(
+                                tag: tag,
+                                child: CachedNetworkImage(
+                                  placeholder: (_, __) => loadingWidget2,
+                                  imageUrl: restaurant.businessPhoto,
+                                  alignment: Alignment.center,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  errorWidget: (_, string, stackTrace) {
+                                    return Lottie.asset(
+                                        "assets/no-connection2.json");
+                                  },
+                                ),
                               ),
                             ),
                           ),

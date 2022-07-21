@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class FoodCard extends StatelessWidget {
-  const FoodCard({Key? key, required this.image}) : super(key: key);
+  const FoodCard({Key? key, required this.image, this.restHero})
+      : super(key: key);
   final String image;
+  final String? restHero;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class FoodCard extends StatelessWidget {
         bottomRight: Radius.circular(30),
       ),
       child: Hero(
-        tag: image + image,
+        tag: restHero!,
         child: CachedNetworkImage(
           imageUrl: image,
           alignment: Alignment.center,

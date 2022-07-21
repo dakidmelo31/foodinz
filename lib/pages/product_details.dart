@@ -79,7 +79,7 @@ class _ProductDetailsState extends State<ProductDetails>
                               ),
                               IconButton(
                                 onPressed: () {},
-                                icon: Icon(Icons.restaurant_menu,
+                                icon: const Icon(Icons.restaurant_menu,
                                     size: 30, color: Colors.black),
                               ),
                             ],

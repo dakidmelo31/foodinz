@@ -18,6 +18,7 @@ class Restaurant {
       tableReservation,
       specialOrders,
       homeDelivery,
+      verified,
       foodReservation,
       ghostKitchen;
   final double lat, long;
@@ -33,6 +34,7 @@ class Restaurant {
       required this.categories,
       required this.gallery,
       required this.followers,
+      required this.verified,
       required this.long,
       required this.lat,
       this.comments = 0,
