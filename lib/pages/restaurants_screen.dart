@@ -101,6 +101,7 @@ class _RecommendedScreenState extends State<RestaurantsScreen> {
                     scale: isScrolling && isFirstPage ? 1 - progress : scale,
                     child: GestureDetector(
                       onTap: () {
+                        HapticFeedback.heavyImpact();
                         _showCardDetails.value = !_showCardDetails.value;
                         const transitionDuration = Duration(milliseconds: 550);
 

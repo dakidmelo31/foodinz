@@ -17,6 +17,7 @@ import '../models/cart.dart';
 import '../models/food.dart';
 import '../providers/cart.dart';
 import '../providers/meals.dart';
+import '../themes/light_theme.dart';
 import '../widgets/meal_gallery_slideshow.dart';
 import 'review_form.dart';
 
@@ -136,6 +137,8 @@ class _FoodDetailsState extends State<FoodDetails>
                                             color: Colors.black,
                                           ),
                                           onPressed: () {
+                                            HapticFeedback.heavyImpact();
+
                                             debugPrint("pop");
                                             Navigator.maybePop(context);
                                           },
@@ -154,6 +157,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                                   size: 30,
                                                 ),
                                                 onPressed: () {
+                                                  HapticFeedback.heavyImpact();
                                                   debugPrint("toggle favorite");
                                                   setState(() {
                                                     _restaurantData.toggleMeal(
@@ -514,7 +518,14 @@ class _FoodDetailsState extends State<FoodDetails>
                           ),
                           OpacityTween(child: FoodInfoTable(meal: meal)),
                           const SizedBox(height: 60),
-                          Text("Ingredients"),
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              "Ingredients",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w800, fontSize: 16.0),
+                            ),
+                          ),
                           Column(
                             children: meal.ingredients.map((e) {
                               return ListTile(

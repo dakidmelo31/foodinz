@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/widgets/food_info_table_item.dart';
 import 'package:foodinz/widgets/rating_list.dart';
@@ -61,6 +62,8 @@ class _MealGalleryState extends State<MealGallery> {
               flex: 4,
               child: InkWell(
                 onTap: () {
+                  HapticFeedback.heavyImpact();
+
                   Navigator.push(
                     context,
                     VerticalSizeTransition(
@@ -133,6 +136,8 @@ class _MealGalleryState extends State<MealGallery> {
               flex: 1,
               child: InkWell(
                 onTap: () {
+                  HapticFeedback.heavyImpact();
+
                   showCupertinoModalBottomSheet(
                       duration: const Duration(milliseconds: 600),
                       animationCurve: Curves.bounceIn,
@@ -178,6 +183,8 @@ class _MealGalleryState extends State<MealGallery> {
                   borderRadius: BorderRadius.circular(15),
                   child: InkWell(
                     onTap: () {
+                      HapticFeedback.heavyImpact();
+
                       Navigator.push(
                           context,
                           PageRouteBuilder(
@@ -207,6 +214,8 @@ class _MealGalleryState extends State<MealGallery> {
                                             Icons.arrow_back_rounded,
                                             color: Colors.white),
                                         onPressed: () {
+                                          HapticFeedback.heavyImpact();
+
                                           Navigator.pop(context);
                                         },
                                       ),

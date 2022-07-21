@@ -66,13 +66,14 @@ class _StreetFoodState extends State<StreetFood> {
                     child: Column(
                       children: [
                         const Spacer(),
-                        ClipOval(
-                          child: GestureDetector(
-                            onTap: () {
-                              debugPrint("open food details: ");
-                              HapticFeedback.heavyImpact();
+                        Hero(
+                          tag: myTag,
+                          child: ClipOval(
+                            child: GestureDetector(
+                              onTap: () {
+                                debugPrint("open food details: ");
+                                HapticFeedback.heavyImpact();
 
-                              if (false)
                                 Navigator.push(
                                     context,
                                     PageRouteBuilder(
@@ -110,11 +111,9 @@ class _StreetFoodState extends State<StreetFood> {
                                         );
                                       },
                                     ));
-                            },
-                            child: Opacity(
-                              opacity: isAlreadyInCart ? .25 : 1.0,
-                              child: Hero(
-                                tag: myTag,
+                              },
+                              child: Opacity(
+                                opacity: isAlreadyInCart ? .25 : 1.0,
                                 child: CachedNetworkImage(
                                   imageUrl: food.image,
                                   alignment: Alignment.center,

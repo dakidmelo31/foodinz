@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/pages/street_food.dart';
@@ -50,6 +51,9 @@ class _MealsBlockState extends State<MealsBlock> {
                   closedElevation: 0,
                   openElevation: 0,
                   closedBuilder: (_, openContainer) => InkWell(
+                    onTapDown: (details) {
+                      HapticFeedback.heavyImpact();
+                    },
                     onTap: openContainer,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -90,6 +94,8 @@ class _MealsBlockState extends State<MealsBlock> {
 
                       return InkWell(
                         onTap: () {
+                          HapticFeedback.heavyImpact();
+
                           Navigator.push(
                               context,
                               PageRouteBuilder(
@@ -322,6 +328,9 @@ class _MealsBlockState extends State<MealsBlock> {
                                                   color: Colors.white,
                                                   child: InkWell(
                                                     onTap: () {
+                                                      HapticFeedback
+                                                          .heavyImpact();
+
                                                       if (isAlreadyInCart) {
                                                         int quantity = _cartData
                                                             .isAvailable(
@@ -498,6 +507,8 @@ class _MealsBlockState extends State<MealsBlock> {
 
                 return InkWell(
                   onTap: () {
+                    HapticFeedback.heavyImpact();
+
                     Navigator.push(
                         context,
                         PageRouteBuilder(
@@ -723,6 +734,8 @@ class _MealsBlockState extends State<MealsBlock> {
                                             color: Colors.white,
                                             child: InkWell(
                                               onTap: () {
+                                                HapticFeedback.heavyImpact();
+
                                                 if (isAlreadyInCart) {
                                                   int quantity = _cartData
                                                       .isAvailable(meal.foodId)!

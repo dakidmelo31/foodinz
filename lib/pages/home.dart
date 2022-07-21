@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foodinz/global.dart';
 import 'package:foodinz/pages/cart_screen.dart';
 import 'package:foodinz/pages/messages_overview.dart';
+import 'package:foodinz/providers/auth.dart';
+import 'package:provider/provider.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
+import '../providers/cart.dart';
 import '../widgets/home_screen.dart';
 import 'my_favorites.dart';
 import 'my_settings.dart';
@@ -21,12 +26,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   bool uploading = false;
   int _pageIndex = 0;
-  final List<Widget> pages = [
-    const HomeScreen(),
-    const MessagesOverview(),
-    const MyFavorites(),
-    const MySettings(),
-  ];
 
   var heart = false;
   late AnimationController _animationController;
@@ -48,7 +47,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final _cartData = Provider.of<CartData>(context, listen: false);
+
+    final size = MediaQuery.of(context).size;
     const Duration transitionDuration = Duration(milliseconds: 500);
+    final me = Provider.of<MyData>(context, listen: true);
     return WillPopScope(
       onWillPop: () async {
         if (_pageIndex != 0) {
@@ -69,25 +72,53 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             physics: const BouncingScrollPhysics(),
             pageSnapping: true,
             controller: controller,
+            onPageChanged: (data) {
+              HapticFeedback.heavyImpact();
+            },
             children: [
-              AnimatedSwitcher(
-                  duration: transitionDuration,
-                  reverseDuration: transitionDuration,
-                  switchInCurve: Curves.easeIn,
-                  transitionBuilder: (child, animation) {
-                    return SizeTransition(
-                      sizeFactor: CurvedAnimation(
-                        curve: Curves.fastLinearToSlowEaseIn,
-                        parent: animation,
-                        reverseCurve: Curves.fastOutSlowIn,
-                      ),
-                      axis: Axis.horizontal,
-                      axisAlignment: 1.0,
-                      child: child,
-                    );
-                  },
-                  switchOutCurve: Curves.easeIn,
-                  child: pages[_pageIndex])
+              Stack(
+                children: [
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    child: AnimatedSwitcher(
+                        duration: transitionDuration,
+                        reverseDuration: transitionDuration,
+                        switchInCurve: Curves.easeIn,
+                        transitionBuilder: (child, animation) {
+                          return SizeTransition(
+                            sizeFactor: CurvedAnimation(
+                              curve: Curves.fastLinearToSlowEaseIn,
+                              parent: animation,
+                              reverseCurve: Curves.fastOutSlowIn,
+                            ),
+                            axis: Axis.horizontal,
+                            axisAlignment: 1.0,
+                            child: child,
+                          );
+                        },
+                        switchOutCurve: Curves.easeIn,
+                        child: [
+                          HomeScreen(data: me),
+                          const MessagesOverview(),
+                          const MyFavorites(),
+                          const MySettings(),
+                        ][_pageIndex]),
+                  ),
+                  if (_cartData.showLoading)
+                    Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                            width: size.width,
+                            height: size.height,
+                            child: Center(child: loadingWidget2)))
+                ],
+              )
             ],
           ),
         ),

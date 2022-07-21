@@ -5,6 +5,7 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/models/user.dart';
 import 'package:foodinz/pages/meal_details.dart';
@@ -25,8 +26,8 @@ import '../widgets/view_category.dart';
 import 'restaurants_screen.dart';
 
 class Showcase extends StatefulWidget {
-  Showcase({Key? key, this.userData}) : super(key: key);
-  MyData? userData;
+  Showcase({Key? key, required this.userData}) : super(key: key);
+  MyData userData;
 
   @override
   State<Showcase> createState() => _ShowcaseState();
@@ -41,11 +42,9 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
   int _cardIndex = 0;
 
   final _showCardDetails = ValueNotifier(true);
-  UserModel? user;
 
   @override
   void initState() {
-    user = widget.userData?.user;
     getCurrentLocation();
     _cardPageController = PageController(viewportFraction: .77)
       ..addListener(_cardPageListener);
@@ -163,6 +162,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                   child: InkWell(
                                     onTap: () {
                                       debugPrint("move");
+                                      HapticFeedback.heavyImpact();
+
                                       Navigator.push(
                                           context,
                                           FadeSearch(
@@ -203,8 +204,9 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                 child: Center(
                                                   child: ClipOval(
                                                     child: CachedNetworkImage(
-                                                      imageUrl:
-                                                          user?.image ?? "",
+                                                      imageUrl: widget.userData
+                                                              .user.image ??
+                                                          "",
                                                       width: 40,
                                                       height: 40,
                                                       placeholder: (__, ___) =>
@@ -250,6 +252,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                 AlwaysScrollableScrollPhysics()),
                                         controller: _cardPageController,
                                         onPageChanged: (page) {
+                                          HapticFeedback.mediumImpact();
+
                                           _cardDetailsController.animateToPage(
                                               page,
                                               duration: const Duration(
@@ -286,6 +290,8 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                                   : scale,
                                               child: GestureDetector(
                                                 onTap: () {
+                                                  HapticFeedback.heavyImpact();
+
                                                   _showCardDetails.value =
                                                       !_showCardDetails.value;
                                                   const transitionDuration =

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
@@ -42,6 +43,8 @@ class _CartScreenState extends State<CartScreen> {
           appBar: AppBar(
             leading: IconButton(
               onPressed: () {
+                HapticFeedback.heavyImpact();
+
                 Navigator.of(context).pop();
               },
               icon: const Icon(
@@ -95,6 +98,7 @@ class _CartScreenState extends State<CartScreen> {
                         confirmDismiss: (direction) async {
                           _cartData
                               .removeFromCart(item.foodId); // drop from cart
+                          return true;
                         },
                         key: GlobalKey(),
                         background: ClipRRect(
@@ -131,6 +135,8 @@ class _CartScreenState extends State<CartScreen> {
                                       borderRadius: BorderRadius.circular(4),
                                       child: InkWell(
                                         onTap: () {
+                                          HapticFeedback.heavyImpact();
+
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -291,6 +297,8 @@ class _CartScreenState extends State<CartScreen> {
                             EdgeInsets.symmetric(horizontal: size.width * .2),
                         child: InkWell(
                           onTap: () async {
+                            HapticFeedback.heavyImpact();
+
                             if (_cartData.isMultipleRestaurants) {
                               MaterialBanner materialBanner = MaterialBanner(
                                   elevation: 10,
@@ -301,6 +309,8 @@ class _CartScreenState extends State<CartScreen> {
                                   actions: [
                                     TextButton(
                                         onPressed: () {
+                                          HapticFeedback.heavyImpact();
+
                                           ScaffoldMessenger.of(context)
                                               .clearMaterialBanners();
                                         },

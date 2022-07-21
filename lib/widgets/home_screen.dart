@@ -5,12 +5,12 @@ import '../pages/recommended_screen.dart';
 import '../providers/auth.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key, required this.data}) : super(key: key);
+  final MyData data;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final _userData = Provider.of<MyData>(context, listen: true);
 
     return SafeArea(
       child: Stack(
@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
             left: 0,
             width: size.width,
             height: size.height,
-            child: Showcase(userData: _userData),
+            child: Showcase(userData: data),
           ),
           // if (search)
         ],

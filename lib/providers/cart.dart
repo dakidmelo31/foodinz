@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/models/cloud_notification.dart';
+import 'package:foodinz/pages/all_chats.dart';
 import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/data.dart';
 import 'package:provider/provider.dart';
@@ -31,10 +32,12 @@ class CartData with ChangeNotifier {
     notifyListeners();
   }
 
+  bool showLoading = false;
   void checkout(
       {required double deliveryCost,
       required bool isHomeDelivery,
       required BuildContext context}) {
+    showLoading = true;
     List<String> names = myCart.map((e) {
       return e.name;
     }).toList();
@@ -91,10 +94,32 @@ class CartData with ChangeNotifier {
       myCart.clear();
       total = 0.0;
 
-      Navigator.pop(context, true);
+      Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+              transitionDuration: const Duration(milliseconds: 1200),
+              transitionsBuilder: (_, animation1, animation2, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                          begin: const Offset(-1, 0), end: const Offset(0, 0))
+                      .animate(CurvedAnimation(
+                          parent: animation1, curve: Curves.elasticInOut)),
+                  child: child,
+                );
+              },
+              pageBuilder: (_, animation, animation2) {
+                return FadeTransition(
+                  opacity: CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.elasticInOut,
+                      reverseCurve: Curves.decelerate),
+                  child: ChatScreen(restaurantId: restaurant.restaurantId),
+                );
+              }));
     }).catchError((onError) {
       debugPrint(onError.toString());
     });
+    showLoading = false;
     notifyListeners();
   }
 

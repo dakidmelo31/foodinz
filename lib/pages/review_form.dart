@@ -124,6 +124,8 @@ class _ReviewFormState extends State<ReviewForm> {
                 CupertinoButton.filled(
                     child: const Text("Add review"),
                     onPressed: () {
+                      HapticFeedback.heavyImpact();
+
                       if (review == 0) debugPrint("add review");
                       FirebaseFirestore.instance.collection("reviews").add({
                         "restaurantId": meal.restaurantId,
