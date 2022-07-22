@@ -7,16 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodinz/providers/auth.dart';
 import 'package:foodinz/providers/meals.dart';
+import 'package:foodinz/providers/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../models/food.dart';
+import '../models/service.dart';
 import '../themes/light_theme.dart';
 
 class ReviewForm extends StatefulWidget {
-  const ReviewForm({Key? key, required this.meal, required this.restaurantId})
+  ReviewForm(
+      {Key? key,
+      required this.meal,
+      required this.restaurantId,
+      this.isFood = true})
       : super(key: key);
-  final Food meal;
+  final dynamic meal;
+  bool isFood;
   final String restaurantId;
 
   @override
@@ -28,7 +35,9 @@ class _ReviewFormState extends State<ReviewForm> {
   int review = 0;
   @override
   Widget build(BuildContext context) {
-    final meal = widget.meal;
+    Food? meal = widget.isFood ? widget.meal as Food : null;
+    ServiceModel? service = widget.isFood ? null : widget.meal as ServiceModel;
+
     final _userData = Provider.of<MyData>(context, listen: true);
     Size size = MediaQuery.of(context).size;
     return SafeArea(
@@ -126,42 +135,88 @@ class _ReviewFormState extends State<ReviewForm> {
                     onPressed: () {
                       HapticFeedback.heavyImpact();
 
-                      if (review == 0) debugPrint("add review");
-                      FirebaseFirestore.instance.collection("reviews").add({
-                        "restaurantId": meal.restaurantId,
-                        "foodId": meal.foodId,
-                        "name": meal.name,
-                        "image": meal.image,
-                        "description": _reviewController.text,
-                        "userId": FirebaseAuth.instance.currentUser!.uid,
-                        "username": _userData.user.name,
-                        "avatar": _userData.user.image,
-                        "stars": review,
-                        "created_at": FieldValue.serverTimestamp(),
-                      }).then((value) {
-                        debugPrint("done adding review");
-                        _reviewController.text = "";
-                      }).catchError((onError) {
-                        debugPrint(onError.toString());
-                      });
-
-                      FirebaseFirestore.instance
-                          .collection("meals")
-                          .doc(meal.foodId)
-                          .get()
-                          .then((value) {
-                        var data = value["comments"] as int;
-                        data += 1;
-                        Provider.of<MealsData>(context, listen: false)
-                            .updateMeal(foodId: meal.foodId, newValue: data);
+                      if (widget.isFood) {
+                        if (meal == null) {
+                          return;
+                        }
+                        if (review == 0) debugPrint("add review");
+                        FirebaseFirestore.instance.collection("reviews").add({
+                          "restaurantId": meal.restaurantId,
+                          "foodId": meal.foodId,
+                          "name": meal.name,
+                          "image": meal.image,
+                          "description": _reviewController.text,
+                          "userId": FirebaseAuth.instance.currentUser!.uid,
+                          "username": _userData.user.name,
+                          "avatar": _userData.user.image,
+                          "stars": review,
+                          "created_at": FieldValue.serverTimestamp(),
+                        }).then((value) {
+                          debugPrint("done adding review");
+                          _reviewController.text = "";
+                        }).catchError((onError) {
+                          debugPrint(onError.toString());
+                        });
 
                         FirebaseFirestore.instance
                             .collection("meals")
                             .doc(meal.foodId)
-                            .update({"comments": data});
-                      });
+                            .get()
+                            .then((value) {
+                          var data = value["comments"] as int;
+                          data += 1;
+                          Provider.of<MealsData>(context, listen: true)
+                              .updateMeal(foodId: meal.foodId, newValue: data);
 
-                      Navigator.pop(context, true);
+                          FirebaseFirestore.instance
+                              .collection("meals")
+                              .doc(meal.foodId)
+                              .update({"comments": data});
+                        });
+
+                        Navigator.pop(context, true);
+                      } else {
+                        if (service == null) {
+                          return;
+                        }
+                        if (review == 0) debugPrint("add review");
+                        FirebaseFirestore.instance.collection("reviews").add({
+                          "restaurantId": service.restaurantId,
+                          "foodId": service.serviceId,
+                          "name": service.name,
+                          "image": service.image,
+                          "description": _reviewController.text,
+                          "userId": FirebaseAuth.instance.currentUser!.uid,
+                          "username": _userData.user.name,
+                          "avatar": _userData.user.image,
+                          "stars": review,
+                          "created_at": FieldValue.serverTimestamp(),
+                        }).then((value) {
+                          debugPrint("done adding review");
+                          _reviewController.text = "";
+                        }).catchError((onError) {
+                          debugPrint(onError.toString());
+                        });
+
+                        FirebaseFirestore.instance
+                            .collection("services")
+                            .doc(service.serviceId)
+                            .get()
+                            .then((value) {
+                          var data = value["comments"] as int;
+                          data += 1;
+                          Provider.of<ServicesData>(context, listen: false)
+                              .updateService(
+                                  serviceId: service.serviceId, newValue: data);
+
+                          FirebaseFirestore.instance
+                              .collection("services")
+                              .doc(service.serviceId)
+                              .update({"comments": data});
+                        });
+
+                        Navigator.pop(context, true);
+                      }
                     }),
                 const SizedBox(
                   height: 20,

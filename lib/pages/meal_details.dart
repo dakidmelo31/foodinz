@@ -172,6 +172,7 @@ class _FoodDetailsState extends State<FoodDetails>
                                                   size: 30,
                                                 ),
                                                 onPressed: () async {
+                                                  HapticFeedback.mediumImpact();
                                                   debugPrint(
                                                       "Show review form");
                                                   bool? outcome =

@@ -312,3 +312,18 @@ Future<List<String>> getFavoriteRestaurants() async {
   debugPrint("favorite restaurants: " + keys.length.toString());
   return keys;
 }
+
+addNewData(
+    {required String collection, required Map<String, dynamic> data}) async {
+  await firestore.collection(collection).get().then((value) {
+    var val = value.docs;
+
+    for (var item in val) {
+      firestore
+          .collection(collection)
+          .doc(item.id)
+          .set(data, SetOptions(merge: true))
+          .then((value) => debugPrint(item['name'] + " has been updated"));
+    }
+  });
+}

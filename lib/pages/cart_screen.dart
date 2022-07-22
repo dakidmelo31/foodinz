@@ -12,7 +12,6 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
-import '../models/chats_model.dart';
 import '../providers/cart.dart';
 import '../themes/light_theme.dart';
 
@@ -29,6 +28,12 @@ class _CartScreenState extends State<CartScreen> {
   bool homeDelivery = false;
   double deliveryCost = 0;
   @override
+  void initState() {
+    debugPrint(FirebaseAuth.instance.currentUser!.uid);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final _cartData = Provider.of<CartData>(context, listen: false);
     final user = Provider.of<MyData>(context, listen: false);
@@ -38,6 +43,7 @@ class _CartScreenState extends State<CartScreen> {
             .deliveryCost
         : 0;
     Size size = MediaQuery.of(context).size;
+
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
@@ -333,29 +339,54 @@ class _CartScreenState extends State<CartScreen> {
                                   Provider.of<MyData>(context, listen: false)
                                       .user;
 
-                              await firestore
-                                  .collection("overviews")
-                                  .doc(restaurant.restaurantId)
-                                  .collection("chats")
-                                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                                  .set({
-                                    "name": user.name,
-                                    "photo": user.image,
-                                    "lastMessage":
-                                        "Hi, I'm interested in your product(s)",
-                                    "newMessage": true,
-                                    "time": FieldValue.serverTimestamp(),
-                                    "sentByMe": false
-                                  }, SetOptions(merge: true))
-                                  .then((value) => debugPrint("now opened"))
-                                  .catchError((onError) => debugPrint(
-                                      "Error adding Overview: $onError"));
-                              // DBManager.instance.addOverview(chat: newChat);
+                              if (restaurant.restaurantId !=
+                                  FirebaseAuth.instance.currentUser!.uid) {
+                                await firestore
+                                    .collection("overviews")
+                                    .doc(restaurant.restaurantId)
+                                    .collection("chats")
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .set({
+                                      "name": user.name,
+                                      "photo": user.image,
+                                      "lastMessage":
+                                          "Hi, I'm interested in your product(s)",
+                                      "newMessage": true,
+                                      "time": FieldValue.serverTimestamp(),
+                                      "sentByMe": false
+                                    }, SetOptions(merge: true))
+                                    .then((value) => debugPrint("now opened"))
+                                    .catchError((onError) => debugPrint(
+                                        "Error adding Overview: $onError"));
+                                // DBManager.instance.addOverview(chat: newChat);
 
-                              _cartData.checkout(
-                                  isHomeDelivery: homeDelivery,
-                                  context: context,
-                                  deliveryCost: restaurant.deliveryCost);
+                                _cartData.checkout(
+                                    isHomeDelivery: homeDelivery,
+                                    context: context,
+                                    deliveryCost: restaurant.deliveryCost);
+                              } else {
+                                debugPrint(
+                                    "you cannot buy from your own restaurant");
+
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                SnackBar toast = SnackBar(
+                                  clipBehavior: Clip.antiAlias,
+                                  elevation: 10,
+                                  duration: const Duration(
+                                    seconds: 12,
+                                  ),
+                                  backgroundColor: Colors.orange[200],
+                                  behavior: SnackBarBehavior.floating,
+                                  margin: const EdgeInsets.only(
+                                      bottom: 175.0, right: 5.0, left: 5.0),
+                                  content: const Text(
+                                    "Sorry, the restaurant was created with your number. try creating your account with different number and try again",
+                                    maxLines: 3,
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(toast);
+                              }
                             }
 
                             debugPrint("Checkout cart");

@@ -264,51 +264,50 @@ class _ServicesListState extends State<ServicesList> {
                                         child: GestureDetector(
                                           onTap: () {
                                             debugPrint("open new page");
-                                            if (false)
-                                              Navigator.push(
-                                                  context,
-                                                  PageRouteBuilder(
-                                                    transitionDuration:
-                                                        const Duration(
-                                                            milliseconds: 1200),
-                                                    reverseTransitionDuration:
-                                                        const Duration(
-                                                            milliseconds: 800),
-                                                    barrierDismissible: true,
-                                                    transitionsBuilder: (_,
-                                                        animation,
-                                                        anotherAnimation,
-                                                        child) {
-                                                      return SizeTransition(
-                                                        sizeFactor: CurvedAnimation(
-                                                            curve: Curves
-                                                                .fastOutSlowIn,
-                                                            parent: animation,
-                                                            reverseCurve: Curves
-                                                                .decelerate),
-                                                        axis: Axis.vertical,
-                                                        axisAlignment: 0.0,
-                                                        child: child,
-                                                      );
-                                                    },
-                                                    pageBuilder: (context,
-                                                        animation,
-                                                        secondaryAnimation) {
-                                                      return SizeTransition(
-                                                        sizeFactor: CurvedAnimation(
-                                                            curve: Curves
-                                                                .fastLinearToSlowEaseIn,
-                                                            parent: animation,
-                                                            reverseCurve: Curves
-                                                                .decelerate),
-                                                        axis: Axis.vertical,
-                                                        axisAlignment: 0.0,
-                                                        child: ServiceDetails(
-                                                            service: service,
-                                                            tag: myTag),
-                                                      );
-                                                    },
-                                                  ));
+                                            Navigator.push(
+                                                context,
+                                                PageRouteBuilder(
+                                                  transitionDuration:
+                                                      const Duration(
+                                                          milliseconds: 1200),
+                                                  reverseTransitionDuration:
+                                                      const Duration(
+                                                          milliseconds: 800),
+                                                  barrierDismissible: true,
+                                                  transitionsBuilder: (_,
+                                                      animation,
+                                                      anotherAnimation,
+                                                      child) {
+                                                    return SizeTransition(
+                                                      sizeFactor: CurvedAnimation(
+                                                          curve: Curves
+                                                              .fastOutSlowIn,
+                                                          parent: animation,
+                                                          reverseCurve: Curves
+                                                              .decelerate),
+                                                      axis: Axis.vertical,
+                                                      axisAlignment: 0.0,
+                                                      child: child,
+                                                    );
+                                                  },
+                                                  pageBuilder: (context,
+                                                      animation,
+                                                      secondaryAnimation) {
+                                                    return SizeTransition(
+                                                      sizeFactor: CurvedAnimation(
+                                                          curve: Curves
+                                                              .fastLinearToSlowEaseIn,
+                                                          parent: animation,
+                                                          reverseCurve: Curves
+                                                              .decelerate),
+                                                      axis: Axis.vertical,
+                                                      axisAlignment: 0.0,
+                                                      child: ServiceDetails(
+                                                          service: service,
+                                                          tag: myTag),
+                                                    );
+                                                  },
+                                                ));
                                           },
                                           child: Opacity(
                                             opacity: 1.0,

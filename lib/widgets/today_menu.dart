@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:foodinz/pages/meal_details.dart';
 import 'package:foodinz/providers/meals.dart';
 import 'package:foodinz/widgets/transitions.dart';
@@ -43,6 +44,7 @@ class TodayMenu extends StatelessWidget {
                 width: size.width * .36,
                 child: InkWell(
                   onTap: () {
+                    HapticFeedback.heavyImpact();
                     // showBottomSheet(
                     //     elevation: 20,
                     //     enableDrag: true,

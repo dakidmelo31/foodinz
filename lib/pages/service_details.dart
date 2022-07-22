@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:foodinz/global.dart';
 import 'package:foodinz/models/restaurants.dart';
@@ -14,8 +15,12 @@ import 'package:foodinz/themes/light_theme.dart';
 import 'package:foodinz/widgets/transitions.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../widgets/rating_list.dart';
+import 'review_form.dart';
 
 class ServiceDetails extends StatefulWidget {
   const ServiceDetails({Key? key, required this.service, required this.tag})
@@ -50,6 +55,63 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                       parent: AlwaysScrollableScrollPhysics()),
                   slivers: [
                     SliverAppBar(
+                        actions: [
+                          TextButton.icon(
+                              onPressed: () async {
+                                HapticFeedback.mediumImpact();
+                                debugPrint("Show review form");
+                                bool? outcome = await Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    alignment: Alignment.center,
+                                    child: ReviewForm(
+                                        isFood: false,
+                                        meal: widget.service,
+                                        restaurantId:
+                                            widget.service.restaurantId),
+                                    type: PageTransitionType.scale,
+                                    duration: const Duration(
+                                      milliseconds: 1800,
+                                    ),
+                                    curve: Curves.bounceOut,
+                                    fullscreenDialog: true,
+                                    opaque: false,
+                                    reverseDuration: const Duration(
+                                      milliseconds: 600,
+                                    ),
+                                  ),
+                                );
+
+                                if (outcome != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          duration: const Duration(
+                                            milliseconds: 1200,
+                                          ),
+                                          behavior: SnackBarBehavior.floating,
+                                          dismissDirection:
+                                              DismissDirection.down,
+                                          backgroundColor: Colors.white,
+                                          elevation: 20,
+                                          width: size.width - 70,
+                                          content: Row(
+                                            children: const [
+                                              Text(
+                                                "Thanks for your review 💖",
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          )));
+                                }
+                              },
+                              icon:
+                                  Icon(Icons.add_reaction, color: Colors.white),
+                              label: Text(
+                                "Review",
+                                style: TextStyle(color: Colors.yellow),
+                              ))
+                        ],
                         backgroundColor: Colors.transparent,
                         expandedHeight: size.height * .5,
                         elevation: 0.0,
@@ -91,6 +153,22 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                               left: 0,
                             ),
                             Positioned(
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                left: 0,
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                            colors: [
+                                      Colors.black.withOpacity(0),
+                                      Colors.black.withOpacity(0),
+                                      Colors.black.withOpacity(.25),
+                                      Colors.black.withOpacity(.25),
+                                    ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight)))),
+                            Positioned(
                               child: Card(
                                 elevation: 15.0,
                                 color: Colors.white,
@@ -113,7 +191,30 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                           ),
                                           GestureDetector(
                                             onTap: () {
-                                              debugPrint("add reviews");
+                                              HapticFeedback.heavyImpact();
+
+                                              showCupertinoModalBottomSheet(
+                                                  duration: const Duration(
+                                                      milliseconds: 600),
+                                                  animationCurve:
+                                                      Curves.bounceIn,
+                                                  bounce: true,
+                                                  enableDrag: true,
+                                                  expand: true,
+                                                  isDismissible: true,
+                                                  topRadius:
+                                                      const Radius.circular(40),
+                                                  context: context,
+                                                  builder: (_) {
+                                                    return SingleChildScrollView(
+                                                      child: CommentList(
+                                                          name: widget
+                                                              .service.name,
+                                                          foodId: widget.service
+                                                              .serviceId,
+                                                          isFood: false),
+                                                    );
+                                                  });
                                             },
                                             child: Row(
                                               children: [
@@ -245,33 +346,38 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                                       child: AbsorbPointer(
                                                         ignoringSemantics: true,
                                                         absorbing: true,
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          imageUrl: image,
-                                                          fadeInCurve:
-                                                              Curves.decelerate,
-                                                          fadeOutCurve:
-                                                              Curves.decelerate,
-                                                          alignment:
-                                                              Alignment.center,
-                                                          fit: BoxFit.cover,
-                                                          placeholder:
-                                                              (_, stackTrace) =>
-                                                                  Lottie.asset(
-                                                            "assets/loading5.json",
-                                                            fit: BoxFit.cover,
+                                                        child: Hero(
+                                                          tag: widget.tag +
+                                                              widget.tag,
+                                                          child:
+                                                              CachedNetworkImage(
+                                                            imageUrl: image,
+                                                            fadeInCurve: Curves
+                                                                .decelerate,
+                                                            fadeOutCurve: Curves
+                                                                .decelerate,
                                                             alignment: Alignment
                                                                 .center,
+                                                            fit: BoxFit.cover,
+                                                            placeholder: (_,
+                                                                    stackTrace) =>
+                                                                Lottie.asset(
+                                                              "assets/loading5.json",
+                                                              fit: BoxFit.cover,
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                            ),
+                                                            filterQuality:
+                                                                FilterQuality
+                                                                    .high,
+                                                            errorWidget: (_,
+                                                                string,
+                                                                stackTrace) {
+                                                              return Lottie.asset(
+                                                                  "assets/no-connection2.json");
+                                                            },
                                                           ),
-                                                          filterQuality:
-                                                              FilterQuality
-                                                                  .high,
-                                                          errorWidget: (_,
-                                                              string,
-                                                              stackTrace) {
-                                                            return Lottie.asset(
-                                                                "assets/no-connection2.json");
-                                                          },
                                                         ),
                                                       ),
                                                     ),
@@ -317,6 +423,8 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                   color: Colors.lightGreen,
                   child: InkWell(
                     onTap: () async {
+                      HapticFeedback.heavyImpact();
+
                       Restaurant? parentRestaurant = _restaurantData
                           .getRestaurant(widget.service.restaurantId);
                       if (parentRestaurant.name.isEmpty) {
@@ -422,13 +530,13 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                               ),
                                             );
                                           },
-                                          leading: Icon(
+                                          leading: const Icon(
                                             Icons.map_rounded,
                                             color: Colors.pink,
                                           ),
-                                          title: Text("Open your map"),
+                                          title: const Text("Open your map"),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 15.0,
                                         ),
                                         Row(
@@ -437,12 +545,15 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                           children: [
                                             FloatingActionButton(
                                               onPressed: () {
+                                                HapticFeedback.heavyImpact();
                                                 Navigator.push(
                                                   context,
                                                   CustomFadeTransition(
                                                     child: RestaurantDetails(
-                                                        restaurant:
-                                                            parentRestaurant),
+                                                      restaurant:
+                                                          parentRestaurant,
+                                                      restHero: widget.tag,
+                                                    ),
                                                   ),
                                                 );
                                               },
@@ -450,9 +561,12 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                                   Icons.restaurant_outlined),
                                             ),
                                             FloatingActionButton(
-                                              backgroundColor: Color.fromARGB(
-                                                  255, 0, 167, 22),
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 0, 167, 22),
                                               onPressed: () {
+                                                HapticFeedback.heavyImpact();
+
                                                 String number = restaurant
                                                     .phoneNumber
                                                     .split("+")
@@ -470,10 +584,13 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                             FloatingActionButton(
                                               backgroundColor: Colors.white,
                                               onPressed: () async {
+                                                HapticFeedback.heavyImpact();
+
                                                 Uri url = Uri.parse("tel:" +
                                                     restaurant.phoneNumber);
-                                                if (await launchUrl(url))
+                                                if (await launchUrl(url)) {
                                                   throw "Could not launch $url";
+                                                }
                                               },
                                               child: const Icon(
                                                 Icons.phone_callback_rounded,

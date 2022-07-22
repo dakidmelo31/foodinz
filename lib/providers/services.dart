@@ -11,6 +11,23 @@ class ServicesData with ChangeNotifier {
     loadServices();
   }
   bool loadingServices = false;
+
+  updateService({required String serviceId, required int newValue}) {
+    int? index = getService(serviceId);
+    if (index == null) {
+      debugPrint("couldn't find service");
+      return;
+    }
+    services[index].comments = newValue;
+    notifyListeners();
+  }
+
+  int? getService(String serviceId) {
+    return services.indexWhere(
+      (element) => element.serviceId == serviceId,
+    );
+  }
+
   Future<void> loadServices() async {
     loadingServices = true;
 
