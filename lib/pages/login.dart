@@ -693,7 +693,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                         children: [
                                           SizedBox(
                                               width: size.width,
-                                              height: 120, 
+                                              height: 120,
                                               child: Stack(
                                                 alignment: Alignment.center,
                                                 children: [
@@ -899,6 +899,26 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                               style: TextStyle(
                                                   color: Colors.black)),
                                           onPressed: () async {
+                                            if (avatar == null) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                      margin: EdgeInsets.only(
+                                                          bottom: 130.0,
+                                                          left: 15.0,
+                                                          right: 15.0),
+                                                      elevation: 10,
+                                                      content: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(8.0),
+                                                        child: Text(
+                                                            "Forgot to add profile pic"),
+                                                      )));
+                                              return;
+                                            }
                                             if (_formKey.currentState!
                                                 .validate()) {
                                               debugPrint(

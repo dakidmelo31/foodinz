@@ -345,6 +345,8 @@ sendMessage({required Chat chat}) async {
         .collection("chats")
         .doc(auth.currentUser!.uid)
         .set({
+      "photo": chat.userImage,
+      "name": chat.senderName,
       "lastMessage": chat.lastmessage,
       "newMessage": true,
       "time": FieldValue.serverTimestamp(),
