@@ -1,8 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart';
 
 class ConnectivityWidget extends StatefulWidget {
   const ConnectivityWidget({Key? key, required this.child}) : super(key: key);
@@ -21,16 +18,15 @@ class _ConnectivityWidgetState extends State<ConnectivityWidget>
     _connectivityStream = Connectivity().onConnectivityChanged;
     _onlineController = AnimationController(
       vsync: this,
-      duration: Duration(
+      duration: const Duration(
         milliseconds: 600,
       ),
     );
 
     _onlineController.addListener(() {
-      debugPrint(_onlineController.value.toString());
       if (_onlineController.isCompleted) {
         debugPrint("completed animation");
-        Future.delayed(Duration(seconds: 5), () {
+        Future.delayed(const Duration(seconds: 5), () {
           _onlineController.reverse();
         });
       }
@@ -54,7 +50,7 @@ class _ConnectivityWidgetState extends State<ConnectivityWidget>
             stream: _connectivityStream,
             builder: (context, AsyncSnapshot<ConnectivityResult> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               }
               if (snapshot.requireData == ConnectivityResult.mobile) {
                 double value = 20.0;
@@ -70,16 +66,24 @@ class _ConnectivityWidgetState extends State<ConnectivityWidget>
                         child: Material(
                           color: Colors.transparent,
                           child: AnimatedContainer(
-                            duration: Duration(milliseconds: 1000),
+                            duration: const Duration(milliseconds: 1000),
                             curve: Curves.fastLinearToSlowEaseIn,
                             color: Colors.green,
-                            child: Center(
-                                child: Text(
-                              "Online",
-                              style: TextStyle(
+                            child: Row(
+                              children: const [
+                                Icon(
+                                  Icons.network_cell_rounded,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w700),
-                            )),
+                                ),
+                                SizedBox(width: 15.0),
+                                Text(
+                                  "Online",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
                             height: value * animation.value,
                             width: size.width,
                           ),
@@ -102,16 +106,24 @@ class _ConnectivityWidgetState extends State<ConnectivityWidget>
                         child: Material(
                           color: Colors.transparent,
                           child: AnimatedContainer(
-                            duration: Duration(milliseconds: 1000),
+                            duration: const Duration(milliseconds: 1000),
                             curve: Curves.fastLinearToSlowEaseIn,
                             color: Colors.blue,
-                            child: Center(
-                                child: Text(
-                              "Using Wifi",
-                              style: TextStyle(
+                            child: Row(
+                              children: const [
+                                Icon(
+                                  Icons.wifi_rounded,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w700),
-                            )),
+                                ),
+                                SizedBox(width: 15.0),
+                                Text(
+                                  "Using Wifi",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
                             height: value * animation.value,
                             width: size.width,
                           ),
@@ -130,16 +142,25 @@ class _ConnectivityWidgetState extends State<ConnectivityWidget>
                         child: Material(
                           color: Colors.transparent,
                           child: AnimatedContainer(
-                            duration: Duration(milliseconds: 1000),
+                            duration: const Duration(milliseconds: 1000),
                             curve: Curves.fastLinearToSlowEaseIn,
                             color: Colors.pink,
-                            child: Center(
-                                child: Text(
-                              "Offline",
-                              style: TextStyle(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.cloud_off_outlined,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w700),
-                            )),
+                                ),
+                                SizedBox(width: 15.0),
+                                Text(
+                                  "Offline",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
                             height: value,
                             width: size.width,
                           ),
@@ -148,7 +169,7 @@ class _ConnectivityWidgetState extends State<ConnectivityWidget>
                     });
               }
 
-              return SizedBox.shrink();
+              return const SizedBox.shrink();
             })
       ],
     );

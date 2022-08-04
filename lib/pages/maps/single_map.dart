@@ -7,9 +7,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RestaurantMap extends StatefulWidget {
-  const RestaurantMap({Key? key, required this.lat, required this.long})
+  const RestaurantMap(
+      {Key? key,
+      required this.restaurantName,
+      required this.lat,
+      required this.long})
       : super(key: key);
   final double lat, long;
+  final String restaurantName;
 
   @override
   State<RestaurantMap> createState() => _RestaurantMapState();
@@ -90,10 +95,14 @@ class _RestaurantMapState extends State<RestaurantMap> {
                   markers: {
                     Marker(
                       markerId: MarkerId("restaurantId"),
+                      infoWindow: InfoWindow(title: widget.restaurantName),
                       position: LatLng(widget.lat, widget.long),
                     ),
                     Marker(
                       markerId: MarkerId("me"),
+                      infoWindow: InfoWindow(
+                        title: "Me",
+                      ),
                       position: LatLng(myLat!, myLng!),
                     ),
                   },

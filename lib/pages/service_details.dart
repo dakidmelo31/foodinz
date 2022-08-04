@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -524,8 +523,11 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                               context,
                                               VerticalSizeTransition(
                                                 child: RestaurantMap(
+                                                  restaurantName:
+                                                      parentRestaurant
+                                                          .companyName,
                                                   lat: parentRestaurant.lat,
-                                                  long: parentRestaurant.long,
+                                                  long: parentRestaurant.lng,
                                                 ),
                                               ),
                                             );

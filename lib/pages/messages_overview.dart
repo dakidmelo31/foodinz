@@ -93,297 +93,314 @@ class _MessagesOverviewState extends State<MessagesOverview>
                 color: Colors.white,
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                            child: Material(
-                          elevation: 10,
-                          shadowColor: Colors.grey.withOpacity(.3),
-                          child: InkWell(
-                            onTap: () {},
-                            child: const TextField(
-                              textAlign: TextAlign.center,
-                              decoration: const InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
-                                border: InputBorder.none,
-                                hintText: "Search Messages...",
+                    SizedBox(
+                        height: kToolbarHeight,
+                        width: size.width,
+                        child: Center(
+                          child: Text("Your History",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 30.0)),
+                        )),
+                    if (false)
+                      Row(
+                        children: [
+                          Flexible(
+                              child: Material(
+                            elevation: 10,
+                            shadowColor: Colors.grey.withOpacity(.3),
+                            child: InkWell(
+                              onTap: () {},
+                              child: const TextField(
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  border: InputBorder.none,
+                                  hintText: "Search Messages...",
+                                ),
                               ),
                             ),
-                          ),
-                        )),
-                        IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.filter,
-                              size: 22, color: Colors.blue),
-                          onPressed: () {
-                            showBarModalBottomSheet(
-                                animationCurve: Curves.elasticInOut,
-                                duration: const Duration(milliseconds: 700),
-                                bounce: true,
-                                isDismissible: true,
-                                elevation: 10,
-                                enableDrag: true,
-                                backgroundColor: Colors.blue.withOpacity(.4),
-                                secondAnimation: _animationController,
-                                context: context,
-                                builder: (_) {
-                                  return StatefulBuilder(
-                                      builder: (_, setState) {
-                                    _showAll = _showPending &&
-                                        _showProcessing &&
-                                        _showComplete &&
-                                        _showReady &&
-                                        _showCancelled;
-                                    return SizedBox(
-                                      width: size.width,
-                                      height: size.height * .6,
-                                      child: Column(children: [
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              if (_showAll) {
-                                                _showCancelled = false;
-                                                _showPending = false;
-                                                _showReady = false;
-                                                _showAll = false;
-                                                _showComplete = false;
-                                                _showProcessing = false;
-                                              } else {
-                                                _showCancelled = true;
-                                                _showPending = true;
-                                                _showReady = true;
-                                                _showAll = true;
-                                                _showComplete = true;
-                                                _showProcessing = true;
-                                              }
-                                              _showAll = !_showAll;
-                                            });
-                                          },
-                                          child: SizedBox(
-                                            height: size.height * .1,
-                                            width: size.width,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text("Show all orders",
-                                                      style: heading),
-                                                  Switch.adaptive(
-                                                    value: _showAll,
-                                                    onChanged: (onChanged) {
-                                                      debugPrint("toggle on");
-                                                      setState(() {
-                                                        if (_showAll) {
+                          )),
+                          IconButton(
+                            icon: const FaIcon(FontAwesomeIcons.filter,
+                                size: 22, color: Colors.blue),
+                            onPressed: () {
+                              showBarModalBottomSheet(
+                                  animationCurve: Curves.elasticInOut,
+                                  duration: const Duration(milliseconds: 700),
+                                  bounce: true,
+                                  isDismissible: true,
+                                  elevation: 10,
+                                  enableDrag: true,
+                                  backgroundColor: Colors.blue.withOpacity(.4),
+                                  secondAnimation: _animationController,
+                                  context: context,
+                                  builder: (_) {
+                                    return StatefulBuilder(
+                                        builder: (_, setState) {
+                                      _showAll = _showPending &&
+                                          _showProcessing &&
+                                          _showComplete &&
+                                          _showReady &&
+                                          _showCancelled;
+                                      return SizedBox(
+                                        width: size.width,
+                                        height: size.height * .6,
+                                        child: Column(children: [
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                if (_showAll) {
+                                                  _showCancelled = false;
+                                                  _showPending = false;
+                                                  _showReady = false;
+                                                  _showAll = false;
+                                                  _showComplete = false;
+                                                  _showProcessing = false;
+                                                } else {
+                                                  _showCancelled = true;
+                                                  _showPending = true;
+                                                  _showReady = true;
+                                                  _showAll = true;
+                                                  _showComplete = true;
+                                                  _showProcessing = true;
+                                                }
+                                                _showAll = !_showAll;
+                                              });
+                                            },
+                                            child: SizedBox(
+                                              height: size.height * .1,
+                                              width: size.width,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                        "Show all orders",
+                                                        style: heading),
+                                                    Switch.adaptive(
+                                                      value: _showAll,
+                                                      onChanged: (onChanged) {
+                                                        debugPrint("toggle on");
+                                                        setState(() {
+                                                          if (_showAll) {
+                                                            _showCancelled =
+                                                                false;
+                                                            _showPending =
+                                                                false;
+                                                            _showReady = false;
+                                                            _showAll = false;
+                                                            _showComplete =
+                                                                false;
+                                                            _showProcessing =
+                                                                false;
+                                                          } else {
+                                                            _showCancelled =
+                                                                true;
+                                                            _showPending = true;
+                                                            _showReady = true;
+                                                            _showAll = true;
+                                                            _showComplete =
+                                                                true;
+                                                            _showProcessing =
+                                                                true;
+                                                          }
+                                                          _showAll = !_showAll;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                _showPending = !_showPending;
+                                              });
+                                            },
+                                            child: SizedBox(
+                                              height: size.height * .1,
+                                              width: size.width,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text("Pending",
+                                                        style: heading),
+                                                    Switch.adaptive(
+                                                      value: _showPending,
+                                                      onChanged: (onChanged) {
+                                                        setState(() {
+                                                          _showPending =
+                                                              !_showPending;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                _showProcessing =
+                                                    !_showProcessing;
+                                              });
+                                            },
+                                            child: SizedBox(
+                                              height: size.height * .1,
+                                              width: size.width,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text("Processing",
+                                                        style: heading),
+                                                    Switch.adaptive(
+                                                      value: _showProcessing,
+                                                      onChanged: (onChanged) {
+                                                        setState(() {
+                                                          _showProcessing =
+                                                              !_showProcessing;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                _showReady = !_showReady;
+                                              });
+                                            },
+                                            child: SizedBox(
+                                              height: size.height * .1,
+                                              width: size.width,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text("Ready",
+                                                        style: heading),
+                                                    Switch.adaptive(
+                                                      value: _showReady,
+                                                      onChanged: (onChanged) {
+                                                        setState(() {
+                                                          _showComplete =
+                                                              !_showComplete;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                _showComplete = !_showComplete;
+                                              });
+                                            },
+                                            child: SizedBox(
+                                              height: size.height * .1,
+                                              width: size.width,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text("Complete",
+                                                        style: heading),
+                                                    Switch.adaptive(
+                                                      value: _showComplete,
+                                                      onChanged: (onChanged) {
+                                                        setState(() {
+                                                          _showComplete =
+                                                              !_showComplete;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                _showCancelled =
+                                                    !_showCancelled;
+                                              });
+                                            },
+                                            child: SizedBox(
+                                              height: size.height * .1,
+                                              width: size.width,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text("Deleted",
+                                                        style: heading),
+                                                    Switch.adaptive(
+                                                      value: _showCancelled,
+                                                      onChanged: (onChanged) {
+                                                        setState(() {
                                                           _showCancelled =
-                                                              false;
-                                                          _showPending = false;
-                                                          _showReady = false;
-                                                          _showAll = false;
-                                                          _showComplete = false;
-                                                          _showProcessing =
-                                                              false;
-                                                        } else {
-                                                          _showCancelled = true;
-                                                          _showPending = true;
-                                                          _showReady = true;
-                                                          _showAll = true;
-                                                          _showComplete = true;
-                                                          _showProcessing =
-                                                              true;
-                                                        }
-                                                        _showAll = !_showAll;
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
+                                                              !onChanged;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _showPending = !_showPending;
-                                            });
-                                          },
-                                          child: SizedBox(
-                                            height: size.height * .1,
-                                            width: size.width,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text("Pending",
-                                                      style: heading),
-                                                  Switch.adaptive(
-                                                    value: _showPending,
-                                                    onChanged: (onChanged) {
-                                                      setState(() {
-                                                        _showPending =
-                                                            !_showPending;
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _showProcessing =
-                                                  !_showProcessing;
-                                            });
-                                          },
-                                          child: SizedBox(
-                                            height: size.height * .1,
-                                            width: size.width,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text("Processing",
-                                                      style: heading),
-                                                  Switch.adaptive(
-                                                    value: _showProcessing,
-                                                    onChanged: (onChanged) {
-                                                      setState(() {
-                                                        _showProcessing =
-                                                            !_showProcessing;
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _showReady = !_showReady;
-                                            });
-                                          },
-                                          child: SizedBox(
-                                            height: size.height * .1,
-                                            width: size.width,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text("Ready",
-                                                      style: heading),
-                                                  Switch.adaptive(
-                                                    value: _showReady,
-                                                    onChanged: (onChanged) {
-                                                      setState(() {
-                                                        _showComplete =
-                                                            !_showComplete;
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _showComplete = !_showComplete;
-                                            });
-                                          },
-                                          child: SizedBox(
-                                            height: size.height * .1,
-                                            width: size.width,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text("Complete",
-                                                      style: heading),
-                                                  Switch.adaptive(
-                                                    value: _showComplete,
-                                                    onChanged: (onChanged) {
-                                                      setState(() {
-                                                        _showComplete =
-                                                            !_showComplete;
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _showCancelled = !_showCancelled;
-                                            });
-                                          },
-                                          child: SizedBox(
-                                            height: size.height * .1,
-                                            width: size.width,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text("Deleted",
-                                                      style: heading),
-                                                  Switch.adaptive(
-                                                    value: _showCancelled,
-                                                    onChanged: (onChanged) {
-                                                      setState(() {
-                                                        _showCancelled =
-                                                            !onChanged;
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    );
+                                        ]),
+                                      );
+                                    });
                                   });
-                                });
-                          },
-                        ),
-                      ],
-                    ),
+                            },
+                          ),
+                        ],
+                      ),
                     const Spacer(),
                     SizedBox(
                       height: kToolbarHeight,

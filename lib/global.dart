@@ -56,28 +56,24 @@ Future<bool> checkLike({required String foodId}) async {
 
 Future<bool> checkFollow({required String restaurantId}) async {
   final prefs = await SharedPreferences.getInstance();
-  bool answer = prefs.containsKey("favoriteRestaurants");
-  if (answer) {
-    List<String>? vals = prefs.getStringList("favoriteRestaurants");
-    if (vals == null || vals.isEmpty) {
-      await prefs.setStringList("favoriteRestaurants", []);
-      return false;
-    }
+
+  if (prefs.containsKey("following")) {
+    List<String> vals = prefs.getStringList("following") ?? [];
 
     if (vals.contains(restaurantId)) {
-      debugPrint("this is currently available");
       return true;
     }
   } else {
-    prefs.setStringList("favoriteRestaurants", []);
+    prefs.setStringList("following", []);
   }
-  return answer;
+
+  return false;
 }
 
 Future<void> toggleLocalFollow({required String restaurantId}) async {
   final prefs = await SharedPreferences.getInstance();
   if (await checkFollow(restaurantId: restaurantId)) {
-    List<String>? container = prefs.getStringList("favoriteRestaurants");
+    List<String>? container = prefs.getStringList("following");
 
     List<String> length = [];
     for (String item in container!) {
@@ -91,16 +87,16 @@ Future<void> toggleLocalFollow({required String restaurantId}) async {
     debugPrint(container.toString());
     debugPrint("after Remove: " + length.toString());
 
-    prefs.setStringList("favoriteRestaurants", length);
+    prefs.setStringList("following", length);
 
     debugPrint("removed follow");
   } else {
     addFollow(restaurantId: restaurantId);
-    List<String>? container = prefs.getStringList("favoriteRestaurants");
+    List<String>? container = prefs.getStringList("following");
     debugPrint("before Add: " + container.toString());
     container!.add(restaurantId);
     debugPrint("after Add: " + container.toString());
-    prefs.setStringList("favoriteRestaurants", container);
+    prefs.setStringList("following", container);
     debugPrint("follow added");
   }
 }
@@ -308,7 +304,7 @@ Future<List<String>> getFavoriteMeals() async {
 
 Future<List<String>> getFavoriteRestaurants() async {
   final prefs = await SharedPreferences.getInstance();
-  List<String> keys = prefs.getStringList("favoriteRestaurants") ?? [];
+  List<String> keys = prefs.getStringList("following") ?? [];
   debugPrint("favorite restaurants: " + keys.length.toString());
   return keys;
 }
@@ -326,4 +322,41 @@ addNewData(
           .then((value) => debugPrint(item['name'] + " has been updated"));
     }
   });
+}
+
+screenSize({required BuildContext ctx}) {
+  final size = MediaQuery.of(ctx).size;
+  return size;
+}
+
+class StoredInfo {
+  static const String googleApiKey = "AIzaSyBW83ZgIKbFvy9Dzc6AkzQjd4ScIpXDrUM";
+}
+
+double lat = 0.0, lng = 0.0;
+
+Future<void> getLocation() async {
+  // var locationStatus = await Permission.location.status;
+  // if (locationStatus.isGranted) {
+  //   debugPrint("granted");
+  // } else if (locationStatus.isDenied) {
+  //   debugPrint("Not granted");
+  //   Map<Permission, PermissionStatus> status =
+  //       await [Permission.location].request();
+  // } else if (locationStatus.isPermanentlyDenied) {
+  //   openAppSettings().then((value) {
+  //     setState(() {});
+  //   });
+  // }
+  // var position = await Geolocator.getCurrentPosition(
+  //   desiredAccuracy: LocationAccuracy.high,
+  // );
+  // var lastPosition = await Geolocator.getLastKnownPosition();
+  // print("position is $lastPosition");
+
+  // setState(() {
+  //   lat = position.latitude;
+  //   lng = position.longitude;
+  // });
+  // debugPrint("latitude: $lat, and logitude: $lng");
 }

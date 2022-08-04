@@ -36,7 +36,7 @@ class _MapDetailsScreenState extends State<MapDetailsScreen> {
     final Polygon polygon = Polygon(polygonId: PolygonId("valuepoly"));
     Marker restaurantMarker = Marker(
         markerId: MarkerId(restaurant.restaurantId),
-        position: LatLng(restaurant.lat, restaurant.long),
+        position: LatLng(restaurant.lat, restaurant.lng),
         infoWindow: InfoWindow(
           title: restaurant.name,
         ),
@@ -44,7 +44,7 @@ class _MapDetailsScreenState extends State<MapDetailsScreen> {
             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange));
     Marker anotherMarker = Marker(
         markerId: MarkerId(restaurant.restaurantId),
-        position: LatLng(restaurant.lat + 10, restaurant.long + 12),
+        position: LatLng(restaurant.lat + 10, restaurant.lng + 12),
         infoWindow: InfoWindow(
           title: restaurant.name,
         ),
@@ -75,8 +75,8 @@ class _MapDetailsScreenState extends State<MapDetailsScreen> {
               Polyline(
                 polylineId: PolylineId("value"),
                 points: [
-                  LatLng(restaurant.lat, restaurant.long),
-                  LatLng(restaurant.lat + .92, restaurant.long + 1.2)
+                  LatLng(restaurant.lat, restaurant.lng),
+                  LatLng(restaurant.lat + .92, restaurant.lng + 1.2)
                 ],
                 width: 5,
               )

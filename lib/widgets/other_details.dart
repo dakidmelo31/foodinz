@@ -47,8 +47,9 @@ class OtherDetails extends StatelessWidget {
               context,
               VerticalSizeTransition(
                 child: RestaurantMap(
+                  restaurantName: restaurant.companyName,
                   lat: restaurant.lat,
-                  long: restaurant.long,
+                  long: restaurant.lng,
                 ),
               ),
             );

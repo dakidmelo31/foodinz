@@ -47,7 +47,7 @@ class ServicesData with ChangeNotifier {
           description: serviceData['description'],
           comments: serviceData['comments'] as int,
           name: serviceData["name"],
-          negociable: serviceData["negociable"],
+          negociable: serviceData["negociable"] ?? false,
           image: serviceData['image'],
           cost: serviceData['cost'], //double.parse(data['price'])
           restaurantId: serviceData['restaurantId'],

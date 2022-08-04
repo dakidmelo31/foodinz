@@ -6,9 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:foodinz/local_notif.dart';
-import 'package:foodinz/providers/category_serice.dart';
 import 'package:foodinz/providers/data.dart';
-import 'package:foodinz/providers/meals.dart';
 import 'package:foodinz/providers/services.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
@@ -221,22 +219,23 @@ class _StartPageState extends State<StartPage> {
                         ),
                       ),
                     ),
-                    Text("OR", style: myTexts),
-                    CupertinoButton(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text("Explore First"),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Icon(CupertinoIcons.person_add)
-                          ],
-                        ),
-                        onPressed: () {
-                          Navigator.pushNamed(context, Home.routeName);
-                          debugPrint("signup new account pressed");
-                        }),
+                    if (false) Text("OR", style: myTexts),
+                    if (false)
+                      CupertinoButton(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Text("Explore First"),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Icon(CupertinoIcons.person_add)
+                            ],
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, Home.routeName);
+                            debugPrint("signup new account pressed");
+                          }),
                   ],
                 ),
               )

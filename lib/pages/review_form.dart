@@ -173,6 +173,10 @@ class _ReviewFormState extends State<ReviewForm> {
                               .doc(meal.foodId)
                               .update({"comments": data});
                         });
+                        Provider.of<MealsData>(context, listen: false)
+                            .updateMeal(
+                                foodId: meal.foodId,
+                                newValue: meal.comments + 1);
 
                         Navigator.pop(context, true);
                       } else {

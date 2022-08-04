@@ -241,18 +241,21 @@ class _OrderDetailsState extends State<OrderDetails>
                                 )
                               ],
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: IconButton(
-                                onPressed: () {},
-                                color: Colors.black,
-                                icon: const Icon(
-                                  Icons.ios_share_rounded,
+                            const Icon(Icons.ios_share_rounded,
+                                color: Colors.transparent),
+                            if (false) //hide share icon
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  color: Colors.black,
+                                  icon: const Icon(
+                                    Icons.ios_share_rounded,
+                                  ),
+                                  iconSize: 30,
                                 ),
-                                iconSize: 30,
-                              ),
-                            )
+                              )
                           ]),
                     ),
                   ),
@@ -274,8 +277,7 @@ class _OrderDetailsState extends State<OrderDetails>
                                   " CFA",
                               style: TextStyle(
                                   fontSize: size.height * .04,
-                                  color:
-                                      const Color.fromARGB(255, 40, 1, 214)),
+                                  color: const Color.fromARGB(255, 40, 1, 214)),
                             ),
                           ),
                         ),
@@ -304,8 +306,7 @@ class _OrderDetailsState extends State<OrderDetails>
                               child: OpacityTween(
                                 child: ClipOval(
                                   child: Container(
-                                    color: widget.order.status
-                                                .toLowerCase() ==
+                                    color: widget.order.status.toLowerCase() ==
                                             "pending"
                                         ? Colors.deepOrange.withOpacity(.2)
                                         : widget.order.status.toLowerCase() ==
@@ -332,10 +333,8 @@ class _OrderDetailsState extends State<OrderDetails>
                                           child: CachedNetworkImage(
                                             maxWidthDiskCache: radius,
                                             maxHeightDiskCache: radius,
-                                            imageUrl:
-                                                restaurant!.businessPhoto,
-                                            errorWidget:
-                                                (_, data, stacktrace) {
+                                            imageUrl: restaurant!.businessPhoto,
+                                            errorWidget: (_, data, stacktrace) {
                                               return Lottie.asset(
                                                   "assets/no-connection2.json",
                                                   reverse: true);

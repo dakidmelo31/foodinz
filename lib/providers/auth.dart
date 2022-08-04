@@ -17,7 +17,7 @@ class MyData with ChangeNotifier {
       userId: 'userId',
       phone: 'phone',
       lat: 0,
-      long: 0);
+      lng: 0);
   MyData() {
     loadUser();
     isLocationSet();

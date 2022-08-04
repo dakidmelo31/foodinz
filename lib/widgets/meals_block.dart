@@ -47,31 +47,15 @@ class _MealsBlockState extends State<MealsBlock> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15.0),
               child: Column(children: [
-                OpenContainer(
-                  closedElevation: 0,
-                  openElevation: 0,
-                  closedBuilder: (_, openContainer) => InkWell(
-                    onTapDown: (details) {
-                      HapticFeedback.heavyImpact();
-                    },
-                    onTap: openContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(widget.title, style: Primary.heading),
-                          const Icon(Icons.arrow_forward_rounded),
-                        ],
-                      ),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(widget.title, style: Primary.heading),
+                      Text("(${filteredList.length.toString()})"),
+                    ],
                   ),
-                  transitionDuration: const Duration(milliseconds: 700),
-                  middleColor: Colors.orange,
-                  transitionType: ContainerTransitionType.fadeThrough,
-                  tappable: true,
-                  openBuilder: (_, closedContainer) =>
-                      ViewCategory(title: widget.title),
                 ),
                 SizedBox(
                   height:
@@ -463,28 +447,15 @@ class _MealsBlockState extends State<MealsBlock> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 15.0),
         child: Column(children: [
-          OpenContainer(
-            closedElevation: 0,
-            openElevation: 0,
-            closedBuilder: (_, openContainer) => InkWell(
-              onTap: openContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(widget.title, style: Primary.heading),
-                    const Icon(Icons.arrow_forward_rounded),
-                  ],
-                ),
-              ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(widget.title, style: Primary.heading),
+                Text("(${filteredList.length.toString()})"),
+              ],
             ),
-            transitionDuration: const Duration(milliseconds: 700),
-            middleColor: Colors.orange,
-            transitionType: ContainerTransitionType.fadeThrough,
-            tappable: true,
-            openBuilder: (_, closedContainer) =>
-                ViewCategory(title: widget.title),
           ),
           SizedBox(
             height: filteredList.length == 1 ? size.width : size.width * .8,

@@ -21,7 +21,7 @@ class Restaurant {
       verified,
       foodReservation,
       ghostKitchen;
-  final double lat, long;
+  final double lat, lng;
   final List<String> categories, gallery;
   double deliveryCost;
   int comments = 0;
@@ -35,7 +35,7 @@ class Restaurant {
       required this.gallery,
       required this.followers,
       required this.verified,
-      required this.long,
+      required this.lng,
       required this.lat,
       this.comments = 0,
       this.likes = 0,

@@ -547,34 +547,17 @@ class _ShowcaseState extends State<Showcase> with TickerProviderStateMixin {
                                 const SizedBox(
                                   height: 20,
                                 ),
-                                OpenContainer(
-                                  closedElevation: 0,
-                                  openElevation: 0,
-                                  closedBuilder: (_, openContainer) => InkWell(
-                                    onTap: openContainer,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: const [
-                                          Text("Popular Restaurants",
-                                              style: Primary.heading),
-                                          Icon(Icons.arrow_forward_rounded),
-                                        ],
-                                      ),
-                                    ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text("Popular Restaurants",
+                                          style: Primary.heading),
+                                    ],
                                   ),
-                                  transitionDuration:
-                                      const Duration(milliseconds: 700),
-                                  middleColor: Colors.orange,
-                                  transitionType:
-                                      ContainerTransitionType.fadeThrough,
-                                  tappable: true,
-                                  openBuilder: (_, closedContainer) =>
-                                      const ViewCategory(title: "Popular"),
                                 ),
-
                                 SizedBox(
                                   width: size.width,
                                   height: size.height * .72,

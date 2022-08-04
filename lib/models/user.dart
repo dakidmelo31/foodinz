@@ -9,7 +9,7 @@ class UserModel {
   String? phone;
   String? deviceToken;
   double lat;
-  double long;
+  double lng;
   UserModel({
     required this.name,
     required this.image,
@@ -17,7 +17,7 @@ class UserModel {
     required this.phone,
     this.deviceToken,
     required this.lat,
-    required this.long,
+    required this.lng,
   });
 
   UserModel copyWith({
@@ -38,7 +38,7 @@ class UserModel {
       phone: phone ?? this.phone,
       deviceToken: deviceToken ?? this.deviceToken,
       lat: lat ?? this.lat,
-      long: long ?? this.long,
+      lng: long ?? this.lng,
     );
   }
 
@@ -52,7 +52,7 @@ class UserModel {
       'phone': phone,
       'deviceToken': deviceToken,
       'lat': lat,
-      'long': long,
+      'long': lng,
     };
   }
 
@@ -64,7 +64,7 @@ class UserModel {
       phone: map['phone'] != null ? map['phone'] : null,
       deviceToken: map['deviceToken'] != null ? map['deviceToken'] : null,
       lat: map['lat'],
-      long: map['long'],
+      lng: map['long'],
     );
   }
 
@@ -75,7 +75,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(name: $name, image: $image, userId: $userId, phone: $phone, deviceToken: $deviceToken, lat: $lat, long: $long)';
+    return 'UserModel(name: $name, image: $image, userId: $userId, phone: $phone, deviceToken: $deviceToken, lat: $lat, long: $lng)';
   }
 
   @override
@@ -89,7 +89,7 @@ class UserModel {
         other.phone == phone &&
         other.deviceToken == deviceToken &&
         other.lat == lat &&
-        other.long == long;
+        other.lng == lng;
   }
 
   @override
@@ -100,6 +100,6 @@ class UserModel {
         phone.hashCode ^
         deviceToken.hashCode ^
         lat.hashCode ^
-        long.hashCode;
+        lng.hashCode;
   }
 }
