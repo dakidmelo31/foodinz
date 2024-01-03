@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Privacy Policy - Foodin</title>
-</head>
-<body>
+
     <h1>Privacy Policy for Foodin</h1>
 
     <h2>Effective Date: [Date]</h2>
@@ -89,5 +83,3 @@
     <p>By using Foodin, you agree to the terms and conditions outlined in this Privacy Policy.</p>
 
     <p>Note: This Privacy Policy is a general template and may need to be customized based on your specific application and legal requirements. It is recommended to seek legal advice to ensure compliance with applicable privacy laws.</p>
-</body>
-</html>
